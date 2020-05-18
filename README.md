@@ -1,21 +1,21 @@
 # gclone懒人转存助手
 <hr />
 前言：
-<hr />
+
 已经在vps配置好gclone
 <hr />
 安装步骤：
-<hr />
+
 step1：ssh连接vps
-<hr />
+
 step2：安装脚本，输入命令sh -c“ $（curl -fsSL https://raw.githubusercontent.com/vcfe/gd/master/install.sh）”
-<hr />
+
 step3：编辑固定地址：nano /root/gd.sh，主要修改目标盘的固定地址ID
 <hr />
 使用方法：
-<hr />
+
 step1：输入./gd.sh启动脚本
-<hr />
+
 step2：输入分享链接地址，回车即开始往固定地址传输；
 <hr />
 原作者：https : //github.com/vcfe/gdgd
