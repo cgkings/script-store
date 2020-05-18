@@ -8,7 +8,7 @@
 
 step1：ssh连接vps
 
-step2：安装脚本，输入命令sh -c“ $（curl -fsSL https://raw.githubusercontent.com/vcfe/gd/master/install.sh）”
+step2：安装脚本，输入命令sh -c“ $（curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/install.sh）”
 
 step3：编辑固定地址：nano /root/gd.sh，主要修改目标盘的固定地址ID
 <hr />
