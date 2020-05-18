@@ -1,5 +1,5 @@
 # gclone懒人转存助手
-<hr />
+
 前言：
 
 已经在vps配置好gclone
