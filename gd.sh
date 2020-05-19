@@ -19,6 +19,6 @@ set /a n+=1
 if %n%==2 goto:step3
 goto:step2
 :step3
-#copylink=`gclone copy goog:{$link} goog:{myid} --drive-server-side-across-configs -vvP --min-size 10M --transfers=10`
+#copylink=`gclone dedupe newest goog:{myid}/$link --drive-server-side-across-configs -v`
 gclone dedupe newest goog:{myid}/$link --drive-server-side-across-configs -v
 goto:step1
