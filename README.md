@@ -26,6 +26,9 @@ nao /root/gd.sh
 ```
 <hr />
 感谢TG的大佬，排名不分先后
+
 shine，这个脚本最初版本的作者，https : //github.com/vcfe/gdgd
+
 Kali Aska，他提供了提取共享文件夹名的核心代码
+
 我只是个搬运工，惭愧！
