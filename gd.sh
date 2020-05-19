@@ -15,3 +15,4 @@ echo gclone copy goog:{$link} goog:{myid}/$rootName --drive-server-side-across-c
 gclone copy goog:{$link} goog:{myid}/$rootName --drive-server-side-across-configs -vvP --transfers=20 --log-file=/root/AutoRclone/LOG/$rootName.txt
 echo gclone dedupe newest goog:{myid}/$rootName --drive-server-side-across-configs -vvP --log-file=/root/AutoRclone/LOG/$rootName.txt
 gclone dedupe newest goog:{myid}/$rootName --drive-server-side-across-configs -vvP --log-file=/root/AutoRclone/LOG/$rootName.txt
+./gd.sh
