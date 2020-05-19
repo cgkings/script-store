@@ -25,7 +25,7 @@ step2：输入分享链接地址，回车即自动在先前设定好的固定地
 nao /root/gd.sh
 ```
 <hr />
-感谢TG的大佬，排名不分先后
+感谢TG的各位大佬的无私帮助，排名不分先后
 
 shine，这个脚本最初版本的作者，https : //github.com/vcfe/gdgd
 
