@@ -1,7 +1,7 @@
 # GD分享链接转存脚本
 
 ## 前言：
-已经在vps配置好gclone
+已经在VPS配置好gclone
 
 ## 安装步骤：
 
@@ -10,11 +10,15 @@
 
 ### 一键急速版
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/install.sh)" 
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/install.sh)"
+```
 
-### 自定义目录版
+### 自定义目录版(转存+分类)   
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/custom_install.sh)"  
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installa.sh)"
+```
 
 ### 一键急速&自动备份版（15G用户福音）
 
@@ -22,18 +26,18 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/m
 
 3、根据提示填写gclone项目名称和需要转存到的固定地址ID
 
-使用方法：
+### 使用方法：
 
 1、输入命令启动脚本
 
     一键急速版: ./gd.sh
-    自定义目录版: ./custom_gd.sh
+    自定义目录版: ./gda.sh
     一键急速&自动备份版: 未完成
     2、输入分享链接地址，回车即自动在先前设定好的固定地址目录里面建立一个共享文件夹同名的文件夹，并自动往该文件夹中转存文件；
 
 注意：
 
-此为默认自动转存2遍，然后自动查重，而且会顾虑掉10M以下的小文件，如有特殊需要，可自行使用nao /root/gd.sh命令修改gd.sh
+此为默认自动转存2遍，然后自动查重，而且会顾虑掉100K以下的小文件，如有特殊需要，可自行使用nao /root/gd.sh命令修改gd.sh
 
 致谢
 
