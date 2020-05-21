@@ -12,11 +12,11 @@ echo "将文件存入配置目录下文件夹："$rootName
 echo "将日志文件保存在：\root\AutoRclone\LOG\$rootName".txt
 echo 【开始拷贝】......
 #echo gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file="/root/AutoRclone/LOG/$rootName".txt
-gclone copy goog:{$link} goog:"{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file="/root/AutoRclone/LOG/$rootName".txt
+gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file="/root/AutoRclone/LOG/$rootName".txt
 echo 【查缺补漏】......
-#echo gclone copy goog:{$link} goog:"{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file="/root/AutoRclone/LOG/$rootName".txt
-gclone copy goog:{$link} goog:"{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file="/root/AutoRclone/LOG/$rootName".txt
+#echo gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file="/root/AutoRclone/LOG/$rootName".txt
+gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file="/root/AutoRclone/LOG/$rootName".txt
 echo 【去重检查】......
-#echo gclone dedupe newest goog:"{myid}/$rootName" --drive-server-side-across-configs -vvP --log-file="/root/AutoRclone/LOG/$rootName".txt
-gclone dedupe newest goog:"{myid}/$rootName" --drive-server-side-across-configs -vvP --log-file="/root/AutoRclone/LOG/$rootName".txt
+#echo gclone dedupe newest "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --log-file="/root/AutoRclone/LOG/$rootName".txt
+gclone dedupe newest "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --log-file="/root/AutoRclone/LOG/$rootName".txt
 #./gd.sh
