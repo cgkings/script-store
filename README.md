@@ -1,22 +1,22 @@
-gclone懒人一键转存脚本
-前言：
+# GD分享链接转存脚本
 
+## 前言：
 已经在vps配置好gclone
 
-安装步骤：
+## 安装步骤：
 
 1、ssh连接vps
 2、安装脚本，输入命令
 
-# 一键急速版
+### 一键急速版
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/install.sh)" 
 
-# 自定义目录版
+### 自定义目录版
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/custom_install.sh)"  
 
-# 一键急速&自动备份版（15G用户福音）
+### 一键急速&自动备份版（15G用户福音）
 
 未完成
 
