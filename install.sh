@@ -8,4 +8,5 @@ sed -i "s/goog/$gclone/g" gd.sh
 read -p "请输入需要转存到的固定地址ID后按回车键:" id
 sed -i "s/myid/$id/g" gd.sh
 chmod +x gd.sh
+mkdir -p ~/AutoRclone/LOG/
 echo "请输入 ./gd.sh 使用脚本"
