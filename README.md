@@ -50,6 +50,14 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 + 输入“./gdb.sh”启动脚本
 + 按提示输入“TD分享链接”回车
 + 按提示输入“分类文件夹ID”回车执行脚本
+
+#### 应网友要求改一个四备份版
+
+    复制一份、备份四份、共计五份！安装地址如下，运行请输入“./gdc.sh”,其他都一样！
+    
+    ```
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installc.sh)"
+    ```
     
 #### 说明：
 
