@@ -57,4 +57,4 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 + shine，这个脚本最初版本的作者，https : //github.com/vcfe/gdgd
 + Kali Aska，他提供了提取共享文件夹名的核心代码
 + cgking，对shine的代码进行了简化
-+ 我只是个搬运工，惭愧！
++ 我在cgking的基础上加了分类转存，只是个搬运工，惭愧！
