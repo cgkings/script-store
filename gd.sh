@@ -20,4 +20,6 @@ echo 【去重检查】......
 #echo gclone dedupe newest "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/gclone_log/'"$rootName"'.log'
 gclone dedupe newest "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/gclone_log/'"$rootName"'.log'
 echo 【比对检查】......
+#echo gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse --log-file=/root/gclone_log/'"$rootName"'.log'
+gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse --log-file=/root/gclone_log/'"$rootName"'.log'
 #./gd.sh
