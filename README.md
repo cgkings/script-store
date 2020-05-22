@@ -55,9 +55,9 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 
     复制一份、备份四份、共计五份！安装地址如下，运行请输入“./gdc.sh”,其他都一样！
     
-    ```
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installc.sh)"
-    ```
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installc.sh)"
+```
     
 #### 说明：
 
