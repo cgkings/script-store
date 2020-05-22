@@ -2,6 +2,7 @@
 rm -rf gdb.sh
 wget https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/gdb.sh
 #echo "输入配置gclone的名称"
+echo 本脚本将执行：复制一份，备份两份，共计三份相同档案
 read -p "请输入配置gclone的名称后按回车键:" gclone
 sed -i "s/goog/$gclone/g" gdb.sh
 #echo "请输入需要转存到的固定地址"
