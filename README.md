@@ -23,7 +23,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 1、输入命令启动脚本 <br>
 - 一键极速版:          `./gd.sh`
 - 自定义目录版:        `./gda.sh`
-- 一键急速&自动备份版:  `未完成`
+- 一键极速&自动备份版:  `未完成`
 
 2、输入分享链接地址，回车即自动在先前设定好的固定地址目录里面建立一个共享文件夹同名的文件夹，并自动往该文件夹中转存文件； <hr />
 # 注意：
