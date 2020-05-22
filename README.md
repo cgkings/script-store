@@ -10,9 +10,9 @@
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/install.sh)" 
 
-# 自定义目录版
+# 自定义目录版（转存+分类）--作者：vitaminx，https://github.com/vitaminx/gclone-assistant
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/custom_install.sh)"  
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installa.sh)"
 
 # 一键急速&自动备份版（15G用户福音）
 
@@ -22,7 +22,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/m
 # 使用方法：
 1、输入命令启动脚本 <br>
 - 一键急速版:          `./gd.sh`
-- 自定义目录版:        `./custom_gd.sh`
+- 自定义目录版:        `./gda.sh`
 - 一键急速&自动备份版:  `未完成`  <br>
 2、输入分享链接地址，回车即自动在先前设定好的固定地址目录里面建立一个共享文件夹同名的文件夹，并自动往该文件夹中转存文件； <hr />
 # 注意：
@@ -31,4 +31,5 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/m
 感谢TG的各位大佬的无私帮助，排名不分先后<br>
 shine，这个脚本最初版本的作者，https : //github.com/vcfe/gdgd<br>
 Kali Aska，他提供了提取共享文件夹名的核心代码<br>
+vitaminx，脚本开发路上的小伙伴，自定义gda.sh出自他手<br>
 我只是个搬运工，惭愧！
