@@ -10,4 +10,5 @@ sed -i "s/Backupid1/$id1/g" gdb.sh
 read -p "请输入备份路径2的地址ID后按回车键:" id2
 sed -i "s/Backupid2/$id2/g" gdb.sh
 chmod +x gdb.sh
+mkdir -p ~/AutoRclone/LOG/
 echo "请输入 ./gdb.sh 使用脚本"
