@@ -6,7 +6,7 @@
 1、ssh连接vps<br>
 2、安装脚本，输入命令<br>
 ```
-# 一键急速版
+# 一键极速版
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/install.sh)" 
 
@@ -14,14 +14,14 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/m
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installa.sh)"
 
-# 一键急速&自动备份版（15G用户福音）
+# 一键极速&自动备份版（15G用户福音）
 
 未完成
 ```
 3、根据提示填写gclone项目名称和需要转存到的固定地址ID <hr />
 # 使用方法：
 1、输入命令启动脚本 <br>
-- 一键急速版:          `./gd.sh`
+- 一键极速版:          `./gd.sh`
 - 自定义目录版:        `./gda.sh`
 - 一键急速&自动备份版:  `未完成`
 
