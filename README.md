@@ -26,8 +26,8 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 
 3、配置参数
 
-    - 一键极速版根据提示输入“gclone配置名”和“转存到的固定地址文件夹ID”
-    + 自定义目录版根据提示输入“gclone配置名”后，**在VPS上“root/AutoRclone/”路径下建立“LOG”文件夹保存日志文件否者报错**
+- 一键极速版根据提示输入“gclone配置名”和“转存到的固定地址文件夹ID”
++ 自定义目录版根据提示输入“gclone配置名”后，**在VPS上“root/AutoRclone/”路径下建立“LOG”文件夹保存日志文件否者报错**
 
 ### 使用方法：
 
