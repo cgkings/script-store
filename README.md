@@ -14,7 +14,7 @@
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/install.sh)"
 ```
 
-### 自定义目录版(转存+分类)   
+### 分类转存版(转存+分类)   
 
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installa.sh)"
@@ -36,13 +36,13 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 + 输入“./gd.sh”启动脚本   
 + 按提示输入TD分享链接回车执行脚本   
 
-#### 2、一键极速版   
+#### 2、分类转存版   
 
 + 输入“./gda.sh”启动脚本  
 + 按提示输入“TD分享链接”回车
 + 按提示输入“分类文件夹ID”回车执行脚本   
 
-#### 3、一键急速&自动备份版
+#### 3、分类转存&自动备份版
 
 + 未完成
     
