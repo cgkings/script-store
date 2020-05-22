@@ -20,5 +20,5 @@ echo 【去重检查】......
 gclone dedupe newest "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP
 echo 【比对检查】......
 #echo gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse
-gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse
+gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse --min-size 10M
 #./gd.sh
