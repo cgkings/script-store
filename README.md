@@ -20,9 +20,11 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installa.sh)"
 ```
 
-### 一键急速&自动备份版（15G用户福音）
+### 分类转存&自动备份版（15G用户福音）
 
-未完成
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installb.sh)"
+```
 
 3、配置参数
 
