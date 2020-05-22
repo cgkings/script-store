@@ -12,7 +12,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/m
 
 # 自定义目录版（转存+分类）--作者：vitaminx
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/installa.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installa.sh)"
 
 # 一键急速&自动备份版（15G用户福音）
 
