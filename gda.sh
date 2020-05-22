@@ -13,14 +13,14 @@ read -p "分类文件夹ID:" folderid
 id=$folderid
 j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) folderName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 echo "文件转存入分类目录："$folderName/$rootName
-echo '日志文件保存在：/root/AutoRclone/LOG/'"$rootName"'.txt'
+echo '日志文件保存在：/root/gcloneLOG/'"$rootName"'.log'
 echo 【开始拷贝】......
-#echo gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file=/root/AutoRclone/LOG/"$rootName"'.txt'
-gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file=/root/AutoRclone/LOG/"$rootName"'.txt'
+#echo gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file=/root/gcloneLOG/'"$rootName"'.log'
+gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file=/root/gcloneLOG/'"$rootName"'.log'
 echo 【查缺补漏】......
-#echo gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file=/root/AutoRclone/LOG/"$rootName"'.txt'
-gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file=/root/AutoRclone/LOG/"$rootName"'.txt'
+#echo gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file=/root/gcloneLOG/'"$rootName"'.log'
+gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 100k --log-file=/root/gcloneLOG/'"$rootName"'.log'
 echo 【去重检查】......
-#echo gclone dedupe newest "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/AutoRclone/LOG/$rootName.txt
-gclone dedupe newest "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/AutoRclone/LOG/"$rootName"'.txt'
+#echo gclone dedupe newest "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/gcloneLOG/'"$rootName"'.log'
+gclone dedupe newest "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/gcloneLOG/'"$rootName"'.log'
 #./gda.sh
