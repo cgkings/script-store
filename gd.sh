@@ -1,6 +1,6 @@
 #!/bin/bash
 #echo "请输入分享链接"
-read -p "请输入分享链接并按回车:" link
+read -p "请输入分享链接后按回车键:" link
 link=${link#*id=};
 link=${link#*folders/}
 #echo $link
