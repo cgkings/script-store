@@ -10,7 +10,7 @@
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/install.sh)" 
 
-# 自定义目录版（转存+分类）--作者：vitaminx，https://github.com/vitaminx/gclone-assistant
+# 自定义目录版（转存+分类）--作者：vitaminx
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installa.sh)"
 
@@ -31,5 +31,5 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 感谢TG的各位大佬的无私帮助，排名不分先后<br>
 shine，这个脚本最初版本的作者，https : //github.com/vcfe/gdgd<br>
 Kali Aska，他提供了提取共享文件夹名的核心代码<br>
-vitaminx，脚本开发路上的小伙伴，自定义gda.sh出自他手<br>
+vitaminx，脚本开发路上的小伙伴，自定义gda.sh出自他手，https://github.com/vitaminx/gclone-assistant<br>
 我只是个搬运工，惭愧！
