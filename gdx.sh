@@ -180,17 +180,16 @@ run_gd_bak4() {
 	echo 【备份四去重检查】......
 	gclone dedupe newest "goog:{Backupid4}/$folderName/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/AutoRclone/LOG/"$rootName"'_dedupe_backup4.txt'
 }
-echo && echo -e " gd一键转存脚本 3 in 1版 ${Red_font_prefix}[v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
- 
+echo && echo -e "
  ${Green_font_prefix} 1.${Font_color_suffix} 极速转存:讲转存入脚本配置时设置的固定文件夹
  ———————————————————————
  ${Green_font_prefix} 2.${Font_color_suffix} 分类转存:转存入输入的分类文件夹
  ———————————————————————
- ${Green_font_prefix} 3.${Font_color_suffix} 分类转存"&"备份：转存入输入的分类文件夹并建立一个备份
+ ${Green_font_prefix} 3.${Font_color_suffix} 分类转存&备份：转存入输入的分类文件夹并建立一个备份
  ———————————————————————
- ${Green_font_prefix} 4.${Font_color_suffix} 分类转存"&"多备份：转存入输入的分类文件夹并建立四个备份
- ———————————————————————" && echo
-read -t 5 -e -p " 请输入数字 [0-3]:" num
+ ${Green_font_prefix} 4.${Font_color_suffix} 分类转存&多备份：转存入输入的分类文件夹并建立四个备份
+ ———————————————————————"&& echo
+read -t 5 -e -p "请输入数字 [1-4]:" num
 num=${num:-1}
 case "$num" in
 1)
