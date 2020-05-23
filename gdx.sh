@@ -19,15 +19,15 @@ check_results=`gclone size goog:{"$link"} 2>&1`
     echo "链接无效，检查是否有权限" && exit
     else
     echo "分享链接的基本信息如下："
-	echo "分享目录名：""$rootName"
-	echo "分享目录下文件数和总大小：""$check_results"
+	  echo "分享目录名："$rootName""
+	  echo "分享目录下文件数和总大小："$check_results""
     echo "请输入1~4选择转存模式,直接回车或5秒钟未输入自动选择“急速转存模式”"
     fi
 fi
 # 进行选项操作，默认1急速转存
-run_gd_fast() {
+run_gd_fast(){
 "==<<极速转存即将开始，可ctrl+c中途中断>>=="
-	id=$myid
+  id=$myid
 	j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) myidName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 	echo "文件将转存到以下目录："$myidName/$rootName
 	echo '转存日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'.txt'
