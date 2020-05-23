@@ -79,7 +79,8 @@ echo && echo -e " gd一键转存脚本 3 in 1版 ${Red_font_prefix}[v1.0 ${Font_
  ———————————————————————
  ${Green_font_prefix} 3.${Font_color_suffix} 自动备份：固定地址所在TD向备份盘进行全盘备份
  ———————————————————————" && echo
-read -e -p " 请输入数字 [0-3]:" num
+read -t 5 -e -p " 请输入数字 [0-3]:" num
+num=${num:-1}
 case "$num" in
 1)
     run_gd_fast
