@@ -5,12 +5,17 @@ read -p """输入分享链接
 if [ -z "$link" ] ;then
     echo "不允许输入为空"
     exit
-else :
-link=${link#*id=};link=${link#*folders/};link=${link#*d/};link=${link%?usp*}
-flist=$(gclone size goog:{"$link"})
-    if [[ $flist == *"Error 404"* ]] ;then
+else
+link=${link#*id=};
+link=${link#*folders/};
+link=${link#*d/};
+link=${link%?usp*}
+check_results=`gclone size cgkings:{"$link"} 2>&1`
+    if [[ $check_results =~ "Error 404" ]]
+    then
     echo "链接无效，检查是否有权限" && exit
-    else ：
+    else
+    echo "分享链接的基本信息如下："$check_results""
     echo "你输入的分享链接ID为： $link,即将开始转存别着急"
     fi
 fi
