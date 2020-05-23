@@ -26,7 +26,7 @@ check_results=`gclone size goog:{"$link"} 2>&1`
 fi
 # 进行选项操作，默认1急速转存
 run_gd_fast() {
-	==<<极速转存即将开始，可ctrl+c中途中断>>=="
+	"==<<极速转存即将开始，可ctrl+c中途中断>>=="
 	id=$myid
 	j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) myidName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 	echo "文件将转存到以下目录："$myidName/$rootName
@@ -43,7 +43,7 @@ run_gd_fast() {
 }
 run_gd_customiz() {
 	read -p "请输入分类文件夹ID后按回车键:" folderid
-	==<<分类转存即将开始，可ctrl+c中途中断>>=="
+	"==<<分类转存即将开始，可ctrl+c中途中断>>=="
 	id=$folderid
 	j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) folderName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 	echo "文件将转存入分类目录："$folderName/$rootName
@@ -60,7 +60,7 @@ run_gd_customiz() {
 }
 run_gd_bak() {
 	read -p "请输入分类文件夹ID后按回车键:" folderid
-	==<<分类转存"&"备份模式即将开始（转存一份、备份一份），可ctrl+c中途中断>>=="
+	"==<<分类转存"&"备份模式即将开始（转存一份、备份一份），可ctrl+c中途中断>>=="
 	id=$folderid
 	j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) folderName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 	echo "文件将转存入分类目录："$folderName/$rootName
@@ -94,7 +94,7 @@ run_gd_bak() {
 }
 run_gd_bak4() {
 	read -p "请输入分类文件夹ID后按回车键:" folderid
-	==<<分类转存"&"多备份模式即将开始（转存一份、备份四份、共五份），可ctrl+c中途中断>>=="
+	"==<<分类转存"&"多备份模式即将开始（转存一份、备份四份、共五份），可ctrl+c中途中断>>=="
 	id=$folderid
 	j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) folderName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 	echo "文件将转存入分类目录："$folderName/$rootName
