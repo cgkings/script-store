@@ -23,8 +23,8 @@ fi
 run_gd_fast() {
    id=$link
     j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) rootName=$(echo $j | grep -Po '(?<="name":")[^"]*')
-    echo "将转存入该文件夹："$rootName
-         "==<<极速转存即将开始，可ctrl+c中途中断>>=="
+    echo "将转存入该文件夹："$rootName"
+    ==<<极速转存即将开始，可ctrl+c中途中断>>=="
     echo 【开始拷贝】......
     #echo "gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 10M"
     gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 10M
@@ -71,7 +71,7 @@ run_gd_bak() {
     #echo "gclone check goog:{tdid} goog:{bakid} --size-only --one-way --no-traverse"
     gclone check goog:{tdid} goog:{bakid} --size-only --one-way --no-traverse --min-size 10M
 }
-echo && echo -e " gd一键转存脚本 3 in 1版 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix} by \033[1;35mcgkings\033[0m
+echo && echo -e " gd一键转存脚本 3 in 1版 ${Red_font_prefix}[v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
  
  ${Green_font_prefix} 1.${Font_color_suffix} 极速版:立即向固定地址ID转存(默认选项，回车即可)
  ———————————————————————
