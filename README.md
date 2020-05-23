@@ -1,4 +1,4 @@
-<h2 align="center">gclone懒人一键转存脚本</h2> 
+### gclone懒人一键转存脚本 
 
 # 前言：
 已经在vps配置好gclone<hr />
