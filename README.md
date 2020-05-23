@@ -8,8 +8,7 @@
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/installt.sh)"
 ```
-3.根据提示填写以下信息：<br>
-  gclone项目名称///固定地址ID//固定地址所在团队盘ID//备份用团队盘ID <hr />
+3.根据提示填写以下信息：gclone项目名称///固定地址ID//固定地址所在团队盘ID//备份用团队盘ID <hr />
 # 使用方法：
 建议先tmux或screen建议个对话<br>
 1.输入命令启动脚本 - `./gdt.sh` <br>
