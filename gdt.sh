@@ -2,13 +2,13 @@
 read -p """输入分享链接
      请输入 =>:""" link
 # 检查接受到的分享链接规范性，并转化出分享文件ID
-if [ -z $link ] ;then
+if [ -z "$link" ] ;then
     echo "不允许输入为空"
     exit
 else :
 link=${link#*id=};link=${link#*folders/};link=${link#*d/};link=${link%?usp*}
-fname=$(gclone size goog:{$link})
-    if [[ $fname == *"Error 404"* ]] ;then
+flist=$(gclone size goog:{"$link"})
+    if [[ $flist == *"Error 404"* ]] ;then
     echo "链接无效，检查是否有权限" && exit
     else ：
     echo "你输入的分享链接ID为： $link,即将开始转存别着急"
