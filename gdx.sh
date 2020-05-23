@@ -28,9 +28,8 @@ fi
 # 进行选项操作，默认1急速转存
 
 run_gd_fast() {
-echo -e "\n"
-echo '==<<极速转存即将开始，可ctrl+c中途中断>>=='
-echo -e "\n"
+echo -e '==<<极速转存即将开始，可ctrl+c中途中断>>=='
+echo -e
 echo "文件将转存到配置中固定目录下文件夹：$rootName"
 echo '转存日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'.txt'
 echo '查漏日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'_check.txt'
