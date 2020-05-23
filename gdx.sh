@@ -1,5 +1,5 @@
 #!/bin/bash
-echo -e "TD分享链接一键转存脚本 4 in 1版 ${Red_font_prefix}[v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m]]]"
+echo -e "TD分享链接一键转存脚本 4 in 1版 ${Red_font_prefix}[v1.0 ${Font_color_suffix} by \033[1;35mcgkings&oneking\033[0m]"
 read -p """输入分享链接
      请输入 =>:""" link
 # 检查接受到的分享链接规范性，并读取分享文件夹ID和文件夹名
@@ -21,7 +21,7 @@ check_results=`gclone size goog:{"$link"} 2>&1`
     echo "分享链接的基本信息如下："
 	echo "分享目录名：""$rootName"
 	echo "分享目录下文件数和总大小：""$check_results"
-    echo "请输入1~3选择转存模式,直接回车或5秒钟未输入自动选择“急速转存模式”"
+    echo "请输入1~4选择转存模式,直接回车或5秒钟未输入自动选择“急速转存模式”"
     fi
 fi
 # 进行选项操作，默认1急速转存
@@ -181,6 +181,7 @@ run_gd_bak4() {
 	gclone dedupe newest "goog:{Backupid4}/$folderName/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/AutoRclone/LOG/"$rootName"'_dedupe_backup4.txt'
 }
 echo && echo -e " 
+
  ${Green_font_prefix} 1.${Font_color_suffix} 极速转存:讲转存入脚本配置时设置的固定文件夹
  ———————————————————————
  ${Green_font_prefix} 2.${Font_color_suffix} 分类转存:转存入输入的分类文件夹
@@ -191,6 +192,7 @@ echo && echo -e "
  ———————————————————————" && echo
  
 read -e -p " 请输入数字 [0-4]:" num
+num=${num:-1}
 case "$num" in
 1)
     run_gd_fast
