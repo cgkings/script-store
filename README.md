@@ -26,6 +26,12 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installb.sh)"
 ```
 
+### 四合一版
+
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installx.sh)"
+```
+
 3、配置参数
 
 - “一键极速版”根据提示输入“gclone配置名”和“转存到的固定地址文件夹ID”
@@ -51,6 +57,12 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 + 按提示输入“TD分享链接”回车
 + 按提示输入“分类文件夹ID”回车执行脚本
 
+#### 4、四合一版
+
++ 输入“./gdx.sh”启动脚本
++ 按提示输入“TD分享链接”回车
++ 按提示选择需要的转存模式回车转存
+
 #### 应网友要求改一个四备份版
 
     复制一份、备份四份、共计五份！安装地址如下，运行请输入“./gdc.sh”,其他都一样！
@@ -58,7 +70,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installc.sh)"
 ```
-    
+
 #### 说明：
 
 + 此脚本所有版本默认自动转存2遍，自动查重，虑掉100k以下的小文件，保存日志文件（日志文件保存在/root/AutoRclone/LOG目录下）
