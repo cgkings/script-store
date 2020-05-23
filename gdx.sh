@@ -14,8 +14,8 @@ link=${link%?usp*}
 id=$link
 j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) rootName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 check_results=`gclone size goog:{"$link"} 2>&1`
-    if [[ $check_results =~ "Error 404" ]]
-    then
+	if [[ $check_results =~ "Error 404" ]]
+	then
     echo "链接无效，检查是否有权限" && exit
     else
     echo "分享链接的基本信息如下："
@@ -26,7 +26,7 @@ check_results=`gclone size goog:{"$link"} 2>&1`
 fi
 # 进行选项操作，默认1急速转存
 run_gd_fast() {
-	"==<<极速转存即将开始，可ctrl+c中途中断>>=="
+"==<<极速转存即将开始，可ctrl+c中途中断>>=="
 	id=$myid
 	j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) myidName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 	echo "文件将转存到以下目录："$myidName/$rootName
@@ -180,8 +180,8 @@ run_gd_bak4() {
 	echo 【备份四去重检查】......
 	gclone dedupe newest "goog:{Backupid4}/$folderName/$rootName" --drive-server-side-across-configs -vvP --log-file=/root/AutoRclone/LOG/"$rootName"'_dedupe_backup4.txt'
 }
-echo && echo -e " 
-
+echo && echo -e " gd一键转存脚本 3 in 1版 ${Red_font_prefix}[v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
+ 
  ${Green_font_prefix} 1.${Font_color_suffix} 极速转存:讲转存入脚本配置时设置的固定文件夹
  ———————————————————————
  ${Green_font_prefix} 2.${Font_color_suffix} 分类转存:转存入输入的分类文件夹
@@ -190,8 +190,7 @@ echo && echo -e "
  ———————————————————————
  ${Green_font_prefix} 4.${Font_color_suffix} 分类转存"&"多备份：转存入输入的分类文件夹并建立四个备份
  ———————————————————————" && echo
- 
-read -e -p " 请输入数字 [0-4]:" num
+read -t 5 -e -p " 请输入数字 [0-3]:" num
 num=${num:-1}
 case "$num" in
 1)
