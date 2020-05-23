@@ -30,9 +30,8 @@ fi
 run_gd_fast() {
 echo -e "\n"
 echo '==<<极速转存即将开始，可ctrl+c中途中断>>=='
-id="myid"
-j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) myidName=$(echo $j | grep -Po '(?<="name":")[^"]*')
-echo "文件将转存到以下目录：$myidName/$rootName"
+echo -e "\n"
+echo "文件将转存到配置中固定目录下文件夹：$rootName"
 echo '转存日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'.txt'
 echo '查漏日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'_check.txt'
 echo '去重日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'_dedupe.txt'
