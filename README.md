@@ -8,10 +8,10 @@
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/installt.sh)"
 ```
-3.根据提示填写以下信息：<hr />
+3.根据提示填写以下信息：<br>
   gclone项目名称///固定地址ID//固定地址所在团队盘ID//备份用团队盘ID <hr />
 # 使用方法：
-建议先tmux或screen建议个对话
+建议先tmux或screen建议个对话<br>
 1.输入命令启动脚本 - `./gdt.sh` <br>
 2.输入分享链接地址并回车，如果不需要自定义或全盘备份，这时候可以去干别的事了，后面脚本会无人值守完成转存 <br>
 3.如果需要自定义转存或全盘备份，看到选项菜单请尽快按提示进行选择，因为我设置了5秒不选，自动固定地址极速转存； <hr />
