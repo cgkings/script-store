@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "\n"
+echo -e "\n"
 echo -e "TD分享链接一键转存脚本 4 in 1版 ${Red_font_prefix}[v1.0 ${Font_color_suffix} by \033[1;35mcgkings&oneking\033[0m]"
 read -p """输入分享链接
      请输入 =>:""" link
@@ -15,24 +15,25 @@ link=${link%?usp*}
 id=$link
 j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) rootName=$(echo $j | grep -Po '(?<="name":")[^"]*')
 check_results=`gclone size goog:{"$link"} 2>&1`
-	if [[ $check_results =~ "Error 404" ]]
-	then
+    if [[ $check_results =~ "Error 404" ]]
+    then
     echo "链接无效，检查是否有权限" && exit
     else
     echo "分享链接的基本信息如下："
-	echo "分享目录名："$rootName""
-	echo "分享目录下文件数和总大小："$check_results""
-	echo "\n"
+	  echo "分享目录名："$rootName""
+	  echo "分享目录下文件数和总大小："$check_results""
+	  echo -e "\n"
     echo "请输入1~4选择转存模式,直接回车或5秒钟未输入自动选择“急速转存模式”"
     fi
 fi
 # 进行选项操作，默认1急速转存
 
-run_gd_fast(){
+run_gd_fast() {
+echo -e "\n"
 echo '==<<极速转存即将开始，可ctrl+c中途中断>>=='
 id=myid
 j=$(gclone lsd goog:{$id} --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) myidName=$(echo $j | grep -Po '(?<="name":")[^"]*')
-echo "文件将转存到以下目录："myidName/$rootName
+echo "文件将转存到以下目录：$myidName/$rootName"
 echo '转存日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'.txt'
 echo '查漏日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'_check.txt'
 echo '去重日志文件将保存在：/root/AutoRclone/LOG/'"$rootName"'_dedupe.txt'
