@@ -10,20 +10,15 @@
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/install.sh)" 
 
-# 自定义目录版（转存+分类）--作者：vitaminx
+# 三合一版（极速+自定义+全盘备份）
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/vitaminx/gclone-assistant/master/installa.sh)"
-
-# 一键极速&自动备份版（15G用户福音）
-
-未完成
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/installt.sh)"
 ```
 3、根据提示填写gclone项目名称和需要转存到的固定地址ID <hr />
 # 使用方法：
 1、输入命令启动脚本 <br>
 - 一键极速版:          `./gd.sh`
-- 自定义目录版:        `./gda.sh`
-- 一键极速&自动备份版:  `未完成`
+- 三合一版:        `./gdt.sh`
 
 2、输入分享链接地址，回车即自动在先前设定好的固定地址目录里面建立一个共享文件夹同名的文件夹，并自动往该文件夹中转存文件； <hr />
 # 注意：
