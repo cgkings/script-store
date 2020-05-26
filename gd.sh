@@ -1,5 +1,5 @@
 #!/bin/bash
-echo -e "GD懒人一键转存脚本${Red_font_prefix}[ v1.0 ${Font_color_suffix} by \033[1;35mcgkings & oneking\033[0m]"
+echo -e "GD懒人一键转存脚本"
 read -p """输入分享链接
      请输入 =>:""" link
 # 检查接受到的分享链接规范性，并转化出分享文件ID
