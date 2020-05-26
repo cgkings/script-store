@@ -1,5 +1,4 @@
 #!/bin/bash
-echo -e "TD分享链接一键转存脚本 4 in 1版 ${Red_font_prefix}[ v1.0 ${Font_color_suffix} by \033[1;35mcgkings & oneking\033[0m ]"
 read -p """输入分享链接
      请输入 =>:""" link
 # 检查接受到的分享链接规范性，并转化出分享文件ID
@@ -41,7 +40,6 @@ run_gd_fast() {
     echo 【比对检查】......
     #echo "gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse --min-size 10M"
     gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse --min-size 10M
-    #./gdt.sh
 }
 run_gd_customiz() {
     read -p "请输入分类文件夹ID后按回车键:" folderid
@@ -55,7 +53,6 @@ run_gd_customiz() {
     gclone copy goog:{$link} "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 10M
     echo 【去重检查】......
     gclone dedupe newest "goog:{$folderid}/$rootName" --drive-server-side-across-configs -vvP
-    #./gdt.sh
 }
 run_gd_bak() {
    echo "全盘备份，有可能时间漫长敬请等待，建议tmux或screen后台进行"
@@ -72,8 +69,7 @@ run_gd_bak() {
     #echo "gclone check goog:{tdid} goog:{bakid} --size-only --one-way --no-traverse"
     gclone check goog:{tdid} goog:{bakid} --size-only --one-way --no-traverse --min-size 10M
 }
-echo && echo -e " gclone懒人一键转存脚本 ${Red_font_prefix}[ v1.0 ${Font_color_suffix} by \033[1;35mcgkings & oneking\033[0m ]"
- 
+echo && echo -e " gclone懒人一键转存脚本"
  ${Green_font_prefix} 1.${Font_color_suffix} 极速转存:预设固定目录ID定向转存(5秒不选默认运行)
  ———————————————————————
  ${Green_font_prefix} 2.${Font_color_suffix} 分类转存:向自定义目录ID转存
