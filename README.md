@@ -1,4 +1,4 @@
-# gclone懒人一键转存脚本 
+# gclone懒人一键转存脚本  by cgking & oneking
 
 ### 前言：
 已经在vps配置好gclone<hr />
