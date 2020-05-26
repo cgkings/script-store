@@ -1,6 +1,7 @@
 #!/bin/bash
 rm -rf gdt.sh
 wget https://raw.githubusercontent.com/cgkings/gclone-assistant/master/gdt.sh
+echo "【gclone懒人一键转存脚本 V1.0 by cgking & oneking】系统配置"
 echo "输入配置gclone的名称"
 read -p "gclone config Name:" gclone
 sed -i "s/goog/$gclone/g" gdt.sh
