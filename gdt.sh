@@ -97,3 +97,4 @@ case "$num" in
     echo -e " ${Error} 请输入正确的数字"
     ;;
 esac
+}
