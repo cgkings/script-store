@@ -7,6 +7,8 @@
 2.安装脚本，输入命令<br>
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/installt.sh)"
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/cgkings/gclone-assistant/master/install.sh)"
 ```
 3.根据提示填写以下信息：gclone项目名称///固定地址ID//固定地址所在团队盘ID//备份用团队盘ID <hr />
 ### 使用方法：
