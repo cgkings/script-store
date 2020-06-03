@@ -24,14 +24,10 @@ fi
     echo "将转存入该文件夹："$rootName"
     ==<<极速转存即将开始，可ctrl+c中途中断>>=="
     echo 【开始拷贝】......
-    #echo "gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 10M"
-    gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs --transfers=20 --min-size 10M
+    gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs --transfers=20 --min-size 10M --stats-log-level NOTICE
     echo 【查缺补漏】......
-    #echo "gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP --transfers=20 --min-size 10M"
-    gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs --transfers=20 --min-size 10M
+    gclone copy goog:{$link} "goog:{myid}/$rootName" --drive-server-side-across-configs --transfers=20 --min-size 10M --stats-log-level NOTICE
     echo 【去重检查】......
-    #echo "gclone dedupe newest "goog:{myid}/$rootName" --drive-server-side-across-configs -vvP"
-    gclone dedupe newest "goog:{myid}/$rootName" --drive-server-side-across-configs
+    gclone dedupe newest "goog:{myid}/$rootName" --drive-server-side-across-configs --stats-log-level NOTICE
     echo 【比对检查】......
-    #echo "gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse"
-    gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse --min-size 10M
+    gclone check goog:{$link} "goog:{myid}/$rootName" --size-only --one-way --no-traverse --min-size 10M --stats-log-level NOTICE
