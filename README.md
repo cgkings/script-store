@@ -3,8 +3,9 @@
 ### 一键清空回收站脚本<br>
 ### 一键备份同步脚本<br>
 ### 一键自动分类整理脚本<br>
-### 一键转存脚本  by cgking & oneking<br>
+### 一键转存脚本<br>
 ### google drvie 15G普通用户生存手册<br>
+by cgking & oneking
 
 ### 前言：
 已经在vps配置好gclone<hr />
