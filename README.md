@@ -1,4 +1,9 @@
-# gclone懒人一键转存脚本  by cgking & oneking
+#gclone实用脚本合集
+###一键清空回收站脚本
+###一键备份同步脚本
+###一键自动分类整理脚本
+###一键转存脚本  by cgking & oneking
+###google drvie 15G普通用户生存手册
 
 ### 前言：
 已经在vps配置好gclone<hr />
