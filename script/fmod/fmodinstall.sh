@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -rf fmod.sh
-wget https://raw.githubusercontent.com/cgkings/fmod-assistant/master/gd.sh
+wget https://raw.githubusercontent.com/cgkings/gclone-assistant/master/script/fmod/fmod.sh
 echo "【fmod一键转存脚本自用】系统配置"
 read -p "输入配置fmod的名称:" fmodid
 sed -i "s/gc/$fmodid/g" fmod.sh
