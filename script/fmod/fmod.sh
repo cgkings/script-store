@@ -13,7 +13,7 @@ link=${link#*folders/};
 link=${link#*d/};
 link=${link%?usp*}
 id=$link
-j=$(fmod lsd gc:{$link} --checkers=128 --drive-pacer-min-sleep=1ms --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) rootName=$(echo $j | grep -Po '(?<="name":")[^"]*')
+j=$(fmod lsd goog:{$link} --checkers=128 --drive-pacer-min-sleep=1ms --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) rootName=$(echo $j | grep -Po '(?<="name":")[^"]*')
     if [[ "$j" =~ "Error 404" ]] ; then
     echo "链接无效，检查是否有权限" && exit
     else
@@ -22,16 +22,16 @@ j=$(fmod lsd gc:{$link} --checkers=128 --drive-pacer-min-sleep=1ms --dump bodies
 fi
 echo "==<<极速转存即将开始，可ctrl+c中途中断>>=="
 echo 【开始拷贝】......
-fmod copy gc:{$link} gc:{myid}/"$rootName" --drive-server-side-across-configs --check-first --drive-pacer-min-sleep=1ms --transfers=128 --transfers=256 --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy1.txt' -vP --stats-one-line --stats=5s
+fmod copy goog:{$link} goog:{myid}/"$rootName" --drive-server-side-across-configs --check-first --drive-pacer-min-sleep=1ms --transfers=128 --transfers=256 --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy1.txt' -vP --stats-one-line --stats=5s
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  拷贝完毕"
 echo 【查缺补漏】......
-fmod sync gc:{$link} gc:{myid}/"$rootName" --drive-server-side-across-configs --check-first --drive-pacer-min-sleep=1ms --transfers=128 --transfers=256 --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy2.txt' -vP --stats-one-line --stats=5s
+fmod sync goog:{$link} goog:{myid}/"$rootName" --drive-server-side-across-configs --check-first --drive-pacer-min-sleep=1ms --transfers=128 --transfers=256 --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy2.txt' -vP --stats-one-line --stats=5s
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  拷贝完毕"
 echo 【去重检查】......
-fmod dedupe newest gc:{myid}/"$rootName" --drive-server-side-across-configs --checkers=128 --drive-pacer-min-sleep=1ms -q --log-file=/root/gclone_log/"$rootName"'_dedupe.txt'
+fmod dedupe newest goog:{myid}/"$rootName" --drive-server-side-across-configs --checkers=128 --drive-pacer-min-sleep=1ms -q --log-file=/root/gclone_log/"$rootName"'_dedupe.txt'
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  查重完毕"
 echo 【比对检查】......
-fmod check gc:{$link} gc:{myid}/"$rootName" --size-only --one-way --no-traverse --min-size 10M --checkers=128 --drive-pacer-min-sleep=1ms
+fmod check goog:{$link} goog:{myid}/"$rootName" --size-only --one-way --no-traverse --min-size 10M --checkers=128 --drive-pacer-min-sleep=1ms
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  检查完毕"
 echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe).txt"
 ./fmod.sh
