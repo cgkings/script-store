@@ -22,13 +22,15 @@ j=$(fmod lsd goog:{$link} --checkers=256 --drive-pacer-min-sleep=1ms --dump bodi
 fi
 echo && echo -e " fmod自用版 ${Red_font_prefix} v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
  
- ${Green_font_prefix} 0.${Font_color_suffix} 1#中转盘ID转存(默认选项，回车即可)
+ ${Green_font_prefix} 1.${Font_color_suffix} 1#中转盘ID转存(默认选项，回车即可)
  ———————————————————————
- ${Green_font_prefix} 1.${Font_color_suffix} 2#ADV盘ID转存
+ ${Green_font_prefix} 2.${Font_color_suffix} 2#ADV盘ID转存
  ———————————————————————
- ${Green_font_prefix} 2.${Font_color_suffix} 3#MDV盘ID转存
+ ${Green_font_prefix} 3.${Font_color_suffix} 3#MDV盘ID转存
   ———————————————————————
- ${Green_font_prefix} 3.${Font_color_suffix} 4#BOOK盘ID转存
+ ${Green_font_prefix} 4.${Font_color_suffix} 4#BOOK盘ID转存
+   ———————————————————————
+ ${Green_font_prefix} 5.${Font_color_suffix} 自定义ID转存
  ———————————————————————" && echo
 read -t 5 -e -p " 请输入数字 [0-3]:" num
 num=${num:-1}
@@ -44,6 +46,10 @@ case "$num" in
     ;;
 4)
     myid=myid4
+    ;;
+5)
+    read -p "请输入自定义转存ID:" myid5
+    myid=$myid5
     ;;
 *)
     echo
