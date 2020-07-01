@@ -1,7 +1,7 @@
 #!/bin/bash
 rm -rf fmod.sh
 wget https://raw.githubusercontent.com/cgkings/gclone-assistant/master/script/fmod/fmod.sh
-echo "【fmod一键转存脚本自用】系统配置"
+echo "【fmod一键转存脚本自用】脚本配置"
 read -p "输入配置fmod的名称:" fmodid
 sed -i "s/goog/$fmodid/g" fmod.sh
 read -p "请输入1#中转盘ID（默认）:" tdid1
