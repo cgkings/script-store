@@ -20,18 +20,48 @@ j=$(fmod lsd goog:{$link} --checkers=256 --drive-pacer-min-sleep=1ms --dump bodi
     echo "文件夹名称为："$rootName""
     fi
 fi
+echo && echo -e " fmod自用版 ${Red_font_prefix} v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
+ 
+ ${Green_font_prefix} 0.${Font_color_suffix} 1#中转盘ID转存(默认选项，回车即可)
+ ———————————————————————
+ ${Green_font_prefix} 1.${Font_color_suffix} 2#ADV盘ID转存
+ ———————————————————————
+ ${Green_font_prefix} 2.${Font_color_suffix} 3#MDV盘ID转存
+  ———————————————————————
+ ${Green_font_prefix} 3.${Font_color_suffix} 4#BOOK盘ID转存
+ ———————————————————————" && echo
+read -t 5 -e -p " 请输入数字 [0-3]:" num
+num=${num:-1}
+case "$num" in
+1)
+    myid=myid1
+    ;;
+2)
+    myid=myid2
+    ;;
+3)
+    myid=myid3
+    ;;
+4)
+    myid=myid4
+    ;;
+*)
+    echo
+    echo -e " ${Error} 请输入正确的数字"
+    ;;
+esac
 echo "==<<极速转存即将开始，可ctrl+c中途中断>>=="
 echo 【开始拷贝】......
-fmod copy goog:{$link} goog:{myid}/"$rootName" --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --check-first --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy1.txt'
+fmod copy goog:{$link} goog:{$myid}/"$rootName" --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --check-first --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy1.txt'
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  拷贝完毕"
 echo 【查缺补漏】......
-fmod sync goog:{$link} goog:{myid}/"$rootName" --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --check-first --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy1.txt'
+fmod sync goog:{$link} goog:{$myid}/"$rootName" --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --check-first --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy1.txt'
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  拷贝完毕"
 echo 【去重检查】......
-fmod dedupe newest goog:{myid}/"$rootName" --drive-server-side-across-configs --checkers=256 --drive-pacer-min-sleep=1ms -q --log-file=/root/gclone_log/"$rootName"'_dedupe.txt'
+fmod dedupe newest goog:{$myid}/"$rootName" --drive-server-side-across-configs --checkers=256 --drive-pacer-min-sleep=1ms -q --log-file=/root/gclone_log/"$rootName"'_dedupe.txt'
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  查重完毕"
 echo 【比对检查】......
-fmod check goog:{$link} goog:{myid}/"$rootName" --size-only --one-way --no-traverse --min-size 10M --checkers=256 --drive-pacer-min-sleep=1ms
+fmod check goog:{$link} goog:{$myid}/"$rootName" --size-only --one-way --no-traverse --min-size 10M --checkers=256 --drive-pacer-min-sleep=1ms
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  检查完毕"
 echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe).txt"
 ./fmod.sh
