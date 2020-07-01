@@ -21,30 +21,37 @@ j=$(fmod lsd goog:{$link} --checkers=256 --drive-pacer-min-sleep=1ms --dump bodi
     fi
 fi
 echo && echo -e " fmod自用版 ${Red_font_prefix} v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
- 
  ${Green_font_prefix} 1.${Font_color_suffix} 1#中转盘ID转存(默认5s自动)
  ${Green_font_prefix} 2.${Font_color_suffix} 2#ADV盘ID转存
  ${Green_font_prefix} 3.${Font_color_suffix} 3#MDV盘ID转存
  ${Green_font_prefix} 4.${Font_color_suffix} 4#BOOK盘ID转存
- ${Green_font_prefix} 5.${Font_color_suffix} 自定义ID转存
- " && echo
+ ${Green_font_prefix} 5.${Font_color_suffix} 自定义ID转存 "
 read -t 5 -e -p " 请输入数字 [1-5]:" num
 num=${num:-1}
 case "$num" in
 1)
+    echo "你选择的是：1#中转盘ID，如选错可ctrl+c中断该转存任务"
+    echo "==<<极速转存即将开始>>=="
     myid=myid1
     ;;
 2)
+    echo "你选择的是：2#ADV盘ID，如选错可ctrl+c中断该转存任务"
+    echo "==<<极速转存即将开始>>=="
     myid=myid2
     ;;
 3)
+    echo "你选择的是：3#MDV盘ID，如选错可ctrl+c中断该转存任务"
+    echo "==<<极速转存即将开始>>=="
     myid=myid3
     ;;
 4)
+    echo "你选择的是：4#BOOK盘ID，如选错可ctrl+c中断该转存任务"
+    echo "==<<极速转存即将开始>>=="
     myid=myid4
     ;;
 5)
-    read -p "请输入自定义转存ID:" myid5
+    read -p "你选择的是：5 自定义ID转存
+             请输入自定义转存ID:" myid5
     myid=$myid5
     ;;
 *)
@@ -52,7 +59,6 @@ case "$num" in
     echo -e " ${Error} 请输入正确的数字"
     ;;
 esac
-echo "==<<极速转存即将开始，可ctrl+c中途中断>>=="
 echo 【开始拷贝】......
 fmod copy goog:{$link} goog:{$myid}/"$rootName" --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --check-first --min-size 10M --log-file=/root/gclone_log/"$rootName"'_copy1.txt'
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  拷贝完毕"
