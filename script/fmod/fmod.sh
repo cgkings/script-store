@@ -20,12 +20,12 @@ j=$(fmod lsd goog:{$link} --checkers=256 --drive-pacer-min-sleep=1ms --dump bodi
     echo "文件夹名称为："$rootName""
     fi
 fi
-echo && echo -e " fmod自用版 ${Red_font_prefix} v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
+echo -e " fmod自用版 ${Red_font_prefix} v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
  ${Green_font_prefix} 1.${Font_color_suffix} 1#中转盘ID转存(默认5s自动)
  ${Green_font_prefix} 2.${Font_color_suffix} 2#ADV盘ID转存
  ${Green_font_prefix} 3.${Font_color_suffix} 3#MDV盘ID转存
  ${Green_font_prefix} 4.${Font_color_suffix} 4#BOOK盘ID转存
- ${Green_font_prefix} 5.${Font_color_suffix} 自定义ID转存 "
+ ${Green_font_prefix} 5.${Font_color_suffix} 自定义ID转存"
 read -t 5 -e -p " 请输入数字 [1-5]:" num
 num=${num:-1}
 case "$num" in
@@ -71,5 +71,23 @@ echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  查重完毕"
 echo 【比对检查】......
 fmod check goog:{$link} goog:{$myid}/"$rootName" --size-only --one-way --no-traverse --min-size 10M --checkers=256 --drive-pacer-min-sleep=1ms
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  检查完毕"
-echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe).txt"
+echo "请注意清空回收站，群组账号必须对团队盘有管理员权限"
+echo "想要清空回收站，打个1，5s不选默认不清空"
+read -t 5 -e -p " 请输入数字 [0 或 1]:" num
+num=${num:-1}
+case "$num" in
+0)
+    echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe).txt"
+    ;;
+1)
+    echo "==<<即将清空回收站，现在后悔可能还来得及>>=="
+    fmod delete goog:{$myid} --drive-trashed-only --drive-use-trash=false --drive-server-side-across-configs --checkers=320 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=5000 --check-first --log-level INFO --log-file=/root/gclone_log/"$rootName"'_trash.txt'
+    fmod rmdirs goog:{$myid} --drive-trashed-only --drive-use-trash=false --drive-server-side-across-configs --checkers=320 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=5000 --check-first --log-level INFO --log-file=/root/gclone_log/"$rootName"'_rmdirs.txt'
+    echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe/trash/rmdirs).txt"
+    ;;
+*)
+    echo
+    echo -e " ${Error} 请输入正确的数字"
+    ;;
+esac
 ./fmod.sh
