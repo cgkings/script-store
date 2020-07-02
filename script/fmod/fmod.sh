@@ -33,28 +33,28 @@ read -t 10 -n1 -p " 请输入数字 [0-4]: (10s默认选0)" num
 num=${num:-0}
 case "$num" in
 0)
-    echo "你选择的是：1#中转盘ID，如选错可ctrl+c中断该转存任务"
+    echo "你选择的是：0#中转盘ID，如选错可ctrl+c中断该转存任务"
     echo "==<<极速转存即将开始>>=="
     myid=myid1
     ;;
 1)
-    echo "你选择的是：2#ADV盘ID，如选错可ctrl+c中断该转存任务"
+    echo "你选择的是：1#ADV盘ID，如选错可ctrl+c中断该转存任务"
     echo "==<<极速转存即将开始>>=="
     myid=myid2
     ;;
 2)
-    echo "你选择的是：3#MDV盘ID，如选错可ctrl+c中断该转存任务"
+    echo "你选择的是：2#MDV盘ID，如选错可ctrl+c中断该转存任务"
     echo "==<<极速转存即将开始>>=="
     myid=myid3
     ;;
 3)
-    echo "你选择的是：4#BOOK盘ID，如选错可ctrl+c中断该转存任务"
+    echo "你选择的是：3#BOOK盘ID，如选错可ctrl+c中断该转存任务"
     echo "==<<极速转存即将开始>>=="
     myid=myid4
     ;;
 4)
-    read -p "你选择的是：5 自定义ID转存
-             请输入自定义转存ID:" myid5
+    read -p "你选择的是：4#自定义ID转存
+            请输入自定义转存ID:" myid5
     myid=$myid5
     ;;
 *)
@@ -86,7 +86,8 @@ Y | y)
     echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe/trash/rmdirs).txt"
     ;;
 N | n)
-    echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe).txt"
+    echo -e "/n 默认值：不清空回收站"
+    echo -e "/n 日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe).txt"
     ;;
 *)
     echo
