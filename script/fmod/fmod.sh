@@ -19,17 +19,17 @@ check_results=`fmod size goog:{"$link"} --checkers=256 --drive-pacer-min-sleep=1
     then
     echo "链接无效，检查是否有权限" && exit
     else
-    echo "分享链接的基本信息如下:"$check_results""
-    echo "folder name："$rootName""
+    echo -e "分享链接的基本信息如下: \n "$check_results""
+    echo -e " \n folder name："$rootName" \n " 
     fi
 fi
-echo -e " fmod自用版 ${Red_font_prefix} v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
- ${Green_font_prefix} 1.${Font_color_suffix} 1#中转盘ID转存(默认10s自动)
- ${Green_font_prefix} 2.${Font_color_suffix} 2#ADV盘ID转存
- ${Green_font_prefix} 3.${Font_color_suffix} 3#MDV盘ID转存
- ${Green_font_prefix} 4.${Font_color_suffix} 4#BOOK盘ID转存
- ${Green_font_prefix} 5.${Font_color_suffix} 自定义ID转存"
-read -t 10 -e -p " 请输入数字 [1-5]:" num
+echo -e " fmod自用版 [v1.0 by \e[1;34m cgkings \e[0m]
+        [1]. 1#中转盘ID转存
+        [2]. 2#ADV盘ID转存
+        [3]. 3#MDV盘ID转存
+        [4]. 4#BOOK盘ID转存
+        [5]. 自定义ID转存"
+read -t 10 -n1 -p " 请输入数字 [1-5]: (10s默认选1)" num
 num=${num:-1}
 case "$num" in
 1)
@@ -75,18 +75,18 @@ echo 【比对检查】......
 fmod check goog:{$link} goog:{$myid}/"$rootName" --fast-list --size-only --one-way --no-traverse --min-size 10M --checkers=320 --drive-pacer-min-sleep=1ms
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  检查完毕"
 echo "请注意清空回收站，群组账号必须对团队盘有管理员权限"
-echo "想要清空回收站，打个1，10s不选默认不清空"
-read -t 10 -e -p " 请输入数字 [0 或 1]:" num
-num=${num:-1}
-case "$num" in
-0)
-    echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe).txt"
-    ;;
-1)
-    echo "==<<即将清空回收站，现在后悔可能还来得及>>=="
+read -t 10 -n1 -p "是否要清空回收站 [Y/N]? 10s不选默认N" answer
+answer=${answer:-N}
+case "$answer" in
+Y | y)
+    echo -e "/n ==<<即将清空回收站，现在后悔可能还来得及>>=="
     fmod delete goog:{$myid} --fast-list --drive-trashed-only --drive-use-trash=false --drive-server-side-across-configs --checkers=256 --transfers=128 --drive-pacer-min-sleep=1ms --drive-pacer-burst=5000 --check-first --log-level INFO --log-file=/root/gclone_log/"$rootName"'_trash.txt'
     fmod rmdirs goog:{$myid} --fast-list --drive-trashed-only --drive-use-trash=false --drive-server-side-across-configs --checkers=256 --transfers=128 --drive-pacer-min-sleep=1ms --drive-pacer-burst=5000 --check-first --log-level INFO --log-file=/root/gclone_log/"$rootName"'_rmdirs.txt'
+    echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  回收站清空完毕"
     echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe/trash/rmdirs).txt"
+    ;;
+N | n)
+    echo "日志文件存储路径/root/gclone_log/"$rootName"_(copy1/copy2/dedupe).txt"
     ;;
 *)
     echo
