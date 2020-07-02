@@ -14,19 +14,22 @@ link=${link#*d/};
 link=${link%?usp*}
 id=$link
 j=$(fmod lsd goog:{$link} --checkers=256 --drive-pacer-min-sleep=1ms --dump bodies -vv 2>&1 | grep '^{"id"' | grep $id) rootName=$(echo $j | grep -Po '(?<="name":")[^"]*')
-    if [[ "$j" =~ "Error 404" ]] ; then
+check_results=`fmod size goog:{"$link"} --checkers=256 --drive-pacer-min-sleep=1ms 2>&1`
+    if [[ $check_results =~ "Error 404" ]] ; 
+    then
     echo "链接无效，检查是否有权限" && exit
     else
-    echo "文件夹名称为："$rootName""
+    echo "分享链接的基本信息如下:"$check_results""
+    echo "folder name："$rootName""
     fi
 fi
 echo -e " fmod自用版 ${Red_font_prefix} v1.0 ${Font_color_suffix} by \033[1;35mcgkings\033[0m
- ${Green_font_prefix} 1.${Font_color_suffix} 1#中转盘ID转存(默认5s自动)
+ ${Green_font_prefix} 1.${Font_color_suffix} 1#中转盘ID转存(默认10s自动)
  ${Green_font_prefix} 2.${Font_color_suffix} 2#ADV盘ID转存
  ${Green_font_prefix} 3.${Font_color_suffix} 3#MDV盘ID转存
  ${Green_font_prefix} 4.${Font_color_suffix} 4#BOOK盘ID转存
  ${Green_font_prefix} 5.${Font_color_suffix} 自定义ID转存"
-read -t 5 -e -p " 请输入数字 [1-5]:" num
+read -t 10 -e -p " 请输入数字 [1-5]:" num
 num=${num:-1}
 case "$num" in
 1)
@@ -69,11 +72,11 @@ echo 【去重检查】......
 fmod dedupe newest goog:{$myid}/"$rootName" --fast-list --drive-use-trash=false --no-traverse --size-only -v --log-file=/root/gclone_log/"$rootName"'_dedupe.txt'
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  查重完毕"
 echo 【比对检查】......
-fmod check goog:{$link} goog:{$myid}/"$rootName" --fast-list --size-only --one-way --no-traverse --min-size 10M --checkers=256 --drive-pacer-min-sleep=1ms
+fmod check goog:{$link} goog:{$myid}/"$rootName" --fast-list --size-only --one-way --no-traverse --min-size 10M --checkers=320 --drive-pacer-min-sleep=1ms
 echo "|▉▉▉▉▉▉▉▉▉▉▉▉|100%  检查完毕"
 echo "请注意清空回收站，群组账号必须对团队盘有管理员权限"
-echo "想要清空回收站，打个1，5s不选默认不清空"
-read -t 5 -e -p " 请输入数字 [0 或 1]:" num
+echo "想要清空回收站，打个1，10s不选默认不清空"
+read -t 10 -e -p " 请输入数字 [0 或 1]:" num
 num=${num:-1}
 case "$num" in
 0)
