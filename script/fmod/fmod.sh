@@ -19,40 +19,40 @@ check_results=`fmod size goog:{"$link"} --checkers=256 --drive-pacer-min-sleep=1
     then
     echo "链接无效，检查是否有权限" && exit
     else
-    echo -e "分享链接的基本信息如下: \n "$check_results""
-    echo -e " \n folder name："$rootName" \n " 
+    echo -e "分享链接的基本信息如下:\n"$check_results""
+    echo -e "folder name："$rootName"" 
     fi
 fi
-echo -e " fmod自用版 [v1.0 by \e[1;34m cgkings \e[0m]
-        [1]. 1#中转盘ID转存
-        [2]. 2#ADV盘ID转存
-        [3]. 3#MDV盘ID转存
-        [4]. 4#BOOK盘ID转存
-        [5]. 自定义ID转存"
-read -t 10 -n1 -p " 请输入数字 [1-5]: (10s默认选1)" num
-num=${num:-1}
+echo -e " fmod自用版 [ v1.0 by \e[1;34m cgkings \e[0m ]
+[0]. 中转盘ID转存
+[1]. ADV盘ID转存
+[2]. MDV盘ID转存
+[3]. BOOK盘ID转存
+[4]. 自定义ID转存"
+read -t 10 -n1 -p " 请输入数字 [0-4]: (10s默认选0)" num
+num=${num:-0}
 case "$num" in
-1)
+0)
     echo "你选择的是：1#中转盘ID，如选错可ctrl+c中断该转存任务"
     echo "==<<极速转存即将开始>>=="
     myid=myid1
     ;;
-2)
+1)
     echo "你选择的是：2#ADV盘ID，如选错可ctrl+c中断该转存任务"
     echo "==<<极速转存即将开始>>=="
     myid=myid2
     ;;
-3)
+2)
     echo "你选择的是：3#MDV盘ID，如选错可ctrl+c中断该转存任务"
     echo "==<<极速转存即将开始>>=="
     myid=myid3
     ;;
-4)
+3)
     echo "你选择的是：4#BOOK盘ID，如选错可ctrl+c中断该转存任务"
     echo "==<<极速转存即将开始>>=="
     myid=myid4
     ;;
-5)
+4)
     read -p "你选择的是：5 自定义ID转存
              请输入自定义转存ID:" myid5
     myid=$myid5
