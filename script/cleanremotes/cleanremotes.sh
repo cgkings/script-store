@@ -17,6 +17,7 @@ for i in ${mounts[@]}; do
   echo; echo "从'$i'账户开始删除空目录"; echo
   fmod rmdirs $i -v --drive-use-trash=false --fast-list --transfers=256 $rc_flags
   echo; echo "从'$i'账户永久清空垃圾桶"; echo
+  fmod delete trash:{$id} --fast-list --drive-trashed-only --drive-use-trash=false --transfers 256 --log-level INFO
   fmod delete $i --fast-list --drive-trashed-only --drive-use-trash=false -v --transfers 256 $rc_flags
   fmod cleanup $i -v $rc_flags
 done
