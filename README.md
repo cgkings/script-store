@@ -1,4 +1,9 @@
-# gclone实用脚本合集
+# 实用脚本合集
+
+### v2ray一键脚本
+```
+bash <(curl -s -L https://git.io/JkKeH)
+```
 
 ### 一键清空回收站脚本<br>
 ### 一键备份同步脚本<br>
