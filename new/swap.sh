@@ -1,25 +1,6 @@
 #!/usr/bin/env bash
 #Blog:https://www.moerats.com/
 
-Green="\033[32m"
-Font="\033[0m"
-Red="\033[31m" 
-
-#root权限
-root_need(){
-    if [[ $EUID -ne 0 ]]; then
-        echo -e "${Red}Error:This script must be run as root!${Font}"
-        exit 1
-    fi
-}
-
-#检测ovz
-ovz_no(){
-    if [[ -d "/proc/vz" ]]; then
-        echo -e "${Red}Your VPS is based on OpenVZ，not supported!${Font}"
-        exit 1
-    fi
-}
 
 add_swap(){
 echo -e "${Green}请输入需要添加的swap，建议为内存的2倍！${Font}"
@@ -63,8 +44,6 @@ fi
 
 #开始菜单
 main(){
-root_need
-ovz_no
 clear
 echo -e "———————————————————————————————————————"
 echo -e "${Green}Linux VPS一键添加/删除swap脚本${Font}"
