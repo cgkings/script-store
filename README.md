@@ -2,7 +2,7 @@
 
 ### swap一键脚本
 ```
-bash <(curl -s -L https://git.io/JLGLV) 
+bash <(curl -s -L https://git.io/cg_swap.sh) 
 ```
 [教程](https://github.com/cgkings/script-store/blob/master/Instruction/swap.md)
 
