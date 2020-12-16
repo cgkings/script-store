@@ -126,6 +126,7 @@ swap_menu(){
   echo -e "${Green}3、删除swap${Font}"
   echo -e "${Green}4、退出${Font}"
   echo -e "${Green}注：10秒不选或者输入2、3、4外任意字符，默认1.自动添加${Font}"
+  echo -e "${Green}感谢wuhuai2020、moerats、github众多作者，我只是整合代码${Font}"
   echo -e "———————————————————————————————————————"
   read -t 10 -n 1 -p "请输入数字 [1-4]:" num
   num=${num:-1}
