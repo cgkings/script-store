@@ -103,17 +103,33 @@ grep -q "swapfile" /etc/fstab
 #如果不存在将为其创建swap
 if [ $? -ne 0 ]; then
 	echo -e "${Green}正在为您创建...${Font}"
+  #分配大小
 	fallocate -l ${swapsize} /swapfile
-	chmod 600 /swapfile
+	#设置适当的权限
+  chmod 600 /swapfile
+  #设置swap区
 	mkswap /swapfile
+  #启用swap区
 	swapon /swapfile
 	echo '/swapfile none swap defaults 0 0' >> /etc/fstab
-    echo -e "${Green}swap创建成功，信息如下：${Font}"
-    cat /proc/swaps
-    cat /proc/meminfo | grep Swap
+  echo -e "${Green}swap创建成功，信息如下：${Font}"
+  cat /proc/swaps
+  cat /proc/meminfo | grep Swap
 else
-	echo -e "${Red}Error:swapfile已存在，swap设置失败，请先删除swap后重新设置！${Font}"
-    swap_menu
+	del_swap
+  echo -e "${Green}正在为您创建...${Font}"
+  #分配大小
+	fallocate -l ${swapsize} /swapfile
+	#设置适当的权限
+  chmod 600 /swapfile
+  #设置swap区
+	mkswap /swapfile
+  #启用swap区
+	swapon /swapfile
+	echo '/swapfile none swap defaults 0 0' >> /etc/fstab
+  echo -e "${Green}swap创建成功，信息如下：${Font}"
+  cat /proc/swaps
+  cat /proc/meminfo | grep Swap
 fi
 }
 
@@ -139,6 +155,8 @@ fi
 swap_menu(){
 clear
 echo -e "———————————————————————————————————————"
+totalswap=`free -m| grep "Swap:"| awk '{print $2}'`
+echo "当前SWAP：$totalswap MB"
 echo -e "${Green}swap一键脚本 by cgkings${Font}"
 echo -e "${Green}1、全自动添加swap[默认值][你的电脑将设置为]${Font}"
 echo -e "${Green}2、自定义添加swap${Font}"
@@ -169,3 +187,20 @@ case "$num" in
     esac
 }
 swap_menu
+
+#swap调用参数调整
+#modi(){
+#echo "正在优化..."
+#echo
+#cat /proc/sys/vm/swappiness
+#sudo sysctl vm.swappiness=10
+#cat /proc/sys/vm/vfs_cache_pressure
+#sudo sysctl vm.vfs_cache_pressure=50
+#cp /etc/sysctl.conf /etc/sysctl.conf.bak
+#echo >> /etc/sysctl.conf
+#echo "vm.swappiness=10" >> /etc/sysctl.conf
+#echo >> /etc/sysctl.conf
+#echo "vm.vfs_cache_pressure = 50" >> /etc/sysctl.conf
+#echo "优化完成"
+#swap_menu
+#}
