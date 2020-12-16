@@ -4,11 +4,7 @@
 ```
 bash <(curl -s -L https://git.io/JLGkm/swap.sh) 
 ```
-教程说明：
-
-
-
-
+[教程](https://t.me/BotFather)
 
 ### v2ray一键脚本
 ```
