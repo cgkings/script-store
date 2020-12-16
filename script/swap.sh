@@ -125,26 +125,30 @@ swap_menu(){
   echo -e "${Green}2、自定义添加swap${Font}"
   echo -e "${Green}3、删除swap${Font}"
   echo -e "${Green}4、退出${Font}"
-  echo -e "———————————————————————————————————————"
   echo -e "${Green}注：10秒不选或者输入2、3、4外任意字符，默认1.自动添加${Font}"
-  read -t 10 -n 1 -p "请输入数字 [1-2]:" num
+  echo -e "———————————————————————————————————————"
+  read -t 10 -n 1 -p "请输入数字 [1-4]:" num
   num=${num:-1}
   check_root
   check_vz
   case "$num" in
     1)
+    echo
     auto_swap
     ;;
     2)
+    echo
     add_swap
     ;;
     3)
+    echo    
     del_swap
     ;;
     4)
     exit
     ;;
     *)
+    echo
     auto_swap
     ;;
   esac
