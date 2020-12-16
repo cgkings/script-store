@@ -4,7 +4,7 @@
 ```
 bash <(curl -s -L https://git.io/JLGkm/swap.sh) 
 ```
-[教程](https://t.me/BotFather)
+[教程](https://github.com/cgkings/script-store/blob/master/Instruction/swap.md)
 
 ### v2ray一键脚本
 ```
