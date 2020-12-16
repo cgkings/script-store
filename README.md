@@ -1,5 +1,15 @@
 # 实用脚本合集
 
+### swap一键脚本
+```
+bash <(curl -s -L https://git.io/JLGkm/swap.sh) 
+```
+教程说明：
+
+
+
+
+
 ### v2ray一键脚本
 ```
 bash <(curl -s -L https://git.io/JkKeH)
