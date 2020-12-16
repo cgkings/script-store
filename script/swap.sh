@@ -60,7 +60,7 @@ auto_swap(){
       swapsize="$(($totalmem * 3))MB"
     fi
   else
-	  swapsize=$1
+	  swapsize="$1MB"
   fi
   if [ "$totalswap" == '0' ]; then
     make-swapfile
