@@ -33,8 +33,7 @@ apt-get -y install build-essential #yum groupinstall "Development Tools"
 apt-get -y install git curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo python3 python3-pip ntpdate manpages-zh python3-distutils screenfetch build-essential libncurses5-dev libpcap-dev fonts-powerline
 #设置时区
 echo 第三步：设置上海市区，时间同步
-rm -rf /etc/localtime
-ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone	
 #同步时间
 ntpdate cn.ntp.org.cn
 #设置系统语言
