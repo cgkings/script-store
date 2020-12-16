@@ -8,8 +8,11 @@ bash <(curl -s -L https://git.io/cg_swap.sh)
 
 ### v2ray一键脚本
 ```
-bash <(curl -s -L https://git.io/JkKeH)
+bash <(curl -s -L https://git.io/cg_v2ray)
 ```
+[教程](https://github.com/cgkings/v2ray/blob/master/README.md)
+
+
 
 ### 一键清空回收站脚本<br>
 ### 一键备份同步脚本<br>
