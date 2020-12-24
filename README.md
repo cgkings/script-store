@@ -1,5 +1,15 @@
 # 实用脚本合集
 
+### 常用工具及环境安装一键脚本
+```
+bash <(curl -s -L https://git.io/cg_tools&environment)
+```
+
+### BBR加速一键脚本
+```
+bash <(curl -s -L https://git.io/cg_bbr)
+```
+
 ### swap一键脚本
 ```
 bash <(curl -s -L https://git.io/cg_swap.sh)
