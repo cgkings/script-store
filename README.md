@@ -40,7 +40,7 @@ bash <(curl -s -L https://git.io/cg_fqcopy)
 
 ### 小功能脚本：
 
-挂载脚本 ` `
+挂载脚本   `  bash <(curl -s -L https://git.io/cg_auto_mount)  `
 
 
 
