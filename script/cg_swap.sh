@@ -115,6 +115,18 @@ del_swap(){
   fi
 }
 
+#帮助
+swap_help(){
+  echo -e "${Red}用法(Usage):
+                     bash <(curl -s -L https://git.io/cg_swap) [flags]${Font}
+                 可用参数(Available flags)：
+                 bash <(curl -s -L https://git.io/cg_swap) a  自动添加swap
+                 bash <(curl -s -L https://git.io/cg_swap) m  手动添加swap
+                 bash <(curl -s -L https://git.io/cg_swap) d  删除现有swap
+                 bash <(curl -s -L https://git.io/cg_swap) h  命令帮助
+                 注：无参数则进入主菜单"                     
+}
+
 #开始菜单
 swap_menu(){
   clear
@@ -125,37 +137,61 @@ swap_menu(){
   echo -e "${Green}2、自定义添加swap${Font}"
   echo -e "${Green}3、删除swap${Font}"
   echo -e "${Green}4、退出${Font}"
-  echo -e "${Green}注：10秒不选或者输入2、3、4外任意字符，默认1.自动添加${Font}"
+  echo -e "${Green}注：输入2、3、4外任意字符，默认选1.自动添加${Font}"
+  echo -e "${Green}注：输入2、3、4外任意字符，默认选1.自动添加${Font}"
   echo -e "${Green}感谢wuhuai2020、moerats、github众多作者，我只是整合代码${Font}"
   echo -e "———————————————————————————————————————"
-  read -t 10 -n 1 -p "请输入数字 [1-4]:" num
-  num=${num:-1}
-  check_root
-  check_vz
+  read -n 1 -p "请输入数字 [1-4]:" num
   case "$num" in
     1)
+      echo
+      auto_swap
+      ;;
+    2)
+      echo
+      add_swap
+      ;;
+    3)
+      echo    
+      del_swap
+      ;;
+    4)
+      exit
+      ;;
+    *)
+      echo
+      auto_swap
+      ;;
+  esac
+}
+check_root
+check_vz
+if [ -z $1 ];then
+swap_menu
+else
+  case "$1" in
+  A|a) 
     echo
     auto_swap
     ;;
-    2)
+  M|m)
     echo
     add_swap
     ;;
-    3)
+  D|d)
     echo    
     del_swap
     ;;
-    4)
-    exit
-    ;;
-    *)
+  H|h)
     echo
-    auto_swap
+    swap_help
+    ;;
+  *)
+    echo
+    swap_help
     ;;
   esac
-}
-swap_menu
-
+fi
 #swap调用参数调整
 #modi(){
 #echo "正在优化..."

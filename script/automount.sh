@@ -1,15 +1,18 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
-# File Name: cg_swap.sh
+# File Name: automount
 # Author: cgkings
-# Created Time : 2020.12.16
-# Description:swap一键脚本
+# Created Time : 2020.12.25
+# Description:挂载一键脚本
 # System Required: Debian/Ubuntu
 # 感谢wuhuai2020、moerats、github众多作者，我只是整合代码
 # Version: 1.0
 #=============================================================
+
 #前置变量[字体颜色]
+cg_filter1="$1"
+
 RED='\E[1;31m'
 RED_W='\E[41;37m'
 END='\E[0m'
