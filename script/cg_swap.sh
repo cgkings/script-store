@@ -117,13 +117,13 @@ del_swap(){
 
 #帮助
 swap_help(){
-  echo -e "${Red}用法(Usage):bash <(curl -s -L https://git.io/cg_swap) [flags]
-  可用参数(Available flags)：
-  bash <(curl -s -L https://git.io/cg_swap) a  自动添加swap
-  bash <(curl -s -L https://git.io/cg_swap) m  手动添加swap
-  bash <(curl -s -L https://git.io/cg_swap) d  删除现有swap
-  bash <(curl -s -L https://git.io/cg_swap) h  命令帮助
-  注：无参数则进入主菜单${Font}"                     
+  echo -e "用法(Usage):bash <(curl -s -L https://git.io/cg_swap) [flags]
+可用参数(Available flags)：
+bash <(curl -s -L https://git.io/cg_swap) a  自动添加swap
+bash <(curl -s -L https://git.io/cg_swap) m  手动添加swap
+bash <(curl -s -L https://git.io/cg_swap) d  删除现有swap
+bash <(curl -s -L https://git.io/cg_swap) h  命令帮助
+注：无参数则进入主菜单"                     
 }
 
 #开始菜单
