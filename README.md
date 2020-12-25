@@ -49,7 +49,7 @@ bash <(curl -s -L https://git.io/cg_auto_mount)
 bash <(curl -s -L xxxx)
 ```
 
-` wget http://abc.com/download/target -O /home/RSSHub/lib/routes/javdb/utils.js `
+` wget https://raw.githubusercontent.com/cgkings/script-store/master/config/javdb/utils.js -O /home/RSSHub/lib/routes/javdb/utils.js `
 
 
 
