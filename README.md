@@ -12,8 +12,13 @@ bash <(curl -s -L https://git.io/cg_bbr)
 
 ### swap一键脚本
 ```
-bash <(curl -s -L https://git.io/cg_swap)
+bash <(curl -s -L https://git.io/cg_swap) [参数]
 ```
+[用法] 无参数进入主菜单
+       a 自动添加swap
+       m 手动添加swap
+       d 删除现有swap
+       h 脚本参数帮助
 [说明](https://github.com/cgkings/script-store/blob/master/Instruction/swap.md)
 
 ### v2ray一键脚本【转自boy233】
