@@ -18,22 +18,6 @@ END='\E[0m'
 totalmem=`free -m | awk '/Mem:/{print $2}'`
 totalswap=`free -m | awk '/Swap:/{print $2}'`
 
-#root权限[done]
-check_root(){
-	if [[ $EUID -ne 0 ]]; then
-        echo -e "${Red}Error:本脚本必须root账号运行，请切换root用户后再执行本脚本!${END}"
-        exit 1
-  fi
-}
-
-#检测VPS架构[done]
-check_vz(){
-  if [[ -d "/proc/vz" ]]; then
-    echo -e "${Red}Error:您的VPS是openVZ架构，臣妾办不到啊!${END}"
-    exit 1
-  fi
-}
-
 #生成swap[done]
 make-swapfile() {
   echo -e "${Green}正在为您创建"$swapsize"的swap分区...${Font}"

@@ -12,12 +12,13 @@
 
 #前置变量[字体颜色]
 cg_filter1="$1"
-
-RED='\E[1;31m'
+Green="\033[32m"
+Font="\033[0m"
+Red="\033[31m" 
 RED_W='\E[41;37m'
 END='\E[0m'
-release=''
-sys=''
+
+
 
 
 
