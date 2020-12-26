@@ -9,18 +9,15 @@
 # 感谢wuhuai2020、moerats、github众多作者，我只是整合代码
 # Version: 1.0
 #=============================================================
+
 #前置变量[字体颜色]
-Green="\033[32m"
-Font="\033[0m"
-Red="\033[31m" 
-RED_W='\E[41;37m'
-END='\E[0m'
+source <(wget -qO- https://raw.githubusercontent.com/cgkings/script-store/master/config/script_option)
 totalmem=`free -m | awk '/Mem:/{print $2}'`
 totalswap=`free -m | awk '/Swap:/{print $2}'`
 
 #生成swap[done]
 make-swapfile() {
-  echo -e "${Green}正在为您创建"$swapsize"的swap分区...${Font}"
+  echo -e "${green}正在为您创建"$swapsize"的swap分区...${normal}"
   #分配大小
 	fallocate -l ${swapsize} /swapfile
 	#设置适当的权限
@@ -30,7 +27,7 @@ make-swapfile() {
   #启用swap区
 	swapon /swapfile
 	echo '/swapfile none swap defaults 0 0' >> /etc/fstab
-  echo -e "${Green}swap创建成功，信息如下：${Font}"
+  echo -e "${green}swap创建成功，信息如下：${normal}"
   cat /proc/swaps
   cat /proc/meminfo | grep Swap
 }
@@ -56,7 +53,7 @@ auto_swap(){
 
 #自定义添加swap[done]
 add_swap(){
-  echo -e "${Green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${END}"
+  echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
   read -p "请输入swap数值:" swapsize
   echo
   swapsize=`echo ${swapsize} | tr '[a-z]' '[A-Z]'`
@@ -66,7 +63,7 @@ add_swap(){
     swapsize="${swapsize}MB"
   else
  	  if [ "${swapsize_unit}" != "GB" ] && [ "${swapsize_unit}" != "MB" ] && [ "${swapsize_unit}" != "KB" ];then
-	  echo -e "${Red}Error:swap大小只能是数字+单位，并且单位只能是KB、MB、GB。请检查后重新输入!${END}"
+	  echo -e "${Red}Error:swap大小只能是数字+单位，并且单位只能是KB、MB、GB。请检查后重新输入!${normal}"
     add_swap
     fi
   fi
@@ -87,14 +84,14 @@ del_swap(){
   grep -q "swapfile" /etc/fstab
   #如果存在就将其移除
   if [ $? -eq 0 ]; then
-	  echo -e "${Green}swapfile已发现，正在删除SWAP空间...${Font}"
+	  echo -e "${green}swapfile已发现，正在删除SWAP空间...${normal}"
 	  sed -i '/swapfile/d' /etc/fstab
 	  echo "3" > /proc/sys/vm/drop_caches
 	  swapoff -a
 	  rm -f /swapfile
-    echo -e "${Green}swap 删除成功！${Font}"
+    echo -e "${green}swap 删除成功！${normal}"
   else
-	  echo -e "${Red}你没建过swap,删什么玩意，跟我闹呢，删除失败！${Font}"
+	  echo -e "${Red}你没建过swap,删什么玩意，跟我闹呢，删除失败！${normal}"
     swap_menu
   fi
 }
@@ -117,14 +114,14 @@ swap_menu(){
   clear
   echo -e "———————————————————————————————————————"
   echo "当前SWAP：$totalswap MB"
-  echo -e "${Green}swap一键脚本 by cgkings${Font}"
-  echo -e "${Green}1、全自动添加swap[默认值][内存*3，最小设置3G]${Font}"
-  echo -e "${Green}2、自定义添加swap${Font}"
-  echo -e "${Green}3、删除swap${Font}"
-  echo -e "${Green}4、退出${Font}"
-  echo -e "${Green}注：输入2、3、4外任意字符，默认选1.自动添加${Font}"
-  echo -e "${Green}注：输入2、3、4外任意字符，默认选1.自动添加${Font}"
-  echo -e "${Green}感谢wuhuai2020、moerats、github众多作者，我只是整合代码${Font}"
+  echo -e "${green}swap一键脚本 by cgkings${normal}"
+  echo -e "${green}1、全自动添加swap[默认值][内存*3，最小设置3G]${normal}"
+  echo -e "${green}2、自定义添加swap${normal}"
+  echo -e "${green}3、删除swap${normal}"
+  echo -e "${green}4、退出${normal}"
+  echo -e "${green}注：输入2、3、4外任意字符，默认选1.自动添加${normal}"
+  echo -e "${green}注：输入2、3、4外任意字符，默认选1.自动添加${normal}"
+  echo -e "${green}感谢wuhuai2020、moerats、github众多作者，我只是整合代码${normal}"
   echo -e "———————————————————————————————————————"
   read -n 1 -p "请输入数字 [1-4]:" num
   case "$num" in
