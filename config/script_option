@@ -37,3 +37,19 @@ check_vz(){
     exit 1
   fi
 }
+
+################## 检查fuse安装情况 ##################
+check_fuse(){
+  if [ ! -f /etc/fuse.conf ]; then
+    echo -e "`curr_date` 未找到fuse包.正在安装..."
+    sleep 1s
+    if [[ "${release}" = "centos" ]];then
+      yum install fuse -y
+      elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]];then
+      apt-get install fuse -y
+    fi
+    echo
+    echo -e "`curr_date` fuse安装完成."
+    echo
+  fi
+}

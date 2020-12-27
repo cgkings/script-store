@@ -10,12 +10,15 @@
 # Version: 1.0
 #=============================================================
 
-#前置变量[字体颜色]
+################## 前置变量 ##################
 source <(wget -qO- https://raw.githubusercontent.com/cgkings/script-store/master/config/script_option)
+setcolor
+check_root
+check_vz
 totalmem=`free -m | awk '/Mem:/{print $2}'`
 totalswap=`free -m | awk '/Swap:/{print $2}'`
 
-#生成swap[done]
+################## 生 成swap ##################
 make-swapfile() {
   echo -e "${green}正在为您创建"$swapsize"的swap分区...${normal}"
   #分配大小
@@ -32,7 +35,7 @@ make-swapfile() {
   cat /proc/meminfo | grep Swap
 }
 
-#全自动添加swap[done]
+################## 自动添加swap ##################
 auto_swap(){
   if [ -z "$1" ]; then
 	  if [ $totalmem -le 1024 ]; then
@@ -51,7 +54,7 @@ auto_swap(){
   fi
 }
 
-#自定义添加swap[done]
+################## 自定义添加swap ##################
 add_swap(){
   echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
   read -p "请输入swap数值:" swapsize
@@ -78,7 +81,7 @@ add_swap(){
   fi
 }
 
-#删除swap[done]
+################## 删 除 swap ##################
 del_swap(){
   #检查是否存在swapfile
   grep -q "swapfile" /etc/fstab
@@ -96,7 +99,7 @@ del_swap(){
   fi
 }
 
-#帮助
+################## 脚本参数帮助 ##################
 swap_help(){
   echo -e "用法(Usage):
   bash <(curl -sL https://git.io/cg_swap) [flags]
@@ -109,7 +112,7 @@ swap_help(){
   注：无参数则进入主菜单"
 }
 
-#开始菜单
+################## 开  始  菜  单 ##################
 swap_menu(){
   clear
   echo -e "———————————————————————————————————————"
@@ -120,10 +123,9 @@ swap_menu(){
   echo -e "${green}3、删除swap${normal}"
   echo -e "${green}4、退出${normal}"
   echo -e "${green}注：输入2、3、4外任意字符，默认选1.自动添加${normal}"
-  echo -e "${green}注：输入2、3、4外任意字符，默认选1.自动添加${normal}"
   echo -e "${green}感谢wuhuai2020、moerats、github众多作者，我只是整合代码${normal}"
   echo -e "———————————————————————————————————————"
-  read -n 1 -p "请输入数字 [1-4]:" num
+  read -n1 -p "请输入数字 [1-4]:" num
   case "$num" in
     1)
       echo
@@ -146,13 +148,13 @@ swap_menu(){
       ;;
   esac
 }
-check_root
-check_vz
+
+################## 执  行  命  令 ##################
 if [ -z $1 ];then
 swap_menu
 else
   case "$1" in
-  A|a) 
+  A|a)
     echo
     auto_swap
     ;;
