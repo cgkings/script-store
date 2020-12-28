@@ -30,7 +30,7 @@ remote_chose(){
     mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
     drive_list=$(fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}')
     drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}')
-    drive_name=$(cat $drive_list | awk '/$drive_id/{print $3}')
+    drive_name=$(echo $drive_list | awk '/$drive_id/{print $3}')
     echo
     echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
     read -n1 -p "是否要修改挂载盘：[Y/n],除输入Y|y默认n" result
@@ -43,7 +43,7 @@ remote_chose(){
         echo -e "${red}$drive_list${normal}"
         echo -e "${red} +-------------------------+"
         read -n1 -p "请选择需要挂载的网盘（输入数字即可）：" drive_chose_num
-        drive_change_id=$(cat $drive_list | awk '{print $2}' | sed -n ''$drive_chose_num'p')
+        drive_change_id=$(echo $drive_list | awk '{print $2}' | sed -n ''$drive_chose_num'p')
         echo $drive_change_id
         drive_change;;
       n | N)
@@ -166,7 +166,7 @@ mount_creat(){
 mount_server_creat(){
   mount_del
   echo -e "$curr_date 正在创建服务 \"${red}rclone-${mount_path_name}.service${normal}\"请稍等..."
-cat >/lib/systemd/system/rclone-${mount_path_name}.service<<'EOF'
+cat >/lib/systemd/system/rclone-${mount_path_name}.service<< EOF
   [Unit]
   Description = rclone-${mount_path_name}
   AssertPathIsDirectory = ${mount_path}
