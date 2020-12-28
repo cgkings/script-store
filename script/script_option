@@ -43,13 +43,27 @@ check_fuse(){
   if [ ! -f /etc/fuse.conf ]; then
     echo -e "`curr_date` 未找到fuse包.正在安装..."
     sleep 1s
-    if [[ "${release}" = "centos" ]];then
-      yum install fuse -y
-      elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]];then
-      apt-get install fuse -y
-    fi
+    apt-get install fuse -y
+    #if [[ "${release}" = "centos" ]];then
+      #yum install fuse -y
+      #elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]];then
+      #apt-get install fuse -y
+    #fi
     echo
     echo -e "`curr_date` fuse安装完成."
     echo
   fi
+}
+################## 检查rclone&fclone安装情况 ##################
+check_rclone(){
+  if [ ! -f ~/.config/rclone/rclone.conf ]; then
+    bash <(curl -L -s https://rclone.org/install.sh)
+    echo -e "$curr_date ${red}[Error]已为你安装了rclone,但~/.config/rclone/rclone.conf仍为空，请你创建remote后再运行本脚本${normal}"
+  fi
+  if [ ! -f /usr/bin/fclone ]; then
+    wget -N https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip
+    unzip -d /usr/bin fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone
+    fclone version
+
+
 }

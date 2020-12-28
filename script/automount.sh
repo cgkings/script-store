@@ -19,23 +19,21 @@ check_vz
 
 ################## 选择remot ##################[done]
 remote_chose(){
-  bash <(curl -L -s https://rclone.org/install.sh)
   remote_list=$(sed -n "/\[.*\]/p" ~/.config/rclone/rclone.conf | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}' )
-  if [ -z $remote_list ]; then
-    echo "~/.config/rclone/rclone.conf为空，请先创建remot,再运行本脚本"
-    exit 1
-  fi
+  
+
+
+
+
   echo -e "   本地已配置网盘列表:"
-  echo
   echo -e "${red} +-------------------------+"
   echo -e "${red}$remote_list${normal}"
   echo -e "${red} +-------------------------+"
-  echo
   read -n1 -p "请选择需要挂载的网盘（输入数字即可）：" rclone_chose_num
   if [[ $remote_list =~ $rclone_chose_num ]]; then
   mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
   echo
-  echo -e "$curr_date 您选择了：${red}${mount_remote}${normal}"
+  echo -e "$curr_date [Info]您选择了：${red}${mount_remote}${normal}"
   else
   echo
   echo "输入不正确，请重新输入。"
@@ -43,6 +41,18 @@ remote_chose(){
   remote_chose
   fi
 }
+################## 选择并修改下载盘 ##################[done]
+remote_pan_chose(){
+  
+}
+
+
+
+
+
+
+
+
 ################## 选择挂载路径 ##################[done]
 dir_check(){
   if [[ $mount_path =~ "/" ]]; then
