@@ -17,7 +17,7 @@ setcolor
 check_root
 check_vz
 
-################## 选择remot ##################
+################## 选择remot ##################[done]
 remote_chose(){
   bash <(curl -L -s https://rclone.org/install.sh)
   remote_list=$(sed -n "/\[.*\]/p" ~/.config/rclone/rclone.conf | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}' )
@@ -47,7 +47,7 @@ remote_chose(){
       fi
   done
 }
-################## 选择挂载路径 ##################
+################## 选择挂载路径 ##################[done]
 dir_check(){
   if [[ $mount_path =~ "/" ]]; then
     if [ ! -d $mount_path ]; then
@@ -67,6 +67,7 @@ dir_check(){
         echo -e "`curr_date` 创建完成！"
       fi
   fi
+  mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
 }
 
 dir_chose(){
@@ -92,18 +93,18 @@ dir_chose(){
   done
 }
 
-################## 删除服务 ##################未完成
+################## 删除服务 ##################
 mount_del(){
   check_fuse
   fusermount -qzu "${mount_path}"
   echo -e "fusermount -qzu "${mount_path}" done"
   echo
   echo -e "`curr_date` 正在检查服务是否存在..."
-  if [[ -f /lib/systemd/system/rclone-${list[rclone_config_name]}.service ]];then
-    echo -e "`curr_date` 找到服务 \"${red}rclone-${list[rclone_config_name]}.service${normal}\"正在删除，请稍等..."
-    systemctl stop rclone-${list[rclone_config_name]}.service &> /dev/null
-    systemctl disable rclone-${list[rclone_config_name]}.service &> /dev/null
-    rm /lib/systemd/system/rclone-${list[rclone_config_name]}.service &> /dev/null
+  if [[ -f /lib/systemd/system/rclone-${mount_path_name}.service ]];then
+    echo -e "`curr_date` 找到服务 \"${red}rclone-${mount_path_name}.service${normal}\"正在删除，请稍等..."
+    systemctl stop rclone-${mount_path_name}.service &> /dev/null
+    systemctl disable rclone-${mount_path_name}.service &> /dev/null
+    rm /lib/systemd/system/rclone-${mount_path_name}.service &> /dev/null
     sleep 2s
     echo -e "`curr_date` 删除成功。"
   else
@@ -150,32 +151,41 @@ mount_creat(){
   fclone mount "$mount_remote": "$mount_path" "$mount_tag" &
 }
 
-################## 创建开机挂载服务 ##################未完成
+################## 创建开机挂载服务 ##################
 mount_server_creat(){
   tag_chose
-  echo -e "`curr_date` 正在创建服务 \"${red}rclone-${list[rclone_config_name]}.service${normal}\"请稍等..."
-  echo "[Unit]
-  Description = rclone-sjhl
+  echo -e "`curr_date` 正在创建服务 \"${red}rclone-${mount_path_name}.service${normal}\"请稍等..."
+cat >/lib/systemd/system/rclone-${mount_path_name}.service<<'EOF'
+  [Unit]
+  Description = rclone-${mount_path_name}
+  AssertPathIsDirectory = ${mount_path}
+  Wants = network-online.target
+  After = network-online.target
   
   [Service]
+  Type = notify
+  KillMode = none
+  Restart = on-failure
+  RestartSec = 5
   User = root
-  ExecStart = /usr/bin/rclone mount ${list[rclone_config_name]}: ${path} --transfers 10  --buffer-size 1G --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 2G  --allow-non-empty --allow-other --dir-cache-time 12h --umask 000
-  Restart = on-abort
-  
+  ExecStart = fclone mount ${mount_path_name}: ${path} ${mount_tag}
+  ExecStop = fusermount -qzu ${mount_path}
+
   [Install]
-  WantedBy = multi-user.target" > /lib/systemd/system/rclone-${list[rclone_config_name]}.service
+  WantedBy = multi-user.target
+EOF
   sleep 2s
   echo -e "`curr_date` 服务创建成功。"
   sleep 2s
   echo
   echo -e "`curr_date` 启动服务..."
-  systemctl start rclone-${list[rclone_config_name]}.service &> /dev/null
+  systemctl start rclone-${mount_path_name}.service &> /dev/null
   sleep 1s
   echo -e "`curr_date` 添加开机启动..."
-  systemctl enable rclone-${list[rclone_config_name]}.service &> /dev/null
+  systemctl enable rclone-${mount_path_name}.service &> /dev/null
   if [[ $? ]];then
     echo
-    echo -e "已为网盘 ${red}${list[rclone_config_name]}${normal} 创建服务 ${red}reclone-${list[rclone_config_name]}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
+    echo -e "已为网盘 ${red}${mount_path_name}${normal} 创建服务 ${red}reclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
     echo
     echo
     sleep 2s
@@ -219,12 +229,14 @@ mount_menu(){
   case "$num" in
     1)
       echo
+      remote_chose
       dir_check
       mount_del
       mount_creat
       ;;
     2)
       echo
+      remote_chose
       dir_check
       mount_del
       mount_server_creat
@@ -244,7 +256,7 @@ mount_menu(){
   esac
 }
 
-################## 执  行  命  令 ##################未完成
+################## 执  行  命  令 ##################
 if [ $# -ne 3 ]; then
   mount_menu
 else
