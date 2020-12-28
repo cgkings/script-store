@@ -309,7 +309,7 @@ mount_menu(){
 ################## 执  行  命  令 ##################
 if [ $# == 0 ]; then
   mount_menu
-elif [ $# -le 3 ];then
+elif [ $# -le 2 ];then
   mount_help
 else
   mount_remote=$2
