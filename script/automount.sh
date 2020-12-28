@@ -106,17 +106,14 @@ tag_chose(){
     1)
       echo
       mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
-      echo "挂载核心命令：fclone mount "$mount_remote": "$mount_path" "$mount_tag""
       ;;
     2)
       echo
       mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
-      echo "挂载核心命令：fclone mount "$mount_remote": "$mount_path" "$mount_tag""
       ;;
     3)
       echo
       mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
-      echo "挂载核心命令：fclone mount "$mount_remote": "$mount_path" "$mount_tag""
       ;;
     *)
       echo
@@ -130,8 +127,10 @@ tag_chose(){
 
 mount_creat(){
   mount_del
+  echo -e "$curr_date 开始临时挂载..."
+  echo -e "$curr_date fclone mount "$mount_remote": "$mount_path" "$mount_tag" &"
   fclone mount $mount_remote: $mount_path $mount_tag &
-  echo -e "恭喜，已临时挂载成功"
+  echo -e "$curr_date 临时挂载[done]"
   df -h
 }
 
