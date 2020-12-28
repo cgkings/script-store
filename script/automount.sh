@@ -19,21 +19,38 @@ check_vz
 
 ################## 选择remot ##################[done]
 remote_chose(){
+  check_rclone
   remote_list=$(sed -n "/\[.*\]/p" ~/.config/rclone/rclone.conf | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}' )
-  
-
-
-
-
-  echo -e "   本地已配置网盘列表:"
+  echo -e "   本地已配置remote列表:"
   echo -e "${red} +-------------------------+"
   echo -e "${red}$remote_list${normal}"
   echo -e "${red} +-------------------------+"
-  read -n1 -p "请选择需要挂载的网盘（输入数字即可）：" rclone_chose_num
+  read -n1 -p "请选择需要挂载的remote（输入数字即可）：" rclone_chose_num
   if [[ $remote_list =~ $rclone_chose_num ]]; then
-  mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
-  echo
-  echo -e "$curr_date [Info]您选择了：${red}${mount_remote}${normal}"
+    mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
+    drive_list=$(fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}')
+    drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}')
+    drive_name=$(cat $drive_list | awk '/$drive_id/{print $3}')
+    echo
+    echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
+    read -n1 -p "是否要修改挂载盘：[Y/n],除输入Y|y默认n" result
+    echo
+    result=${result:-n}
+    case ${result} in
+      Y | y)
+        echo -e "$mount_remote 的网盘列表："
+        echo -e "${red} +-------------------------+"
+        echo -e "${red}$drive_list${normal}"
+        echo -e "${red} +-------------------------+"
+        read -n1 -p "请选择需要挂载的网盘（输入数字即可）：" drive_chose_num
+        drive_change_id=$(cat $drive_list | awk '{print $2}' | sed -n ''$drive_chose_num'p')
+        echo $drive_change_id
+        drive_change;;
+      n | N)
+        echo;;
+      *)
+        echo;;
+      esac
   else
   echo
   echo "输入不正确，请重新输入。"
@@ -41,18 +58,19 @@ remote_chose(){
   remote_chose
   fi
 }
-################## 选择并修改下载盘 ##################[done]
-remote_pan_chose(){
-  
+################## 修改挂载盘 ##################[done]
+drive_change(){
+  drive_list=$(fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}')
+  drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}')
+  if [ $drive_change_id == $drive_id ]; then
+  echo -e "$curr_date ${red}[Info]你要改的挂载盘id与conf文件id相同，无需修改${normal}"
+  else
+  echo -e "$curr_date ${red}[Info]即将修改挂载盘ID为：${drive_id}${normal}..."
+  sed -i "s/$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}')/'$drive_id'/g" ~/.config/rclone/rclone.conf
+  echo -e "$curr_date ${red}[Info]已将挂载盘ID修改为：${drive_id}${normal}[done]"
+  sleep 10s
+  fi
 }
-
-
-
-
-
-
-
-
 ################## 选择挂载路径 ##################[done]
 dir_check(){
   if [[ $mount_path =~ "/" ]]; then
@@ -192,19 +210,21 @@ EOF
 mount_help(){
   echo -e "用法(Usage):
   bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3]
-  注意：无或缺少参数则进入主菜单
+  注意：无或少于3个参数则进入主菜单
 
 [flags1]可用参数(Available flags)：
-  bash <(curl -sL https://git.io/cg_auto_mount) l  临时创建挂载
-  bash <(curl -sL https://git.io/cg_auto_mount) s  服务创建挂载
-  bash <(curl -sL https://git.io/cg_auto_mount) d  删除挂载
-  bash <(curl -sL https://git.io/cg_auto_mount) h  命令帮助
+  bash <(curl -sL https://git.io/cg_auto_mount) l1,2,3  临时创建挂载(1,2,3代表挂载方案)
+  bash <(curl -sL https://git.io/cg_auto_mount) s1,2,3  服务创建挂载(1,2,3代表挂载方案)
+  bash <(curl -sL https://git.io/cg_auto_mount) d       删除挂载
+  bash <(curl -sL https://git.io/cg_auto_mount) h       命令帮助
   
 [flags2]可用参数(Available flags)：
   flags2 为需要创建挂载的remote名称，可查阅~/.config/rclone/rclone.conf
 
 [flags3]可用参数(Available flags)：
-  flags3 为挂载路径"
+  flags3 为挂载路径
+[flags4]可用参数(Available flags)：
+  flags4 为要修改为的挂载盘ID"
 }
 
 ################## 开  始  菜  单 ##################
@@ -255,41 +275,48 @@ if [ $# -ne 3 ]; then
 else
   mount_remote=$2
   mount_path=$3
+  drive_change_id=$4
   case "$1" in
   L1|l1)
     echo
     mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
     dir_check
+    drive_change
     mount_creat
     ;;
   L2|l2)
     echo
     mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
     dir_check
+    drive_change
     mount_creat
     ;;
   L3|l3)
     echo
     mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
     dir_check
+    drive_change
     mount_creat
     ;;
   S1|s1)
     echo
     mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
     dir_check
+    drive_change
     mount_server_creat
     ;;
   S2|s2)
     echo
     mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
     dir_check
+    drive_change
     mount_server_creat
     ;;
   S3|s3)
     echo
     mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
     dir_check
+    drive_change
     mount_server_creat
     ;;  
   D|d)
