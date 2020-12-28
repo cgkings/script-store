@@ -246,8 +246,8 @@ EOF
 ################## 脚本参数帮助 ##################
 mount_help(){
   echo -e "用法(Usage):
-  bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3]
-  注意：无或少于3个参数则进入主菜单
+  bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
+  注意：无参数则进入主菜单,参数少于3个显示help，即1,2,3为脚本参数执行方式必备!
 
 [flags1]可用参数(Available flags)：
   bash <(curl -sL https://git.io/cg_auto_mount) l1,2,3  临时创建挂载(1,2,3代表挂载方案)
@@ -307,8 +307,10 @@ mount_menu(){
 }
 
 ################## 执  行  命  令 ##################
-if [ $# -ne 3 ]; then
+if [ $# == 0 ]; then
   mount_menu
+elif [ $# -le 3 ];then
+  mount_help
 else
   mount_remote=$2
   mount_path=$3
@@ -359,10 +361,6 @@ else
   D|d)
     echo    
     mount_del
-    ;;
-  H|h)
-    echo
-    mount_help
     ;;
   *)
     echo
