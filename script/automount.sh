@@ -26,12 +26,14 @@ remote_chose(){
   echo -e "${red}$remote_list${normal}"
   echo -e "${red} +-------------------------+"
   read -n1 -p "请选择需要挂载的remote（输入数字即可）：" rclone_chose_num
+  echo
   if [[ $remote_list =~ $rclone_chose_num ]]; then
     mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
     fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$mount_remote"_drivelist.txt
     drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
     if [ -z $drive_id ];then
       echo -e "$curr_date ${red}[Info]您的team_drive id为空，在下面添加一个吧${normal}"
+      sleep 3s
       drive_chose_list
       rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
       sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
