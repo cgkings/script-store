@@ -111,22 +111,22 @@ drive_change(){
 ################## 选择挂载路径 ##################[done]
 dir_check(){
   if [[ $mount_path =~ "/" ]]; then
+    if [ ! -f $mount_path ]; then
+      echo -e "$curr_date  ${red}${mount_path}${normal} 不存在，正在创建..."
+      mkdir -p -m 755 $mount_path
+      sleep 1s
+      echo
+      echo -e "$curr_date 创建完成！"
+    fi
+    else
+    mount_path="/home/$mount_path"
     if [ ! -d $mount_path ]; then
       echo -e "$curr_date  ${red}${mount_path}${normal} 不存在，正在创建..."
       mkdir -p -m 755 $mount_path
       sleep 1s
       echo
       echo -e "$curr_date 创建完成！"
-      fi
-    else
-    mount_path="/home/$mount_path"
-      if [ ! -d $mount_path ]; then
-        echo -e "$curr_date  ${red}${mount_path}${normal} 不存在，正在创建..."
-        mkdir -p -m 755 $mount_path
-        sleep 1s
-        echo
-        echo -e "$curr_date 创建完成！"
-      fi
+    fi
   fi
   mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
 }
