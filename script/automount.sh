@@ -129,6 +129,8 @@ tag_chose(){
 mount_creat(){
   mount_del
   fclone mount $mount_remote: $mount_path $mount_tag &
+  echo -e "恭喜，已临时挂载成功"
+  df -h
 }
 
 ################## 创建开机挂载服务 ##################
