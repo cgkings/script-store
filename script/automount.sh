@@ -191,18 +191,18 @@ tag_chose(){
 
 mount_creat(){
   mount_del
-  echo -e "$curr_date 开始临时挂载..."
-  echo -e "$curr_date fclone mount "$mount_remote": "$mount_path" "$mount_tag" &"
+  echo -e "$curr_date [Info] 开始临时挂载..."
+  echo -e "$curr_date [Info] fclone mount "$mount_remote": "$mount_path" "$mount_tag" &"
   fclone mount $mount_remote: $mount_path $mount_tag &
   sleep 5s
-  echo -e "$curr_date 临时挂载[done]"
+  echo -e "$curr_date [Info] 临时挂载[done]"
   df -h
 }
 
 ################## 创建开机挂载服务 ##################
 mount_server_creat(){
   mount_del
-  echo -e "$curr_date 正在创建服务 \"${red}rclone-${mount_path_name}.service${normal}\"请稍等..."
+  echo -e "$curr_date [Info] 正在创建服务 \"${red}rclone-${mount_path_name}.service${normal}\"请稍等..."
 cat >/lib/systemd/system/rclone-${mount_path_name}.service<< EOF
   [Unit]
   Description = rclone-${mount_path_name}
@@ -223,23 +223,21 @@ cat >/lib/systemd/system/rclone-${mount_path_name}.service<< EOF
   WantedBy = multi-user.target
 EOF
   sleep 2s
-  echo -e "$curr_date 服务创建成功。"
+  echo -e "$curr_date [Info] 服务创建成功。"
   sleep 2s
-  echo
-  echo -e "$curr_date 启动服务..."
+  echo -e "$curr_date [Info] 启动服务..."
   systemctl start rclone-${mount_path_name}.service &> /dev/null
   sleep 1s
-  echo -e "$curr_date 添加开机启动..."
+  echo -e "$curr_date [Info] 添加开机启动..."
   systemctl enable rclone-${mount_path_name}.service &> /dev/null
   if [[ $? ]];then
     echo
-    echo -e "已为网盘 ${red}${mount_path_name}${normal} 创建服务 ${red}reclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
-    echo
+    echo -e "[Info] 已为网盘 ${red}${mount_path_name}${normal} 创建服务 ${red}reclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
     echo
     sleep 2s
   else
     echo
-    echo -e "$curr_date 警告:未知错误."
+    echo -e "$curr_date[警告] 未知错误."
   fi
 }
 
