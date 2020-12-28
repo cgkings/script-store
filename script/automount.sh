@@ -37,7 +37,7 @@ remote_chose(){
       if [[ $remote_list =~ $rclone_chose_num ]]; then
         mount_remote=$($remote_list | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
         echo
-        echo -e "`curr_date` 您选择了：${red}${mount_remote}${normal}"
+        echo -e "$curr_date 您选择了：${red}${mount_remote}${normal}"
         break
       else
         echo
@@ -51,20 +51,20 @@ remote_chose(){
 dir_check(){
   if [[ $mount_path =~ "/" ]]; then
     if [ ! -d $mount_path ]; then
-      echo -e "`curr_date`  ${red}${mount_path}${normal} 不存在，正在创建..."
+      echo -e "$curr_date  ${red}${mount_path}${normal} 不存在，正在创建..."
       mkdir -p -m 755 $mount_path
       sleep 1s
       echo
-      echo -e "`curr_date` 创建完成！"
+      echo -e "$curr_date 创建完成！"
       fi
     else
     mount_path="/home/$mount_path"
       if [ ! -d $mount_path ]; then
-        echo -e "`curr_date`  ${red}${mount_path}${normal} 不存在，正在创建..."
+        echo -e "$curr_date  ${red}${mount_path}${normal} 不存在，正在创建..."
         mkdir -p -m 755 $mount_path
         sleep 1s
         echo
-        echo -e "`curr_date` 创建完成！"
+        echo -e "$curr_date 创建完成！"
       fi
   fi
   mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
@@ -99,14 +99,14 @@ mount_del(){
   fusermount -qzu "${mount_path}"
   echo -e "fusermount -qzu "${mount_path}" done"
   echo
-  echo -e "`curr_date` 正在检查服务是否存在..."
+  echo -e "$curr_date 正在检查服务是否存在..."
   if [[ -f /lib/systemd/system/rclone-${mount_path_name}.service ]];then
-    echo -e "`curr_date` 找到服务 \"${red}rclone-${mount_path_name}.service${normal}\"正在删除，请稍等..."
+    echo -e "$curr_date 找到服务 \"${red}rclone-${mount_path_name}.service${normal}\"正在删除，请稍等..."
     systemctl stop rclone-${mount_path_name}.service &> /dev/null
     systemctl disable rclone-${mount_path_name}.service &> /dev/null
     rm /lib/systemd/system/rclone-${mount_path_name}.service &> /dev/null
     sleep 2s
-    echo -e "`curr_date` 删除成功。"
+    echo -e "$curr_date 删除成功。"
   else
     echo -e "你没创建过服务!"
 fi
@@ -154,7 +154,7 @@ mount_creat(){
 ################## 创建开机挂载服务 ##################
 mount_server_creat(){
   tag_chose
-  echo -e "`curr_date` 正在创建服务 \"${red}rclone-${mount_path_name}.service${normal}\"请稍等..."
+  echo -e "$curr_date 正在创建服务 \"${red}rclone-${mount_path_name}.service${normal}\"请稍等..."
 cat >/lib/systemd/system/rclone-${mount_path_name}.service<<'EOF'
   [Unit]
   Description = rclone-${mount_path_name}
@@ -175,13 +175,13 @@ cat >/lib/systemd/system/rclone-${mount_path_name}.service<<'EOF'
   WantedBy = multi-user.target
 EOF
   sleep 2s
-  echo -e "`curr_date` 服务创建成功。"
+  echo -e "$curr_date 服务创建成功。"
   sleep 2s
   echo
-  echo -e "`curr_date` 启动服务..."
+  echo -e "$curr_date 启动服务..."
   systemctl start rclone-${mount_path_name}.service &> /dev/null
   sleep 1s
-  echo -e "`curr_date` 添加开机启动..."
+  echo -e "$curr_date 添加开机启动..."
   systemctl enable rclone-${mount_path_name}.service &> /dev/null
   if [[ $? ]];then
     echo
@@ -191,7 +191,7 @@ EOF
     sleep 2s
   else
     echo
-    echo -e "`curr_date` 警告:未知错误."
+    echo -e "$curr_date 警告:未知错误."
   fi
 }
 
