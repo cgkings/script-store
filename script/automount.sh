@@ -363,7 +363,8 @@ else
     mount_server_creat
     ;;  
   D|d)
-    echo    
+    echo
+    dir_check
     mount_del
     ;;
   *)
