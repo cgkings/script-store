@@ -76,21 +76,21 @@ dir_chose(){
 ################## 删除服务 ##################
 mount_del(){
   check_fuse
-  echo -e "$curr_date 正在执行fusermount -qzu "${mount_path}"..."
+  echo -e "$curr_date [Info]正在执行fusermount -qzu "${mount_path}"..."
   fusermount -qzu "${mount_path}"
-  echo -e "$curr_date fusermount -qzu "${mount_path}"[done]"
-  echo -e "$curr_date 正在检查服务是否存在..."
+  echo -e "$curr_date [Info]fusermount -qzu "${mount_path}"[done]"
+  echo -e "$curr_date [Info]正在检查服务是否存在..."
   if [[ -f /lib/systemd/system/rclone-${mount_path_name}.service ]];then
-    echo -e "$curr_date 找到服务 \"${red}rclone-${mount_path_name}.service${normal}\"正在删除，请稍等..."
+    echo -e "$curr_date [Info]找到服务 \"${red}rclone-${mount_path_name}.service${normal}\"正在删除，请稍等..."
     systemctl stop rclone-${mount_path_name}.service &> /dev/null
     systemctl disable rclone-${mount_path_name}.service &> /dev/null
     rm /lib/systemd/system/rclone-${mount_path_name}.service &> /dev/null
     sleep 2s
-    echo -e "$curr_date 删除服务[done]"
+    echo -e "$curr_date [Info]删除服务[done]"
   else
-    echo -e "你没创建过服务!"
+    echo -e "$curr_date [Debug]你没创建过服务!"
   fi
-  echo -e "$curr_date 删除挂载[done]"
+  echo -e "$curr_date [Info]删除挂载[done]"
 }
 
 ################## 挂载参数选择 ##################
