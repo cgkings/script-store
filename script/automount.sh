@@ -197,6 +197,7 @@ mount_creat(){
   sleep 5s
   echo -e "$curr_date [Info] 临时挂载[done]"
   df -h
+  exit
 }
 
 ################## 创建开机挂载服务 ##################
@@ -239,6 +240,7 @@ EOF
     echo
     echo -e "$curr_date[警告] 未知错误."
   fi
+  exit
 }
 
 ################## 脚本参数帮助 ##################
@@ -305,9 +307,6 @@ mount_menu(){
 }
 
 ################## 执  行  命  令 ##################
-
-
-
 if [ $# == 0 ]; then
   mount_menu
   if [ $# -le 3 ];then
