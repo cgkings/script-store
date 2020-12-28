@@ -28,9 +28,9 @@ remote_chose(){
   read -n1 -p "请选择需要挂载的remote（输入数字即可）：" rclone_chose_num
   if [[ $remote_list =~ $rclone_chose_num ]]; then
     mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
-    drive_list=$(fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}')
+    fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/$mount_remote_drivelist.txt
     drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}')
-    drive_name=$(echo $drive_list | awk '/$drive_id/{print $3}')
+    drive_name=$(cat ~/.config/rclone/$mount_remote_drivelist.txt | awk '/$drive_id/{print $3}')
     echo
     echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
     read -n1 -p "是否要修改挂载盘：[Y/n],除输入Y|y默认n" result
@@ -40,10 +40,10 @@ remote_chose(){
       Y | y)
         echo -e "$mount_remote 的网盘列表："
         echo -e "${red} +-------------------------+"
-        echo -e "${red}$drive_list${normal}"
+        echo -e "${red}$(cat ~/.config/rclone/$mount_remote_drivelist.txt)${normal}"
         echo -e "${red} +-------------------------+"
         read -n1 -p "请选择需要挂载的网盘（输入数字即可）：" drive_chose_num
-        drive_change_id=$(echo $drive_list | awk '{print $2}' | sed -n ''$drive_chose_num'p')
+        drive_change_id=$(cat ~/.config/rclone/$mount_remote_drivelist.txt | awk '{print $2}' | sed -n ''$drive_chose_num'p')
         echo $drive_change_id
         drive_change;;
       n | N)
@@ -60,7 +60,7 @@ remote_chose(){
 }
 ################## 修改挂载盘 ##################[done]
 drive_change(){
-  drive_list=$(fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}')
+  fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/$mount_remote_drivelist.txt
   drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}')
   if [ $drive_change_id == $drive_id ]; then
   echo -e "$curr_date ${red}[Info]你要改的挂载盘id与conf文件id相同，无需修改${normal}"
