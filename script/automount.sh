@@ -29,7 +29,7 @@ remote_chose(){
   if [[ $remote_list =~ $rclone_chose_num ]]; then
     mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
     fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$mount_remote"_drivelist.txt
-    drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}')
+    drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | awk '{print $1}')
     drive_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/$drive_id/{print $3}')
     echo
     echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
@@ -60,7 +60,7 @@ remote_chose(){
 }
 ################## 修改挂载盘 ##################[done]
 drive_change(){
-  drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}')
+  drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | awk '{print $1}')
   if [ $drive_change_id == $drive_id ]; then
   echo -e "$curr_date ${red}[Info]你要改的挂载盘id与conf文件id相同，无需修改${normal}"
   else
