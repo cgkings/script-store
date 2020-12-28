@@ -46,8 +46,22 @@ bash <(curl -sL https://git.io/cg_fqcopy)
 
 ### 挂载脚本【小组件】【 google drive & 6pan 】【未完成】
 ```
-bash <(curl -sL https://git.io/cg_auto_mount)
+bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3]
 ```
+**[用法]**<br>
+*注意：无或缺少参数则进入主菜单*<br>
+*[flags1]可用参数(Available flags)：*<br>
+*`L`  临时创建挂载*<br>
+*`S`  服务创建挂载*<br>
+*`D`  删除挂载*<br>
+*`h`  命令帮助* <br>
+
+*[flags2]可用参数(Available flags)：*<br>
+*flags2 为需要创建挂载的remote名称，可查阅~/.config/rclone/rclone.conf*<br>
+
+*[flags3]可用参数(Available flags)：*<br>
+*flags3 为挂载路径"*<br>
+
 [说明]()
 
 ### 影片媒体库脚本【刮削、EMBY、Jellyfin】【未完成】

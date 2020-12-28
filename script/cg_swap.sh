@@ -11,7 +11,7 @@
 #=============================================================
 
 ################## 前置变量 ##################
-source <(wget -qO- https://raw.githubusercontent.com/cgkings/script-store/master/config/script_option)
+source <(wget -qO- https://git.io/cg_script_option)
 setcolor
 check_root
 check_vz

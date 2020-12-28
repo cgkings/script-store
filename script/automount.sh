@@ -11,7 +11,7 @@
 #=============================================================
 
 ################## 前置变量设置 ##################
-source <(wget -qO- https://raw.githubusercontent.com/cgkings/script-store/master/config/script_option)
+source <(wget -qO- https://git.io/cg_script_option)
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 setcolor
 check_root
