@@ -30,6 +30,17 @@ remote_chose(){
     mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
     fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$mount_remote"_drivelist.txt
     drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
+    if [ -z $drive_id ];then
+      echo -e "$curr_date ${red}[Info]您的team_drive id为空，在下面添加一个吧${normal}"
+      drive_chose_list
+      rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
+      sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
+      team_drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'team_drive' | sed -n '1p')
+      sed -i "s/$team_drive_id/root_folder_id = $drive_change_id/g" ~/.config/rclone/rclone.conf
+      drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
+      echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
+      return
+    fi
     drive_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_id'/{print $3}')
     echo
     echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
@@ -38,13 +49,7 @@ remote_chose(){
     result=${result:-n}
     case ${result} in
       Y | y)
-        echo -e "$mount_remote 的网盘列表："
-        echo -e "${red} +-------------------------+"
-        echo -e "${red}$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt)${normal}"
-        echo -e "${red} +-------------------------+"
-        read -p "请选择需要挂载的网盘（输入数字即可）：" drive_chose_num
-        drive_change_id=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '{print $2}' | sed -n ''$drive_chose_num'p')
-        echo $drive_change_id
+        drive_chose_list
         drive_change;;
       n | N)
         echo;;
@@ -58,23 +63,48 @@ remote_chose(){
   remote_chose
   fi
 }
+
+################## 网盘选择列表 ##################[done]
+drive_chose_list(){
+  echo -e "$mount_remote 的网盘列表："
+  echo -e "${red} +-------------------------+"
+  echo -e "${red}$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt)${normal}"
+  echo -e "${red} +-------------------------+"
+  read -p "请选择需要挂载的网盘（输入数字即可）：" drive_chose_num
+  drive_change_id=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '{print $2}' | sed -n ''$drive_chose_num'p')
+  echo $drive_change_id
+}
+    
 ################## 修改挂载盘 ##################[done]
 drive_change(){
+  fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$mount_remote"_drivelist.txt
+  drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
+  if [ -z $drive_id ];then
+      echo -e "$curr_date ${red}[Info]您的team_drive id为空，在下面添加一个吧${normal}"
+      drive_chose_list
+      rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
+      sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
+      team_drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'team_drive' | sed -n '1p')
+      sed -i "s/$team_drive_id/root_folder_id = $drive_change_id/g" ~/.config/rclone/rclone.conf
+      drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
+      drive_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_id'/{print $3}')
+      echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
+      return
+  fi
   if [ -z $drive_change_id ];then
   return
   fi
-  fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$mount_remote"_drivelist.txt
-  drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
-  drive_change_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_change_id'/{print $3}')
   if [ $drive_change_id == $drive_id ]; then
   echo -e "$curr_date ${red}[Info]你要改的挂载盘id与conf文件id相同，无需修改${normal}"
   else
   echo -e "$curr_date ${red}[Info]即将修改挂载盘ID为：${drive_change_id}${normal}..."
   sed -i "s/$drive_id/$drive_change_id/g" ~/.config/rclone/rclone.conf
+  drive_change_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_change_id'/{print $3}')
   echo -e "$curr_date ${red}[Info]已将挂载盘ID修改为：${drive_change_id},挂载盘名为：${drive_change_name}[done]${normal}"
   sleep 3s
   fi
 }
+
 ################## 选择挂载路径 ##################[done]
 dir_check(){
   if [[ $mount_path =~ "/" ]]; then
