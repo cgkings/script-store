@@ -67,7 +67,7 @@ drive_change(){
   echo -e "$curr_date ${red}[Info]你要改的挂载盘id与conf文件id相同，无需修改${normal}"
   else
   echo -e "$curr_date ${red}[Info]即将修改挂载盘ID为：${drive_change_id}${normal}..."
-  sed -i "s/'$drive_change_id'/'$drive_id'/g" ~/.config/rclone/rclone.conf
+  sed -i "s/$drive_id/$drive_change_id/g" ~/.config/rclone/rclone.conf
   echo -e "$curr_date ${red}[Info]已将挂载盘ID修改为：${drive_change_id},挂载盘名为：${drive_change_name}[done]${normal}"
   sleep 10s
   fi
