@@ -38,7 +38,7 @@ remote_chose(){
       rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
       sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
       team_drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'team_drive' | sed -n '1p')
-      sed -i "s/$team_drive_id/root_folder_id = $drive_change_id/g" ~/.config/rclone/rclone.conf
+      sed -i "s/$team_drive_id/team_drive = $drive_change_id/g" ~/.config/rclone/rclone.conf
       drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
       echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
       return
@@ -69,6 +69,7 @@ remote_chose(){
 ################## 网盘选择列表 ##################[done]
 drive_chose_list(){
   echo -e "$mount_remote 的网盘列表："
+  sleep 2s
   echo -e "${red} +-------------------------+"
   echo -e "${red}$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt)${normal}"
   echo -e "${red} +-------------------------+"
@@ -87,7 +88,7 @@ drive_change(){
       rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
       sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
       team_drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'team_drive' | sed -n '1p')
-      sed -i "s/$team_drive_id/root_folder_id = $drive_change_id/g" ~/.config/rclone/rclone.conf
+      sed -i "s/$team_drive_id/team_drive = $drive_change_id/g" ~/.config/rclone/rclone.conf
       drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
       drive_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_id'/{print $3}')
       echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
