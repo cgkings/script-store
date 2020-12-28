@@ -197,7 +197,6 @@ mount_creat(){
   sleep 5s
   echo -e "$curr_date [Info] 临时挂载[done]"
   df -h
-  exit
 }
 
 ################## 创建开机挂载服务 ##################
@@ -240,7 +239,6 @@ EOF
     echo
     echo -e "$curr_date[警告] 未知错误."
   fi
-  exit
 }
 
 ################## 脚本参数帮助 ##################
@@ -283,6 +281,7 @@ mount_menu(){
       dir_chose
       tag_chose
       mount_creat
+      exit
       ;;
     2)
       echo
@@ -290,10 +289,12 @@ mount_menu(){
       dir_chose
       tag_chose
       mount_server_creat
+      exit
       ;;
     3)
       echo    
       mount_del
+      exit
       ;;
     4)
       exit
