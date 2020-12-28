@@ -111,7 +111,7 @@ drive_change(){
 ################## 选择挂载路径 ##################[done]
 dir_check(){
   if [[ "$mount_path" =~ "/" ]]; then
-    if [ ! -f "$mount_path" ]; then
+    if [ ! -d "$mount_path" ]; then
       echo -e "$curr_date  ${red}${mount_path}${normal} 不存在，正在创建..."
       mkdir -p 755 "$mount_path"
       sleep 1s
