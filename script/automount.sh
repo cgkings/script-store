@@ -29,9 +29,9 @@ remote_chose(){
     do
       echo -e "   本地已配置网盘列表:"
       echo
-      echo -e "      `${red} +-------------------------+`"
+      echo -e "      ${red} +-------------------------+"
       echo -e "      ${red}|$remote_list|${normal}"
-      echo -e "      `${red} +-------------------------+`"
+      echo -e "      ${red} +-------------------------+"
       echo
       read -n1 -p "   请选择需要挂载的网盘（输入数字即可）：" rclone_chose_num
       if [[ $remote_list =~ $rclone_chose_num ]]; then
