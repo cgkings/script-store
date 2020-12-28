@@ -145,7 +145,7 @@ mount_del(){
   fusermount -qzu "${mount_path}"
   echo -e "$curr_date [Info]fusermount -qzu "${mount_path}"[done]"
   echo -e "$curr_date [Info]正在检查服务是否存在..."
-  if [[ -f /lib/systemd/system/rclone-${mount_path_name}.service ]];then
+  if [ -f /lib/systemd/system/rclone-${mount_path_name}.service ];then
     echo -e "$curr_date [Info]找到服务 \"${red}rclone-${mount_path_name}.service${normal}\"正在删除，请稍等..."
     systemctl stop rclone-${mount_path_name}.service &> /dev/null
     systemctl disable rclone-${mount_path_name}.service &> /dev/null
@@ -216,7 +216,7 @@ cat >/lib/systemd/system/rclone-${mount_path_name}.service<< EOF
   Restart = on-failure
   RestartSec = 5
   User = root
-  ExecStart = fclone mount ${mount_path_name}: ${path} ${mount_tag}
+  ExecStart = fclone mount ${mount_path_name}: ${mount_path} ${mount_tag}
   ExecStop = fusermount -qzu ${mount_path}
 
   [Install]
