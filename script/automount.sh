@@ -28,7 +28,7 @@ remote_chose(){
   echo -e "   本地已配置网盘列表:"
   echo
   echo -e "${red} +-------------------------+"
-  echo -e "${red} $remote_list${normal}"
+  echo -e "${red}$remote_list${normal}"
   echo -e "${red} +-------------------------+"
   echo
   read -n1 -p "请选择需要挂载的网盘（输入数字即可）：" rclone_chose_num
@@ -67,26 +67,10 @@ dir_check(){
 }
 
 dir_chose(){
-  while [[ 0 ]]
-    do
-    read -p "请输入需要挂载目录的路径（回车默认/home,非绝对路径：含/创建该路径，不含为/home/输入文件夹名）:" mount_path
-    mount_path=${mount_path:-/home}
-    dir_check
-    read -t5 -n1 -p "您的挂载目录为 ${mount_path},确认无误[Y/N]，5秒或回车默认Y" result
-    result=${result:-Y}
-    echo
-    case ${result} in
-      Y | y)
-        echo
-        break;;
-      n | N)
-        echo
-        continue;;
-      *)
-        echo
-        continue;;
-    esac
-  done
+  read -p "请输入需要挂载目录的路径（回车默认/home,非绝对路径：含/创建该路径，不含为/home/输入文件夹名）:" mount_path
+  mount_path=${mount_path:-/home}
+  dir_check
+  echo -e "您的挂载目录为 ${mount_path}"
 }
 
 ################## 删除服务 ##################
