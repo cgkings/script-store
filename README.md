@@ -44,7 +44,7 @@ bash <(curl -sL https://git.io/cg_fqcopy)
 ```
 [说明]()
 
-### 挂载脚本【小组件】【 google drive & 6pan 】【未完成】
+### 挂载脚本【小组件】【 google drive & 6pan 】
 ```
 bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
 ```
