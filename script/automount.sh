@@ -60,6 +60,9 @@ remote_chose(){
 }
 ################## 修改挂载盘 ##################[done]
 drive_change(){
+  if [ -z $drive_change_id ];then
+  return
+  fi
   fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$mount_remote"_drivelist.txt
   drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
   drive_change_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_change_id'/{print $3}')
@@ -69,7 +72,7 @@ drive_change(){
   echo -e "$curr_date ${red}[Info]即将修改挂载盘ID为：${drive_change_id}${normal}..."
   sed -i "s/$drive_id/$drive_change_id/g" ~/.config/rclone/rclone.conf
   echo -e "$curr_date ${red}[Info]已将挂载盘ID修改为：${drive_change_id},挂载盘名为：${drive_change_name}[done]${normal}"
-  sleep 10s
+  sleep 3s
   fi
 }
 ################## 选择挂载路径 ##################[done]
