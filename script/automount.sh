@@ -216,7 +216,7 @@ cat >/lib/systemd/system/rclone-${mount_path_name}.service<< EOF
   Restart = on-failure
   RestartSec = 5
   User = root
-  ExecStart = fclone mount ${mount_path_name}: ${mount_path} ${mount_tag}
+  ExecStart = fclone mount ${mount_remote}: ${mount_path} ${mount_tag}
   ExecStop = fusermount -qzu ${mount_path}
 
   [Install]
