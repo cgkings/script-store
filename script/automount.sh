@@ -25,27 +25,23 @@ remote_chose(){
     echo "~/.config/rclone/rclone.conf为空，请先创建remot,再运行本脚本"
     exit 1
   fi
-  while [[ 0 ]]
-    do
-      echo -e "   本地已配置网盘列表:"
-      echo
-      echo -e "${red} +-------------------------+"
-      echo -e "${red}|$remote_list|${normal}"
-      echo -e "${red} +-------------------------+"
-      echo
-      read -n1 -p "请选择需要挂载的网盘（输入数字即可）：" rclone_chose_num
-      if [[ $remote_list =~ $rclone_chose_num ]]; then
-        mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
-        echo
-        echo -e "$curr_date 您选择了：${red}${mount_remote}${normal}"
-        break
-      else
-        echo
-        echo "输入不正确，请重新输入。"
-        echo
-        continue
-      fi
-  done
+  echo -e "   本地已配置网盘列表:"
+  echo
+  echo -e "${red} +-------------------------+"
+  echo -e "${red} $remote_list${normal}"
+  echo -e "${red} +-------------------------+"
+  echo
+  read -n1 -p "请选择需要挂载的网盘（输入数字即可）：" rclone_chose_num
+  if [[ $remote_list =~ $rclone_chose_num ]]; then
+  mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
+  echo
+  echo -e "$curr_date 您选择了：${red}${mount_remote}${normal}"
+  else
+  echo
+  echo "输入不正确，请重新输入。"
+  echo
+  remote_chose
+  fi
 }
 ################## 选择挂载路径 ##################[done]
 dir_check(){
@@ -115,10 +111,10 @@ fi
 ################## 挂载参数选择 ##################
 tag_chose(){
   echo -e "1、256G硬盘或以上[回车默认值]
-  2、小硬盘，2G内存以上
-  3、小硬盘，512M-1G内存
-  注：如参数不合适，可自行修改脚本内挂载参数行，已备注"
-  read -n1 -p "请选择挂载参数" tag_chose_result
+2、小硬盘，2G内存以上
+3、小硬盘，512M-1G内存
+注：如参数不合适，可自行修改脚本内挂载参数行，已备注"
+  read -n1 -p "请选择挂载参数:" tag_chose_result
   tag_chose_result=${tag_chose_result:-1}
   case $tag_chose_result in
     1)
@@ -147,13 +143,13 @@ tag_chose(){
 ################## 临  时  挂  载 ##################
 
 mount_creat(){
-  tag_chose
+  mount_del
   fclone mount "$mount_remote": "$mount_path" "$mount_tag" &
 }
 
 ################## 创建开机挂载服务 ##################
 mount_server_creat(){
-  tag_chose
+  mount_del
   echo -e "$curr_date 正在创建服务 \"${red}rclone-${mount_path_name}.service${normal}\"请稍等..."
 cat >/lib/systemd/system/rclone-${mount_path_name}.service<<'EOF'
   [Unit]
@@ -231,14 +227,14 @@ mount_menu(){
       echo
       remote_chose
       dir_chose
-      mount_del
+      tag_chose
       mount_creat
       ;;
     2)
       echo
       remote_chose
       dir_chose
-      mount_del
+      tag_chose
       mount_server_creat
       ;;
     3)
