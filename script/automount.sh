@@ -79,7 +79,6 @@ mount_del(){
   echo -e "$curr_date 正在执行fusermount -qzu "${mount_path}"..."
   fusermount -qzu "${mount_path}"
   echo -e "$curr_date fusermount -qzu "${mount_path}"[done]"
-  echo
   echo -e "$curr_date 正在检查服务是否存在..."
   if [[ -f /lib/systemd/system/rclone-${mount_path_name}.service ]];then
     echo -e "$curr_date 找到服务 \"${red}rclone-${mount_path_name}.service${normal}\"正在删除，请稍等..."
