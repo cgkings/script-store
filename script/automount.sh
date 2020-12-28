@@ -129,6 +129,7 @@ mount_creat(){
   echo -e "$curr_date 开始临时挂载..."
   echo -e "$curr_date fclone mount "$mount_remote": "$mount_path" "$mount_tag" &"
   fclone mount $mount_remote: $mount_path $mount_tag &
+  sleep 5s
   echo -e "$curr_date 临时挂载[done]"
   df -h
 }
