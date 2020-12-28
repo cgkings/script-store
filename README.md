@@ -46,21 +46,24 @@ bash <(curl -sL https://git.io/cg_fqcopy)
 
 ### 挂载脚本【小组件】【 google drive & 6pan 】【未完成】
 ```
-bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3]
+bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
 ```
 **[用法]**<br>
-*注意：无或缺少参数则进入主菜单*<br>
+*注意：无参数则进入主菜单,参数少于3个显示help，即1,2,3为脚本参数执行方式必备!*<br>
 *[flags1]可用参数(Available flags)：*<br>
-*`L`  临时创建挂载*<br>
-*`S`  服务创建挂载*<br>
-*`D`  删除挂载*<br>
-*`h`  命令帮助* <br>
+*`L1` `L2` `L3`  临时创建挂载(1,2,3代表挂载方案)*<br>
+*`S1` `S2` `S3`  服务创建挂载(1,2,3代表挂载方案)*<br>
+*`D`             删除挂载*<br>
+*`h`             命令帮助* <br>
 
 *[flags2]可用参数(Available flags)：*<br>
 *flags2 为需要创建挂载的remote名称，可查阅~/.config/rclone/rclone.conf*<br>
 
 *[flags3]可用参数(Available flags)：*<br>
 *flags3 为挂载路径"*<br>
+
+*[flags4]可用参数(Available flags)：*<br>
+*flags4 为要修改为的挂载盘ID"*<br>
 
 [说明]()
 
