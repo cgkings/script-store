@@ -1,7 +1,7 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
-# File Name: 
+# File Name:
 # Author: cgkings
 # Created Time : 2020.12.25
 # Description:
@@ -10,28 +10,54 @@
 #=============================================================
 ################## 字体格式设置 ##################
 function setcolor() {
-black=$(tput setaf 0); red=$(tput setaf 1) ; green=$(tput setaf 2); yellow=$(tput setaf 3); bold=$(tput bold) ; jiacu=${normal}${bold}
-blue=$(tput setaf 4) ; magenta=$(tput setaf 5); cyan=$(tput setaf 6) ; white=$(tput setaf 7) ;  normal=$(tput sgr0)
-on_black=$(tput setab 0); on_red=$(tput setab 1)    ; on_green=$(tput setab 2); on_yellow=$(tput setab 3)
-on_blue=$(tput setab 4) ; on_magenta=$(tput setab 5); on_cyan=$(tput setab 6) ; on_white=$(tput setab 7)
-shanshuo=$(tput blink)  ; wuguangbiao=$(tput civis)    ; guangbiao=$(tput cnorm)
-underline=$(tput smul)  ; reset_underline=$(tput rmul) ; dim=$(tput dim)
-standout=$(tput smso)   ; reset_standout=$(tput rmso)  ; title=${standout}
-baihuangse=${white}${on_yellow}; bailanse=${white}${on_blue} ; bailvse=${white}${on_green}
-baiqingse=${white}${on_cyan}   ; baihongse=${white}${on_red} ; baizise=${white}${on_magenta}
-heibaise=${black}${on_white}   ; heihuangse=${on_yellow}${black}
+  black=$(tput setaf 0)
+  red=$(tput setaf 1)
+  green=$(tput setaf 2)
+  yellow=$(tput setaf 3)
+  bold=$(tput bold)
+  jiacu=${normal}${bold}
+  blue=$(tput setaf 4)
+  magenta=$(tput setaf 5)
+  cyan=$(tput setaf 6)
+  white=$(tput setaf 7)
+  normal=$(tput sgr0)
+  on_black=$(tput setab 0)
+  on_red=$(tput setab 1)
+  on_green=$(tput setab 2)
+  on_yellow=$(tput setab 3)
+  on_blue=$(tput setab 4)
+  on_magenta=$(tput setab 5)
+  on_cyan=$(tput setab 6)
+  on_white=$(tput setab 7)
+  shanshuo=$(tput blink)
+  wuguangbiao=$(tput civis)
+  guangbiao=$(tput cnorm)
+  underline=$(tput smul)
+  reset_underline=$(tput rmul)
+  dim=$(tput dim)
+  standout=$(tput smso)
+  reset_standout=$(tput rmso)
+  title=${standout}
+  baihuangse=${white}${on_yellow}
+  bailanse=${white}${on_blue}
+  bailvse=${white}${on_green}
+  baiqingse=${white}${on_cyan}
+  baihongse=${white}${on_red}
+  baizise=${white}${on_magenta}
+  heibaise=${black}${on_white}
+  heihuangse=${on_yellow}${black}
 }
 
 ################## 检查root权限 ##################
-check_root(){
-	if [[ $EUID -ne 0 ]]; then
-        echo -e "${Red}Error:本脚本必须root账号运行，请切换root用户后再执行本脚本!${END}"
-        exit 1
+check_root() {
+  if [[ $EUID -ne 0 ]]; then
+    echo -e "${Red}Error:本脚本必须root账号运行，请切换root用户后再执行本脚本!${END}"
+    exit 1
   fi
 }
 
 ################## 检查VPS架构 ##################
-check_vz(){
+check_vz() {
   if [[ -d "/proc/vz" ]]; then
     echo -e "${Red}Error:您的VPS是openVZ架构，臣妾办不到啊!${END}"
     exit 1
@@ -39,15 +65,15 @@ check_vz(){
 }
 
 ################## 检查fuse安装情况 ##################
-check_fuse(){
+check_fuse() {
   if [ ! -f /etc/fuse.conf ]; then
     echo -e "$curr_date 未找到fuse包.正在安装..."
     sleep 1s
     apt-get install fuse -y
     #if [[ "${release}" = "centos" ]];then
-      #yum install fuse -y
-      #elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]];then
-      #apt-get install fuse -y
+    #yum install fuse -y
+    #elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]];then
+    #apt-get install fuse -y
     #fi
     echo
     echo -e "$curr_date fuse安装完成"
@@ -55,7 +81,7 @@ check_fuse(){
   fi
 }
 ################## 检查rclone&fclone安装情况 ##################
-check_rclone(){
+check_rclone() {
   if [ ! -f ~/.config/rclone/rclone.conf ]; then
     bash <(curl -L -s https://rclone.org/install.sh)
     echo -e "$curr_date ${red}[Error]已为你安装了rclone,但~/.config/rclone/rclone.conf仍为空，请你创建remote后再运行本脚本${normal}"

@@ -12,17 +12,17 @@
 #前置变量
 Green="\033[32m"
 Font="\033[0m"
-Red="\033[31m" 
+Red="\033[31m"
 
 #检查root权限
 if [[ $EUID -ne 0 ]]; then
-echo -e "${Red}Error:This script must be run as root!${Font}"
-exit 1
+  echo -e "${Red}Error:This script must be run as root!${Font}"
+  exit 1
 fi
 #检测ovz
 if [[ -d "/proc/vz" ]]; then
-echo -e "${Red}Your VPS is based on OpenVZ，not supported!${Font}"
-exit 1
+  echo -e "${Red}Your VPS is based on OpenVZ，not supported!${Font}"
+  exit 1
 fi
 #软件更新
 echo 第一步：软件及软件源更新
@@ -33,75 +33,75 @@ apt-get -y install build-essential #yum groupinstall "Development Tools"
 apt-get -y install git curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo python3 python3-pip ntpdate manpages-zh python3-distutils screenfetch build-essential libncurses5-dev libpcap-dev fonts-powerline
 #设置时区
 echo 第三步：设置上海市区，时间同步
-ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone	
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" >/etc/timezone
 #同步时间
 ntpdate cn.ntp.org.cn
 #设置系统语言
 echo 第四步：设置系统语言
-setlanguage(){
+setlanguage() {
   set +e
   if [[ ! -d /root/.trojan/ ]]; then
     mkdir /root/.trojan/
     mkdir /etc/certs/
   fi
   if [[ -f /root/.trojan/language.json ]]; then
-    language="$( jq -r '.language' "/root/.trojan/language.json" )"
+    language="$(jq -r '.language' "/root/.trojan/language.json")"
   fi
   while [[ -z $language ]]; do
-  export LANGUAGE="C.UTF-8"
-  export LANG="C.UTF-8"
-  export LC_ALL="C.UTF-8"
-  if (whiptail --title "System Language Setting" --yes-button "中文" --no-button "English" --yesno "使用中文或英文(Use Chinese or English)?" 8 68); then
-  chattr -i /etc/locale.gen
-  cat > '/etc/locale.gen' << EOF
+    export LANGUAGE="C.UTF-8"
+    export LANG="C.UTF-8"
+    export LC_ALL="C.UTF-8"
+    if (whiptail --title "System Language Setting" --yes-button "中文" --no-button "English" --yesno "使用中文或英文(Use Chinese or English)?" 8 68); then
+      chattr -i /etc/locale.gen
+      cat >'/etc/locale.gen' <<EOF
 zh_TW.UTF-8 UTF-8
 en_US.UTF-8 UTF-8
 EOF
-language="cn"
-locale-gen
-update-locale
-chattr -i /etc/default/locale
-  cat > '/etc/default/locale' << EOF
+      language="cn"
+      locale-gen
+      update-locale
+      chattr -i /etc/default/locale
+      cat >'/etc/default/locale' <<EOF
 LANGUAGE="zh_TW.UTF-8"
 LANG="zh_TW.UTF-8"
 LC_ALL="zh_TW.UTF-8"
 EOF
-  cat > '/root/.trojan/language.json' << EOF
+      cat >'/root/.trojan/language.json' <<EOF
 {
   "language": "$language"
 }
 EOF
-  else
-  chattr -i /etc/locale.gen
-  cat > '/etc/locale.gen' << EOF
+    else
+      chattr -i /etc/locale.gen
+      cat >'/etc/locale.gen' <<EOF
 zh_TW.UTF-8 UTF-8
 en_US.UTF-8 UTF-8
 EOF
-language="en"
-locale-gen
-update-locale
-chattr -i /etc/default/locale
-  cat > '/etc/default/locale' << EOF
+      language="en"
+      locale-gen
+      update-locale
+      chattr -i /etc/default/locale
+      cat >'/etc/default/locale' <<EOF
 LANGUAGE="en_US.UTF-8"
 LANG="en_US.UTF-8"
 LC_ALL="en_US.UTF-8"
 EOF
-  cat > '/root/.trojan/language.json' << EOF
+      cat >'/root/.trojan/language.json' <<EOF
 {
   "language": "$language"
 }
 EOF
-fi
-done
-if [[ $language == "cn" ]]; then
-export LANGUAGE="zh_TW.UTF-8"
-export LANG="zh_TW.UTF-8"
-export LC_ALL="zh_TW.UTF-8"
+    fi
+  done
+  if [[ $language == "cn" ]]; then
+    export LANGUAGE="zh_TW.UTF-8"
+    export LANG="zh_TW.UTF-8"
+    export LC_ALL="zh_TW.UTF-8"
   else
-export LANGUAGE="en_US.UTF-8"
-export LANG="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-fi
+    export LANGUAGE="en_US.UTF-8"
+    export LANG="en_US.UTF-8"
+    export LC_ALL="en_US.UTF-8"
+  fi
 }
 
 #设置颜色
@@ -137,13 +137,12 @@ sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc && source ~/.zshrc #设置�
 git clone https://github.com/zsh-users/zsh-syntax-highlighting $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-completions
-[ -z "`grep "autoload -U compinit && compinit" ~/.zshrc`" ] && echo "autoload -U compinit && compinit" >> ~/.zshrc
+[ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >>~/.zshrc
 sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
-echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
+echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >>/root/.zshrc
 source ~/.zshrc
 chsh -s zsh
 touch ~/.hushlogin #不显示提示语
-
 
 screenfetch
 

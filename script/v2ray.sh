@@ -857,7 +857,7 @@ config() {
 	# 	# 	systemctl start iptables
 	# 	# 	systemctl start ip6tables
 	# fi
-	
+
 	# systemctl restart v2ray
 	do_service restart v2ray
 	backup_config
