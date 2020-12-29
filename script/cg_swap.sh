@@ -1,5 +1,4 @@
 #!/bin/bash
-cat << EOF
 #=============================================================
 # https://github.com/cgkings/script-store
 # File Name: cg_swap.sh
@@ -10,7 +9,7 @@ cat << EOF
 # 感谢wuhuai2020、moerats、github众多作者，我只是整合代码
 # Version: 1.0
 #=============================================================
-EOF
+
 ################## 前置变量 ##################
 source <(wget -qO- https://git.io/cg_script_option)
 setcolor
@@ -116,16 +115,20 @@ swap_help() {
 ################## 开  始  菜  单 ##################
 swap_menu() {
   clear
-  echo -e "———————————————————————————————————————"
-  echo "当前SWAP：$totalswap MB"
-  echo -e "${green}swap一键脚本 by cgkings${normal}"
-  echo -e "${green}1、全自动添加swap[默认值][内存*3，最小设置3G]${normal}"
-  echo -e "${green}2、自定义添加swap${normal}"
-  echo -e "${green}3、删除swap${normal}"
-  echo -e "${green}4、退出${normal}"
-  echo -e "${green}注：输入2、3、4外任意字符，默认选1.自动添加${normal}"
-  echo -e "${green}感谢wuhuai2020、moerats、github众多作者，我只是整合代码${normal}"
-  echo -e "———————————————————————————————————————"
+  printf "${green}"
+  cat <<EOF
+  —————————————————————————————————————————————————————
+  当前SWAP：$totalswap MB"
+  swap一键脚本 by cgkings
+  1、全自动添加swap[默认值][内存*3，最小设置3G]
+  2、自定义添加swap
+  3、删除swap
+  4、退出
+  注：输入2、3、4外任意字符，默认选1.自动添加
+  感谢wuhuai2020、moerats、github众多作者，我只是整合代码
+  —————————————————————————————————————————————————————
+EOF
+  printf "${normal}"
   read -n1 -p "请输入数字 [1-4]:" num
   case "$num" in
   1)
