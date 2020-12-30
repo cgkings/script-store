@@ -19,7 +19,6 @@ check_vz
 
 ################## 选择remot ##################[done]
 remote_chose() {
-  check_rclone
   remote_list=$(sed -n "/\[.*\]/p" ~/.config/rclone/rclone.conf | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}')
   echo -e "   本地已配置remote列表:"
   echo -e "${red} +-------------------------+"
@@ -311,6 +310,7 @@ mount_menu() {
 }
 
 ################## 执  行  命  令 ##################
+check_rclone
 if [ $# == 0 ]; then
   mount_menu
   if [ $# -le 3 ]; then

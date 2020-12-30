@@ -85,6 +85,7 @@ check_rclone() {
   if [ ! -f ~/.config/rclone/rclone.conf ]; then
     bash <(curl -L -s https://rclone.org/install.sh)
     echo -e "$curr_date ${red}[Error]已为你安装了rclone,但~/.config/rclone/rclone.conf仍为空，请你创建remote后再运行本脚本${normal}"
+    exit
   fi
   if [ ! -f /usr/bin/fclone ]; then
     wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip
