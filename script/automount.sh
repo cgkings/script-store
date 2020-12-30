@@ -142,7 +142,9 @@ mount_del() {
   check_fuse
   if [ -z $mount_path ]; then
     read -p "请输入需要删除的挂载目录路径:" mount_path
+    if [ -z ${mount_path_name} ]; then
     mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
+    fi
   fi  
   echo -e "$curr_date [Info]正在执行fusermount -qzu "${mount_path}"..."
   fusermount -qzu "${mount_path}"
