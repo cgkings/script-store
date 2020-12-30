@@ -114,20 +114,18 @@ drive_change() {
 dir_check() {
   if [[ "$mount_path" =~ "/" ]]; then
     if [ ! -d "$mount_path" ]; then
-      echo -e "$curr_date ${mount_path} 不存在，正在创建..."
+      echo -e "$curr_date [警告]${mount_path} 不存在，正在创建..."
       mkdir -p 755 ${mount_path}
       sleep 1s
-      echo
-      echo -e "$curr_date 创建完成！"
+      echo -e "$curr_date [Info]创建完成！"
     fi
   else
     mount_path="/home/$mount_path"
     if [ ! -d "$mount_path" ]; then
-      echo -e "$curr_date ${mount_path} 不存在，正在创建..."
+      echo -e "$curr_date [警告]${mount_path} 不存在，正在创建..."
       mkdir -p 755 ${mount_path}
       sleep 1s
-      echo
-      echo -e "$curr_date 创建完成！"
+      echo -e "$curr_date [Info]创建完成！"
     fi
   fi
   mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
@@ -143,6 +141,9 @@ dir_chose() {
 ################## 删除服务 ##################
 mount_del() {
   check_fuse
+  if [ -z $mount_path ]; then
+    read -p "请输入需要删除的挂载目录路径:" mount_path
+  fi  
   echo -e "$curr_date [Info]正在执行fusermount -qzu "${mount_path}"..."
   fusermount -qzu "${mount_path}"
   echo -e "$curr_date [Info]fusermount -qzu "${mount_path}"[done]"
