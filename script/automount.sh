@@ -145,7 +145,7 @@ mount_del() {
   fi
   if [ -z ${mount_path_name} ]; then
     mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
-  fi  
+  fi
   echo -e "$curr_date [Info]正在执行fusermount -qzu "${mount_path}"..."
   fusermount -qzu "${mount_path}"
   echo -e "$curr_date [Info]fusermount -qzu "${mount_path}"[done]"
