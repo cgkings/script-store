@@ -313,9 +313,6 @@ mount_menu() {
 check_rclone
 if [ $# == 0 ]; then
   mount_menu
-  if [ $# -le 3 ]; then
-    mount_help
-  fi
 else
   mount_remote=$2
   mount_path=$3
@@ -367,6 +364,10 @@ else
     echo
     dir_check
     mount_del
+    ;;
+  H | h)
+    echo
+    mount_help
     ;;
   *)
     echo
