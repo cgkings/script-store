@@ -311,7 +311,7 @@ mount_menu() {
 
 ################## 执  行  命  令 ##################
 check_rclone
-if [ $# == 0 ]; then
+if [ -z $1 ]; then
   mount_menu
 else
   mount_remote=$2
