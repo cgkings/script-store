@@ -140,7 +140,7 @@ dir_chose() {
 ################## 删除服务 ##################
 mount_del() {
   check_fuse
-  if [ -z $mount_path ]; then
+  if [ -z ${mount_path} ]; then
     read -p "请输入需要删除的挂载目录路径:" mount_path
     if [ -z ${mount_path_name} ]; then
     mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
