@@ -233,9 +233,7 @@ EOF
   echo -e "$curr_date [Info] 添加开机启动..."
   systemctl enable rclone-${mount_path_name}.service &>/dev/null
   if [[ $? ]]; then
-    echo
-    echo -e "[Info] 已为网盘 ${red}${mount_path_name}${normal} 创建服务 ${red}reclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
-    echo
+    echo -e "$curr_date [Info] 已为网盘 ${red}${mount_path_name}${normal} 创建服务 ${red}reclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
     sleep 2s
   else
     echo
