@@ -151,7 +151,7 @@ mount_del() {
   echo -e "$curr_date [Info]fusermount -qzu "${mount_path}"[done]"
   echo -e "$curr_date [Info]正在检查服务是否存在..."
   if [ -f /lib/systemd/system/rclone-${mount_path_name}.service ]; then
-    echo -e "$curr_date [Info]找到服务 \"${red}rclone-${mount_path_name}.service${normal}\"正在删除，请稍等..."
+    echo -e "$curr_date [Info]找到服务 "${red}rclone-${mount_path_name}.service${normal}"正在删除，请稍等..."
     systemctl stop rclone-${mount_path_name}.service &>/dev/null
     systemctl disable rclone-${mount_path_name}.service &>/dev/null
     rm /lib/systemd/system/rclone-${mount_path_name}.service &>/dev/null
@@ -364,7 +364,6 @@ else
     ;;
   D | d)
     echo
-    dir_check
     mount_del
     ;;
   H | h)
