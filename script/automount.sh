@@ -46,7 +46,6 @@ remote_chose() {
     echo
     echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
     read -n1 -p "是否要修改挂载盘[Y/n],除输入Y|y默认n ：" result
-    echo
     result=${result:-n}
     case ${result} in
     Y | y)
