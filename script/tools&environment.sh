@@ -9,125 +9,81 @@
 # Version: 1.0
 #=============================================================
 
-#前置变量
-Green="\033[32m"
-Font="\033[0m"
-Red="\033[31m"
+################## 前置变量 ##################
+source <(wget -qO- https://git.io/cg_script_option)
+setcolor
+check_root
+check_vz
 
-#检查root权限
-if [[ $EUID -ne 0 ]]; then
-  echo -e "${Red}Error:This script must be run as root!${Font}"
-  exit 1
+################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
+initialization() {
+  #设置颜色
+  cat >>/root/.bashrc <<EOF
+if [ "$TERM" == "xterm" ]; then
+  export TERM=xterm-256color
 fi
-#检测ovz
-if [[ -d "/proc/vz" ]]; then
-  echo -e "${Red}Your VPS is based on OpenVZ，not supported!${Font}"
-  exit 1
-fi
-#软件更新
-echo 第一步：软件及软件源更新
-apt-get update --fix-missing -y && apt upgrade -y
-#系统常用
-echo 第二步：安装常用软件
-apt-get -y install build-essential #yum groupinstall "Development Tools"
-apt-get -y install git curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo python3 python3-pip ntpdate manpages-zh python3-distutils screenfetch build-essential libncurses5-dev libpcap-dev fonts-powerline
-#设置时区
-echo 第三步：设置上海市区，时间同步
-ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" >/etc/timezone
-#同步时间
-ntpdate cn.ntp.org.cn
-#设置系统语言
-echo 第四步：设置系统语言
-setlanguage() {
-  set +e
-  if [[ ! -d /root/.trojan/ ]]; then
-    mkdir /root/.trojan/
-    mkdir /etc/certs/
-  fi
-  if [[ -f /root/.trojan/language.json ]]; then
-    language="$(jq -r '.language' "/root/.trojan/language.json")"
-  fi
-  while [[ -z $language ]]; do
-    export LANGUAGE="C.UTF-8"
-    export LANG="C.UTF-8"
-    export LC_ALL="C.UTF-8"
-    if (whiptail --title "System Language Setting" --yes-button "中文" --no-button "English" --yesno "使用中文或英文(Use Chinese or English)?" 8 68); then
-      chattr -i /etc/locale.gen
-      cat >'/etc/locale.gen' <<EOF
-zh_TW.UTF-8 UTF-8
-en_US.UTF-8 UTF-8
 EOF
-      language="cn"
-      locale-gen
-      update-locale
-      chattr -i /etc/default/locale
-      cat >'/etc/default/locale' <<EOF
-LANGUAGE="zh_TW.UTF-8"
-LANG="zh_TW.UTF-8"
-LC_ALL="zh_TW.UTF-8"
-EOF
-      cat >'/root/.trojan/language.json' <<EOF
-{
-  "language": "$language"
-}
-EOF
-    else
-      chattr -i /etc/locale.gen
-      cat >'/etc/locale.gen' <<EOF
-zh_TW.UTF-8 UTF-8
-en_US.UTF-8 UTF-8
-EOF
-      language="en"
-      locale-gen
-      update-locale
-      chattr -i /etc/default/locale
-      cat >'/etc/default/locale' <<EOF
-LANGUAGE="en_US.UTF-8"
-LANG="en_US.UTF-8"
-LC_ALL="en_US.UTF-8"
-EOF
-      cat >'/root/.trojan/language.json' <<EOF
-{
-  "language": "$language"
-}
-EOF
-    fi
-  done
-  if [[ $language == "cn" ]]; then
-    export LANGUAGE="zh_TW.UTF-8"
-    export LANG="zh_TW.UTF-8"
-    export LC_ALL="zh_TW.UTF-8"
+  source ~/.bashrc
+  if [ $(tput colors) == 256 ]; then
+    echo -e "设置256色成功" >>install_logo.txt
   else
-    export LANGUAGE="en_US.UTF-8"
-    export LANG="en_US.UTF-8"
-    export LC_ALL="en_US.UTF-8"
+    echo -e "设置256色失败" >>install_logo.txt
+  fi
+  #设置时区
+  ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" >/etc/timezone
+  echo -e "设置时区为Asia/Shanghai成功" >>install_logo.txt
+  ntpdate cn.ntp.org.cn #同步时间
+  #设置语言
+  apt-get install -y locales
+  echo "LANG=en_US.UTF-8" >/etc/default/locale
+  cat >/etc/locale.gen <<EOF
+  en_US.UTF-8 UTF-8
+  zh_CN.UTF-8 UTF-8
+EOF
+  locale-gen
+  echo -e "设置语言为en_US.UTF-8成功" >>install_logo.txt
+  #file-max设置，解决too many open files问题
+  cat >>/etc/sysctl.conf <<EOF
+fs.file-max = 6553500
+EOF
+  sysctl -p
+  cat >>/etc/security/limits.conf <<EOF
+* soft memlock unlimited
+* hard memlock unlimited
+* soft nofile 65535
+* hard nofile 65535
+* soft nproc 65535
+* hard nproc 65535
+
+root soft memlock unlimited
+root hard memlock unlimited
+root soft nofile 65535
+root hard nofile 65535
+root soft nproc 65535
+root hard nproc 65535
+EOF
+  cat >>/etc/pam.d/common-session <<EOF
+session required pam_limits.so
+EOF
+  if [ $(ulimit -n) == 65535 ]; then
+    echo -e "file_max 修改成功" >>install_logo.txt
+  else
+    echo -e "file_max 修改失败" >>install_logo.txt
   fi
 }
 
-#设置颜色
-echo 第五步：设置系统颜色显示
-echo=echo
-for cmd in echo /bin/echo; do
-  $cmd >/dev/null 2>&1 || continue
-  if ! $cmd -e "" | grep -qE '^-e'; then
-    echo=$cmd
-    break
-  fi
-done
-CSI=$($echo -e "\033[")
-CEND="${CSI}0m"
-CDGREEN="${CSI}32m"
-CRED="${CSI}1;31m"
-CGREEN="${CSI}1;32m"
-CYELLOW="${CSI}1;33m"
-CBLUE="${CSI}1;34m"
-CMAGENTA="${CSI}1;35m"
-CCYAN="${CSI}1;36m"
-CSUCCESS="$CDGREEN"
-CFAILURE="$CRED"
-CQUESTION="$CMAGENTA"
-CWARNING="$CYELLOW"
-CMSG="$CCYAN"
+################## 安装常用软件 ##################
+Common_software(){
+  apt-get update --fix-missing -y && apt upgrade -y
+  apt-get -y install build-essential #yum groupinstall "Development Tools"
+  
+  apt-get -y install git curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo python3 python3-pip ntpdate manpages-zh python3-distutils screenfetch build-essential libncurses5-dev libpcap-dev fonts-powerline
+  
+
+
+
+}
+
 
 #安装zsh
 echo 第六步：安装oh my zsh（装逼神器）
