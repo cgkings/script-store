@@ -19,8 +19,8 @@ check_vz
 initialization() {
   #安装常用软件
   apt-get update --fix-missing -y && apt upgrade -y
-  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar
-  echo -e "常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq" >>install_logo.txt
+  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core
+  echo -e "常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core" >>install_logo.txt
   #设置颜色
   cat >>/root/.bashrc <<EOF
 if [ "$TERM" == "xterm" ]; then
@@ -77,7 +77,7 @@ EOF
 }
 
 ################## 安装开发各种环境 ##################
-Common_environment(){
+install_environment() {
   #安装基础开发环境
   apt-get update --fix-missing -y && apt upgrade -y
   apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev #yum groupinstall "Development Tools"
@@ -87,39 +87,64 @@ Common_environment(){
   python3 -m pip install --upgrade pip
   pip install --upgrade setuptools
   pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
+  echo -e "python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >>install_logo.txt
   #安装nodejs环境
   apt-get -y install nodejs npm
-  npm install -g yarn
+  npm install -g yarn n --force
+  npm install npm@latest -g #更新npm
+  #n stable  #更新node
   yarn set version latest
+  echo -e "nodejs&npm已安装,yarn&n已安装" >>install_logo.txt
   #安装go环境
   wget -q https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
-  tar -zxf /root/go.tar.gz -C /home
-  echo "export PATH=$PATH:/home/go/bin" >> /etc/profile
-  source /etc/profile
-  go version
-
-
-
-
-
+  tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
+  cat >>/etc/profile <<EOF
+export PATH=$PATH:/home/go/bin
+export GOROOT=/home/go
+export GOPATH=/home/go/gopath
+EOF
+  echo -e "go1.15.6环境已安装,go库路径：/home/go/gopath" >>install_logo.txt
   apt autoremove -y
+  echo -e "python/nodejs/go环境已安装，建议重启生效"
 }
 
+################## 安装装逼神器 oh my zsh & on my tmux ##################
+install_beautify() {
+  #安装oh my zsh
+  chsh -s /usr/bin/zsh
+  cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
+  sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc #设置主题
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting /root/.oh-my-zsh/plugins/zsh-syntax-highlighting
+  git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/plugins/zsh-autosuggestions
+  git clone https://github.com/zsh-users/zsh-completions /root/.oh-my-zsh/plugins/zsh-completions
+  [ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >>~/.zshrc
+  sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
+  echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >>/root/.zshrc
+  source ~/.zshrc
+  chsh -s zsh
+  touch ~/.hushlogin #不显示开机提示语
+  echo -e "装逼神器之oh my zsh 已安装" >>install_logo.txt
+  #安装oh my tmux
+  cd /root && git clone https://github.com/gpakosz/.tmux.git
+  ln -s -f .tmux/.tmux.conf
+  cp .tmux/.tmux.conf.local .
+  echo -e "装逼神器之oh my tmux 已安装" >>install_logo.txt
+}
 
-#安装zsh
-echo 第六步：安装oh my zsh（装逼神器）
-chsh -s /bin/zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc && source ~/.zshrc #设置主题
-git clone https://github.com/zsh-users/zsh-syntax-highlighting $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-completions
-[ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >>~/.zshrc
-sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
-echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >>/root/.zshrc
-source ~/.zshrc
-chsh -s zsh
-touch ~/.hushlogin #不显示提示语
+################## 安装rclone/fclone ##################[未完成]
+install_rclone() {
+  check_rclone
+  read -p "即将为你解压sa文件夹及rclone conf文件，请输入解压密码：" zip_password
+  wget -qN https:// -O /root/sa1.zip && unzip -qo /root/sa1.zip -d /root -P $zip_password && rm -f /root/sa1.zip  
+  wget -qN https:// -O /root/sa2.zip && unzip -qo /root/sa2.zip -d /root -P $zip_password && rm -f /root/sa2.zip  
+  wget -qN https:// -O /root/rclone_conf.zip && unzip -qo /root/rclone_conf.zip -d /root/.config/rclone -P $zip_password && rm -f /root/rclone_conf.zip  
+  echo -e "rclone&fclone已安装,sa及conf文件已下载解压" >>install_logo.txt
+}
+
+################## buyvm挂载硬盘 ##################
+buyvm_disk() {
+  
+}
 
 screenfetch
 
