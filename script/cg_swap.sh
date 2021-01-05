@@ -41,9 +41,9 @@ make-swapfile() {
 auto_swap() {
   if [ -z "$1" ]; then
     if [ $totalmem -le 1024 ]; then
-      swapsize="3072MB"
+      swapsize="2048MB"
     elif [ $totalmem -gt 1024 ]; then
-      swapsize="$(($totalmem * 3))MB"
+      swapsize="$(($totalmem * 2))MB"
     fi
   else
     swapsize="$1MB"
@@ -122,7 +122,7 @@ swap_menu() {
 —————————————————————————————————————————————————————————
   当前SWAP：$totalswap MB"
   swap一键脚本 by cgkings
-  1、全自动添加swap[默认值][内存*3，最小设置3G]
+  1、全自动添加swap[默认值][内存*2，最小设置2G]
   2、自定义添加swap
   3、删除swap
   4、退出
