@@ -16,6 +16,8 @@ curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 setcolor
 check_root
 check_vz
+#set -e #异常则退出整个脚本，避免错误累加
+#set -x #脚本调试，逐行执行并输出执行的脚本命令行
 
 ################## 选择remot ##################[done]
 remote_chose() {
