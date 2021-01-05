@@ -17,6 +17,10 @@ check_vz
 
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
 initialization() {
+  #安装常用软件
+  apt-get update --fix-missing -y && apt upgrade -y
+  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar
+  echo -e "常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq" >>install_logo.txt
   #设置颜色
   cat >>/root/.bashrc <<EOF
 if [ "$TERM" == "xterm" ]; then
@@ -72,16 +76,33 @@ EOF
   fi
 }
 
-################## 安装常用软件 ##################
-Common_software(){
+################## 安装开发各种环境 ##################
+Common_environment(){
+  #安装基础开发环境
   apt-get update --fix-missing -y && apt upgrade -y
-  apt-get -y install build-essential #yum groupinstall "Development Tools"
-  
-  apt-get -y install git curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo python3 python3-pip ntpdate manpages-zh python3-distutils screenfetch build-essential libncurses5-dev libpcap-dev fonts-powerline
-  
+  apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev #yum groupinstall "Development Tools"
+  echo -e "基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >>install_logo.txt
+  #安装python环境
+  apt-get -y install python python3 python3-pip python3-distutils
+  python3 -m pip install --upgrade pip
+  pip install --upgrade setuptools
+  pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
+  #安装nodejs环境
+  apt-get -y install nodejs npm
+  npm install -g yarn
+  yarn set version latest
+  #安装go环境
+  wget -q https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
+  tar -zxf /root/go.tar.gz -C /home
+  echo "export PATH=$PATH:/home/go/bin" >> /etc/profile
+  source /etc/profile
+  go version
 
 
 
+
+
+  apt autoremove -y
 }
 
 
