@@ -277,14 +277,13 @@ ${green}${bold}B4、${normal}搭建shellbot，TG控制vps下载、转存[包含�
 ${blue}${bold}————————————————————————————————网 络 相 关—————————————————————————————————————${normal}
 ${green}${bold}C1、${normal}BBR一键加速[转自-忘记抄的谁的了]
 ${green}${bold}C2、${normal}一键搭建V2ray[转自233boy]
-${green}${bold}C3、${normal}LNMP 一键脚本[转自-lnmp.org]
-${green}${bold}C4、${normal}宝塔面板一键脚本[转自-laowangblog.com]
+${green}${bold}C3、${normal}宝塔面板一键脚本[转自-laowangblog.com]
 ${blue}${bold}————————————————————————————————EMBY  相 关—————————————————————————————————————${normal}
 ${green}${bold}D1、${normal}自动网盘挂载脚本[支持命令参数模式]
 ${green}${bold}D2、${normal}安装配置AVDC刮削工具[转自yoshiko2]
 ${green}${bold}D3、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
-${green}${bold}al、${normal}新机安装[A1-A4,B1-B4,C3,D2]
+${green}${bold}al、${normal}新机安装[A1-A4,B1-B4,D2]
 ${green}${bold}qq、${normal}退出脚本
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
 EOF
@@ -350,33 +349,6 @@ EOF
       ;;
     C3 | c3)
       echo
-      tmux new -s lnmp -d
-      tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
-      echo -e "${curr_date} [info] 您使用了lnmp一键包！
-安装：mysql5.5(数据库root密码：lnmp.org) & php7.4 
-1、Nginx + MySQL + PHP 的默认安装目录如下：
-   Nginx 目录: /usr/local/nginx/
-   MySQL 目录 : /usr/local/mysql/
-   MySQL 数据库所在目录：/usr/local/mysql/var/
-   PHP 目录 : /usr/local/php/
-   默认网站目录 : /home/wwwroot/default/
-   Nginx 日志目录：/home/wwwlogs/
-2、LNMP 默认的配置文件目录如下：
-   Nginx 主配置(默认虚拟主机)文件：/usr/local/nginx/conf/nginx.conf
-   添加的虚拟主机配置文件：/usr/local/nginx/conf/vhost/域名.conf
-   MySQL 配置文件：/etc/my.cnf
-   PHP 配置文件：/usr/local/php/etc/php.ini
-   php-fpm 配置文件：/usr/local/php/etc/php-fpm.conf
-3、一般维护站点需要用到的命令如下：
-重启 nginx/mysql/php：lnmp nginx/mysql/php restart
-重启所有：lnmp restart
-添加站点：lnmp vhost add
-添加数据库：lnmp database add
-查看帮助：lnmp" >> /root/install_log.txt
-      menu_go_on
-      ;;
-    C4 | c4)
-      echo
       bash <(curl -sL git.io/cg_baota)
       echo -e "${curr_date} [info] 您安装了宝塔面板！" >> /root/install_log.txt
       menu_go_on
@@ -413,29 +385,6 @@ EOF
       install_aria2
       bash <(curl -sL git.io/cg_flexget) 20
       echo -e "${curr_date} [info] 您安装配置了RSSHUB和flexget！" >> /root/install_log.txt
-      tmux new -s lnmp -d
-      tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
-      echo -e "${curr_date} [info] 您使用了lnmp一键包！
-安装：mysql5.5(数据库root密码：lnmp.org) & php7.4 
-1、Nginx + MySQL + PHP 的默认安装目录如下：
-   Nginx 目录: /usr/local/nginx/
-   MySQL 目录 : /usr/local/mysql/
-   MySQL 数据库所在目录：/usr/local/mysql/var/
-   PHP 目录 : /usr/local/php/
-   默认网站目录 : /home/wwwroot/default/
-   Nginx 日志目录：/home/wwwlogs/
-2、LNMP 默认的配置文件目录如下：
-   Nginx 主配置(默认虚拟主机)文件：/usr/local/nginx/conf/nginx.conf
-   添加的虚拟主机配置文件：/usr/local/nginx/conf/vhost/域名.conf
-   MySQL 配置文件：/etc/my.cnf
-   PHP 配置文件：/usr/local/php/etc/php.ini
-   php-fpm 配置文件：/usr/local/php/etc/php-fpm.conf
-3、一般维护站点需要用到的命令如下：
-重启 nginx/mysql/php：lnmp nginx/mysql/php restart
-重启所有：lnmp restart
-添加站点：lnmp vhost add
-添加数据库：lnmp database add
-查看帮助：lnmp" >> /root/install_log.txt
       bash <(curl -sL git.io/cg_avdc)
       echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
             这个小脚本不带参数则帮您安装AVDC
