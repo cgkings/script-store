@@ -256,7 +256,7 @@ menu_go_on() {
 main_menu() {
   clear
   cat << EOF
-${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统     by cgkings                 ${normal}
+${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
 ${blue}${bold}————————————————————————————————系 统 相 关—————————————————————————————————————${normal}
 ${green}${bold}A1、${normal}系统初始化设置[颜色/时区/语言/maxfile/常用工具]
 ${green}${bold}A2、${normal}安装各种开发环境[python/nodejs/go]
