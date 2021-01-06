@@ -27,3 +27,5 @@ wget -qN https://raw.githubusercontent.com/cgkings/script-store/master/config/co
 
 ################## 搭建RSSHUB ##################
 
+mkdir -p /home/RSSHub && git clone https://github.com/cgkings/RSSHub /home/RSSHub
+cd /home/RSSHub && npm install
