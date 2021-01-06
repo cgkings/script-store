@@ -276,7 +276,7 @@ ${green}${bold}C3、${normal}LNMP 一键脚本[转自-lnmp.org]
 ${green}${bold}C4、${normal}宝塔面板一键脚本[转自-laowangblog.com]
 ${blue}${bold}————————————————————————————————EMBY  相 关—————————————————————————————————————${normal}
 ${green}${bold}D1、${normal}自动网盘挂载脚本[支持命令参数模式]
-${green}${bold}D2、${normal}安装配置AVDC刮削工具[转自yoshiko2]                                     #未完成
+${green}${bold}D2、${normal}安装配置AVDC刮削工具[转自yoshiko2]
 ${green}${bold}D3、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
 ${green}${bold}qq、${normal}退出脚本
@@ -385,9 +385,11 @@ EOF
       ;;
     D2 | d2)
       echo
-      
-      
-
+      bash <(curl -sL git.io/cg_avdc)
+      echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
+            这个小脚本不带参数则帮您安装AVDC
+            带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
+      echo -e "${curr_date} [info] 您已安装AVDC！" >> /root/install_logo.txt
       menu_go_on
       ;;
     D3 | d3)
