@@ -119,7 +119,7 @@ EOF
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
 install_beautify() {
   #安装oh my zsh
-  cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
+  cd /root && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
   sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc #设置主题
   git clone https://github.com/zsh-users/zsh-syntax-highlighting /root/.oh-my-zsh/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/plugins/zsh-autosuggestions
@@ -230,7 +230,7 @@ EOF
   echo -e "$curr_date ${red}[Info]您选择的remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download"
   service aria2 restart
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
-  if [[ "$aria2_install_status" == "success" ]]; then
+  if [[ "$aria2_install_status" == 'success' ]]; then
     echo -e "${curr_date} [info] aria2自动上传已安装配置成功！
     本地下载目录为：/home/download
     remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download" >> /root/install_log.txt
