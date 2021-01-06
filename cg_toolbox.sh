@@ -42,7 +42,7 @@ EOF
   echo -e "${curr_date} [info] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   ntpdate cn.ntp.org.cn #同步时间
   #设置语言
-  apt-get install -y locales
+  sudo apt-get install -y locales
   echo "LANG=en_US.UTF-8" > /etc/default/locale
   cat > /etc/locale.gen << EOF
   
@@ -87,26 +87,27 @@ EOF
 ################## 安装各种开发环境 ##################
 install_environment() {
   #安装基础开发环境
-  apt-get update --fix-missing -y && apt upgrade -y
-  apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev  #yum groupinstall "Development Tools"
+  sudo apt-get update --fix-missing -y && apt upgrade -y
+  sudo apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev  #yum groupinstall "Development Tools"
   echo -e "${curr_date} [info] 基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >> /root/install_log.txt
   #安装python环境
-  apt-get -y install python python3 python3-pip python3-distutils 
-  pip3 install --upgrade pip
-  pip3 install --upgrade setuptools
-  pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
+  sudo apt-get -y install python python3 python3-pip python3-distutils 
+  sudo pip3 install --upgrade pip
+  sudo pip3 install --upgrade setuptools
+  sudo pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
   echo -e "${curr_date} [info] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
   #安装nodejs环境
-  apt-get -y install nodejs npm
-  npm i --save module-alias
-  npm install -g yarn n dotenv https-proxy-agent --force
-  npm install npm@latest -g #更新npm
+  sudo apt-get -y install nodejs npm
+  sudo npm i --save module-alias
+  sudo npm install yarn n dotenv https-proxy-agent --force
+  #npm install npm@latest -g #更新npm
   n stable  #更新node
   yarn set version latest
   echo -e "${curr_date} [info] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
   #安装go环境
   wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz && tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
   cat >> /etc/profile << EOF
+
 export PATH=$PATH:/home/go/bin
 export GOROOT=/home/go
 export GOPATH=/home/go/gopath
@@ -118,7 +119,6 @@ EOF
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
 install_beautify() {
   #安装oh my zsh
-  chsh -s /usr/bin/zsh
   cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
   sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc #设置主题
   git clone https://github.com/zsh-users/zsh-syntax-highlighting /root/.oh-my-zsh/plugins/zsh-syntax-highlighting
@@ -128,13 +128,10 @@ install_beautify() {
   sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
   echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
   source ~/.zshrc
-  chsh -s zsh
   touch ~/.hushlogin #不显示开机提示语
   echo -e "${curr_date} [info] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
-  cd /root && git clone https://github.com/gpakosz/.tmux.git
-  ln -s -f .tmux/.tmux.conf
-  cp .tmux/.tmux.conf.local .
+  cd /root && git clone https://github.com/gpakosz/.tmux.git && ln -s -f .tmux/.tmux.conf && cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [info] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
 }
 
