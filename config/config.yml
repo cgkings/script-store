@@ -1,42 +1,41 @@
-#使用前请将注释删除以免出问题。#后面带汉字的就是注释
-#如果不想启用 Web-UI 则删除本段代码
-web_server:
-  bind: 0.0.0.0
-  port: 50001 #web-ui的监听端口
-#  ssl_certificate: '/etc/ssl/private/myCert.pem' #SSL证书位置，启用https的话，把前面的#号删除
-#  ssl_private_key: '/etc/ssl/private/myKey.key' #SSL证书位置，启用https的话，把前面的#号删除
-  web_ui: yes #启用web-ui
-  base_url: /flex #网址后缀
-  run_v2: yes #启动 V2 版本
-
-#定时器-定时抓取一次指定任务的rss，不需要自动化就删除本段，更多查看 https://flexget.com/Plugins/Daemon/scheduler
-schedules:
-  - tasks: [myrssfeed, task_b] #指定 myreefeed 和 task_b 两个任务
-    schedule:
-      minute: "*/30" #每30分抓取
-  - tasks: [task_c, task_d]
-    schedule:
-      minute: "*/30"
-      hour: 22,23 #每日 22:30和23:30 抓取
-      
-#任务列表
-tasks: #保持不变
-  myrssfeed: #任务名称，改冒号前的。
-    rss: http://mysite.com/myfeed.rss # rss 地址
-    accept_all: no #是否全部下载，不想过滤就yes然后把downlod之前的全删了
-    if: #启用 if 条件过滤
-      - "'ABC' in title": accept #标题含有 ABC 就下载
-      - "'DEF' in title": reject #标题含有 DEF 就不下载
-    content_size: #启用大小过滤
-      min: 2048 # 文件小于 2048M 就不下载
-      max: 9999 # 文件大于 9999M 就不下载
-      strict: no #不要动
-    download: /path/of/your/torrents/download-dir/ #flexget 的种子下载目录
-#下面是 deluge 通过 rpc 方式自动添加种子下载，transmission也是类似的，自行搜索下。
-    deluge:
-      host：localhost #不要改
-      port: 13222 #填 daemon 监听的端口
-      user: localclient #不要改
-      pass: dsad5a6s5d6as #填密码密文
-      #执行 cat ~/.config/deluge/auth 会获得localclient:446d2cd96bfc7e15003fab1f11e9238b94671521:10
-      #其中 446d2cd96bfc7e15003fab1f11e9238b94671521 就是密码密文
+tasks:
+  shtzz:
+    rss: http://127.0.0.1:1200/dsndsht23/gqzwzm
+    accept_all: yes
+    aria2:
+      server: 127.0.0.1
+      port: 6800
+      secret: c31df97cae212ee0b9da
+      path: /home/download/
+  javdbwm:
+    rss: http://127.0.0.1:1200/javdb/home/uncensored/2/2
+    accept_all: yes
+    aria2:
+      server: 127.0.0.1
+      port: 6800
+      secret: c31df97cae212ee0b9da
+      path: /home/download/
+  javdbym:
+    rss: http://127.0.0.1:1200/javdb/home/censored/2/2
+    accept_all: yes
+    aria2:
+      server: 127.0.0.1
+      port: 6800
+      secret: c31df97cae212ee0b9da
+      path: /home/download/
+  javdbom:
+    rss: http://127.0.0.1:1200/javdb/home/western/2/2
+    accept_all: yes
+    aria2:
+      server: 127.0.0.1
+      port: 6800
+      secret: c31df97cae212ee0b9da
+      path: /home/download/
+  2048cn:
+    rss: http://127.0.0.1:1200/2048/bbs/16
+    accept_all: yes
+    aria2:
+      server: 127.0.0.1
+      port: 6800
+      secret: c31df97cae212ee0b9da
+      path: /home/download/

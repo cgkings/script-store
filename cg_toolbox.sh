@@ -93,9 +93,10 @@ install_environment() {
   echo -e "${curr_date} [info] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
   #安装nodejs环境
   apt-get -y install nodejs npm
-  npm install -g yarn n --force
+  npm i --save module-alias
+  npm install -g yarn n dotenv https-proxy-agent --force
   npm install npm@latest -g #更新npm
-  #n stable  #更新node
+  n stable  #更新node
   yarn set version latest
   echo -e "${curr_date} [info] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
   #安装go环境

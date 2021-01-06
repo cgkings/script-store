@@ -28,7 +28,7 @@ remote_chose() {
   echo -e "${red} +-------------------------+"
   read -n1 -p "请选择需要挂载的remote（输入数字即可）：" rclone_chose_num
   echo
-  if [[ $remote_list =~ $rclone_chose_num ]]; then
+  if [[ ${remote_list} =~ ${rclone_chose_num} ]]; then
     mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
     fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' >~/.config/rclone/"$mount_remote"_drivelist.txt
     drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
@@ -109,7 +109,7 @@ drive_change() {
 
 ################## 选择挂载路径 ##################[done]
 dir_check() {
-  if [[ "$mount_path" =~ "/" ]]; then
+  if [[ ${mount_path} =~ "/" ]]; then
     if [ ! -d "$mount_path" ]; then
       echo -e "$curr_date [警告]${mount_path} 不存在，正在创建..."
       mkdir -p 755 ${mount_path}

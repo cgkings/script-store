@@ -1,5 +1,5 @@
 {
-    "shellformat.path": "C:/users/cgking/desktop/fsdownload/shfmt_v3.2.1_windows_amd64.exe",
+    "shellformat.path": "D:/shfmt_v3.2.1_windows_amd64.exe",
     "shellformat.flag": "-i=2 -sr -kp -ci",
-    "shellcheck.executablePath": "C:\\Users\\cgking\\Desktop\\fsdownload\\shellcheck-stable\\shellcheck-stable.exe"
+    "shellcheck.executablePath": "D:\\shellcheck-stable"
 }
