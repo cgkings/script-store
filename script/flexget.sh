@@ -38,13 +38,8 @@ install_flexget(){
   pip3 install --ignore-installed flexget
   mkdir -p ~/.config/flexget
   wget -qN https://raw.githubusercontent.com/cgkings/script-store/master/config/config.yml -O ~/.config/flexget/config.yml
-  aria2_port=$(cat /root/.aria2c/aria2.conf | grep "rpc-listen-port" | awk -F= '{print $2}')
   aria2_key=$(cat /root/.aria2c/aria2.conf | grep "rpc-secret" | awk -F= '{print $2}')
-
-
-
-
-
+  sed -i 's/secret:.*$/secret: '$aria2_key'/g' ~/.config/flexget/config.yml
 }
 
 ################## 配置flexget刷新时间 ##################

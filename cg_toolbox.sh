@@ -328,6 +328,8 @@ EOF
       ;;
     B3 | b3)
       echo
+      bash <(curl -sL git.io/cg_flexget)
+      echo -e "${curr_date} [info] 您安装配置了RSSHUB和flexget！" >> /root/install_log.txt
       menu_go_on
       ;;
     B4 | b4)
@@ -409,6 +411,8 @@ EOF
       install_beautify
       install_rclone
       install_aria2
+      bash <(curl -sL git.io/cg_flexget)
+      echo -e "${curr_date} [info] 您安装配置了RSSHUB和flexget！" >> /root/install_log.txt
       tmux new -s lnmp -d
       tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
       echo -e "${curr_date} [info] 您使用了lnmp一键包！
