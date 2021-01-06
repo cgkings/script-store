@@ -257,7 +257,7 @@ main_menu() {
   clear
   echo -e "${on_black}${white}${bold}                VPS一键脚本 for Ubuntu/Debian系统     by cgkings                  ${normal}"
   cat << EOF
-${bold}
+${blue}
 ————————————————————————————————系 统 相 关—————————————————————————————————————
 A1、系统初始化设置[颜色/时区/语言/maxfile/常用工具]
 A2、安装各种开发环境[python/nodejs/go]
