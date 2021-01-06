@@ -274,8 +274,8 @@ main_menu() {
   echo -e "${green}——————————————————网 络 相 关————————————————————${normal}"
   echo -e "${green}C1、BBR一键加速[转自-忘记抄的谁的了]${normal}"
   echo -e "${green}C2、一键搭建V2ray[转自233boy]${normal}"
-  echo -e "${green}C3、LNMP 一键脚本[转自-忘记抄的谁的了]${normal}"                                  #未完成
-  echo -e "${green}C4、宝塔面板一键脚本[转自-忘记抄的谁的了]${normal}"                                #未完成
+  echo -e "${green}C3、LNMP 一键脚本[转自-lnmp.org]${normal}"
+  echo -e "${green}C4、宝塔面板一键脚本[转自-laowangblog.com]${normal}"                                #未完成
   echo -e "${green}——————————————————EMBY  相 关————————————————————${normal}"
   echo -e "${green}D1、自动网盘挂载脚本[支持命令参数模式]${normal}"
   echo -e "${green}D2、安装配置AVDC刮削工具[转自yoshiko2]${normal}"                                  #未完成
@@ -346,6 +346,29 @@ main_menu() {
     ;;
     C3|c3)
       echo
+      tmux new -s lnmp -d
+      tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter      
+      echo -e "${curr_date} [info] 您使用了lnmp一键包！
+安装：mysql5.5(数据库root密码：lnmp.org) & php7.4 
+1、Nginx + MySQL + PHP 的默认安装目录如下：
+   Nginx 目录: /usr/local/nginx/
+   MySQL 目录 : /usr/local/mysql/
+   MySQL 数据库所在目录：/usr/local/mysql/var/
+   PHP 目录 : /usr/local/php/
+   默认网站目录 : /home/wwwroot/default/
+   Nginx 日志目录：/home/wwwlogs/
+2、LNMP 默认的配置文件目录如下：
+   Nginx 主配置(默认虚拟主机)文件：/usr/local/nginx/conf/nginx.conf
+   添加的虚拟主机配置文件：/usr/local/nginx/conf/vhost/域名.conf
+   MySQL 配置文件：/etc/my.cnf
+   PHP 配置文件：/usr/local/php/etc/php.ini
+   php-fpm 配置文件：/usr/local/php/etc/php-fpm.conf
+3、一般维护站点需要用到的命令如下：
+重启 nginx/mysql/php：lnmp nginx/mysql/php restart
+重启所有：lnmp restart
+添加站点：lnmp vhost add
+添加数据库：lnmp database add
+查看帮助：lnmp" >>/root/install_logo.txt
       menu_go_on
     ;;
     C4|c4)
