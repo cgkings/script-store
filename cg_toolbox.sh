@@ -302,7 +302,7 @@ EOF
       ;;
     A3 | a3)
       echo
-      bash <(curl -sL git.io/cg_swap) -a
+      bash <(curl -sL git.io/cg_swap) a
       echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_log.txt
       menu_go_on
       ;;
@@ -406,7 +406,7 @@ EOF
       echo
       initialization
       install_environment
-      bash <(curl -sL git.io/cg_swap) -a
+      bash <(curl -sL git.io/cg_swap) a
       echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_log.txt
       install_beautify
       install_rclone
