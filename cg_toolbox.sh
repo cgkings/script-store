@@ -385,12 +385,8 @@ EOF
       ;;
     D2 | d2)
       echo
-      wget -qN https:// -O /root/sa1.zip && unzip -qo /root/sa1.zip -d /root -P $zip_password && rm -f /root/sa1.zip
       
-
-
-
-
+      
 
       menu_go_on
       ;;
