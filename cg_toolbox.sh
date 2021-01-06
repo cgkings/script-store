@@ -272,7 +272,7 @@ ${green}${bold}A5、${normal}buyvm挂载256G硬盘
 ${blue}${bold}————————————————————————————————离 线 转 存—————————————————————————————————————${normal}
 ${green}${bold}B1、${normal}安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
 ${green}${bold}B2、${normal}安装配置aria2一键增强[转自P3TERX]
-${green}${bold}B3、${normal}安装配置rsshub/flexget自动添加种子                                     #未完成
+${green}${bold}B3、${normal}安装配置rsshub/flexget自动添加种子
 ${green}${bold}B4、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能] #未完成
 ${blue}${bold}————————————————————————————————网 络 相 关—————————————————————————————————————${normal}
 ${green}${bold}C1、${normal}BBR一键加速[转自-忘记抄的谁的了]
@@ -411,7 +411,7 @@ EOF
       install_beautify
       install_rclone
       install_aria2
-      bash <(curl -sL git.io/cg_flexget)
+      bash <(curl -sL git.io/cg_flexget) 20
       echo -e "${curr_date} [info] 您安装配置了RSSHUB和flexget！" >> /root/install_log.txt
       tmux new -s lnmp -d
       tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
