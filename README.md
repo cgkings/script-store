@@ -2,7 +2,7 @@
 
 ### 常用工具及环境安装一键脚本【未完成】
 ```
-bash <(curl -sL git.io/cg_tools&environment)
+bash <(curl -sL git.io/cg_toolbox)
 ```
 [说明]()
 ### BBR加速一键脚本【转自。。】

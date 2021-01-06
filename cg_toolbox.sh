@@ -15,8 +15,8 @@ curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 setcolor
 check_root
 check_vz
-set -e #异常则退出整个脚本，避免错误累加
-set -x #脚本调试，逐行执行并输出执行的脚本命令行
+#set -e #异常则退出整个脚本，避免错误累加
+#set -x #脚本调试，逐行执行并输出执行的脚本命令行
 
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
 initialization() {
@@ -275,7 +275,7 @@ main_menu() {
   echo -e "${green}C1、BBR一键加速[转自-忘记抄的谁的了]${normal}"
   echo -e "${green}C2、一键搭建V2ray[转自233boy]${normal}"
   echo -e "${green}C3、LNMP 一键脚本[转自-lnmp.org]${normal}"
-  echo -e "${green}C4、宝塔面板一键脚本[转自-laowangblog.com]${normal}"                                #未完成
+  echo -e "${green}C4、宝塔面板一键脚本[转自-laowangblog.com]${normal}"
   echo -e "${green}——————————————————EMBY  相 关————————————————————${normal}"
   echo -e "${green}D1、自动网盘挂载脚本[支持命令参数模式]${normal}"
   echo -e "${green}D2、安装配置AVDC刮削工具[转自yoshiko2]${normal}"                                  #未完成
@@ -373,6 +373,8 @@ main_menu() {
     ;;
     C4|c4)
       echo
+      bash <(curl -sL git.io/cg_baota)
+      echo -e "${curr_date} [info] 您安装了宝塔面板！" >>/root/install_logo.txt
       menu_go_on
     ;;
     D1|d1)
