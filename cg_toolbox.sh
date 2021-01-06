@@ -26,6 +26,7 @@ initialization() {
   echo -e "${curr_date} [info] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg" >> /root/install_log.txt
   #设置颜色
   cat >> /root/.bashrc << EOF
+
 if [ "$TERM" == "xterm" ]; then
   export TERM=xterm-256color
 fi
@@ -44,6 +45,7 @@ EOF
   apt-get install -y locales
   echo "LANG=en_US.UTF-8" > /etc/default/locale
   cat > /etc/locale.gen << EOF
+  
   en_US.UTF-8 UTF-8
   zh_CN.UTF-8 UTF-8
 EOF
@@ -51,10 +53,12 @@ EOF
   echo -e "${curr_date} [info] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
   #file-max设置，解决too many open files问题
   cat >> /etc/sysctl.conf << EOF
+
 fs.file-max = 6553500
 EOF
   sysctl -p
   cat >> /etc/security/limits.conf << EOF
+
 * soft memlock unlimited
 * hard memlock unlimited
 * soft nofile 65535
@@ -70,6 +74,7 @@ root soft nproc 65535
 root hard nproc 65535
 EOF
   cat >> /etc/pam.d/common-session << EOF
+
 session required pam_limits.so
 EOF
   if [ $(ulimit -n) == 65535 ]; then
