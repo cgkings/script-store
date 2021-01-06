@@ -21,8 +21,8 @@ check_vz
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
 initialization() {
   #安装常用软件
-  apt-get update --fix-missing -y &> /dev/null && apt upgrade -y &> /dev/null
-  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core expect e4fsprogs ca-certificates findutils gzip dpkg &> /dev/null
+  apt-get update --fix-missing -y && apt upgrade -y
+  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core expect e4fsprogs ca-certificates findutils gzip dpkg
   echo -e "${curr_date} [info] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core expect e4fsprogs ca-certificates findutils gzip dpkg" >> /root/install_log.txt
   #设置颜色
   cat >> /root/.bashrc << EOF
@@ -107,7 +107,7 @@ export GOROOT=/home/go
 export GOPATH=/home/go/gopath
 EOF
   echo -e "${curr_date} [info] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
-  apt autoremove -y &> /dev/null
+  apt autoremove -y
 }
 
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
@@ -122,14 +122,14 @@ install_beautify() {
   [ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >> ~/.zshrc
   sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
   echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
-  source ~/.zshrc &> /dev/null
+  source ~/.zshrc
   chsh -s zsh
   touch ~/.hushlogin #不显示开机提示语
   echo -e "${curr_date} [info] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
   cd /root && git clone https://github.com/gpakosz/.tmux.git
-  ln -s -f .tmux/.tmux.conf &> /dev/null
-  cp .tmux/.tmux.conf.local . &> /dev/null
+  ln -s -f .tmux/.tmux.conf
+  cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [info] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
 }
 
