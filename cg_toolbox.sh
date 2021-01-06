@@ -256,7 +256,7 @@ menu_go_on() {
 main_menu() {
   clear
   echo
-  echo -e "${black}${on_white}${bold}                VPS一键脚本 for Ubuntu/Debian系统     by cgkings                  ${normal}"
+  echo -e "${bule}${on_white}${bold}                VPS一键脚本 for Ubuntu/Debian系统     by cgkings                  ${normal}"
   cat << EOF
 ${bold}
 ————————————————————————————————系 统 相 关—————————————————————————————————————
