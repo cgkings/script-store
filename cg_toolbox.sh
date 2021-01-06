@@ -256,7 +256,7 @@ menu_go_on() {
 main_menu() {
   clear
   echo
-  echo -e "${bailanse}${bold}                 VPS一键脚本 for Ubuntu/Debian系统     by cgkings                   ${normal}"
+  echo -e "${black}${on_white}${bold}                VPS一键脚本 for Ubuntu/Debian系统     by cgkings                  ${normal}"
   cat << EOF
 ${bold}
 ————————————————————————————————系 统 相 关—————————————————————————————————————
@@ -285,7 +285,6 @@ qq、退出脚本
 ————————————————————————————————————————————————————————————————————————————————
 ${normal}
 EOF
-  printf ${normal}
   read -n2 -p "请输入选择 [A1-D3]:" num
   case "$num" in
     A1 | a1)
