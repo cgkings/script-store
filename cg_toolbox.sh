@@ -254,36 +254,40 @@ menu_go_on() {
 ################## 主    菜    单 ##################
 main_menu() {
   clear
-  echo -e "${green}####################################################################################${normal}"
-  echo -e "${green}#                                                                                  #${normal}"
-  echo -e "${green}#                        VPS一键脚本 for Ubuntu/Debian系统                          #${normal}"
-  echo -e "${green}#                                                      by cgkings                  #${normal}"
-  echo -e "${green}#                                                                                  #${normal}"
-  echo -e "${green}####################################################################################${normal}"
-  echo -e "${green}————————————————————————————————系 统 相 关—————————————————————————————————————${normal}"
-  echo -e "${green}A1、系统初始化设置[颜色/时区/语言/maxfile/常用工具]${normal}"
-  echo -e "${green}A2、安装各种开发环境[python/nodejs/go]${normal}"
-  echo -e "${green}A3、设置虚拟内存[支持命令参数模式]${normal}"
-  echo -e "${green}A4、安装装逼神器 oh my zsh & on my tmux${normal}"
-  echo -e "${green}A5、buyvm挂载256G硬盘${normal}"
-  echo -e "${green}————————————————————————————————离 线 转 存—————————————————————————————————————${normal}"
-  echo -e "${green}B1、安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]${normal}"
-  echo -e "${green}B2、安装配置aria2一键增强[转自P3TERX]${normal}"
-  echo -e "${green}B3、安装qBittorrent/Deluge/Transmission[转自aniverse]${normal}"                  #未完成
-  echo -e "${green}B4、安装配置rsshub/flexget自动添加种子${normal}"                                  #未完成
-  echo -e "${green}B5、搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]${normal}"
-  echo -e "${green}————————————————————————————————网 络 相 关—————————————————————————————————————${normal}"
-  echo -e "${green}C1、BBR一键加速[转自-忘记抄的谁的了]${normal}"
-  echo -e "${green}C2、一键搭建V2ray[转自233boy]${normal}"
-  echo -e "${green}C3、LNMP 一键脚本[转自-lnmp.org]${normal}"
-  echo -e "${green}C4、宝塔面板一键脚本[转自-laowangblog.com]${normal}"
-  echo -e "${green}————————————————————————————————EMBY  相 关———————————————————————————————————————${normal}"
-  echo -e "${green}D1、自动网盘挂载脚本[支持命令参数模式]${normal}"
-  echo -e "${green}D2、安装配置AVDC刮削工具[转自yoshiko2]${normal}"                                  #未完成
-  echo -e "${green}D3、EMBY一键安装搭建脚本[转自wuhuai2020 & why]${normal}"
-  echo -e "${green}———————————————————————————————————————————————————————————————————————————————————${normal}"
-  echo -e "${green}qq、退出脚本${normal}"
-  echo -e "${green}———————————————————————————————————————————————————————————————————————————————————${normal}"
+printf "${green}"
+  cat <<EOF
+  ################################################################################
+  #                                                                              #
+  #                        VPS一键脚本 for Ubuntu/Debian系统                      #
+  #                                                      by cgkings              #
+  #                                                                              #
+  ################################################################################
+  ————————————————————————————————系 统 相 关—————————————————————————————————————
+  A1、系统初始化设置[颜色/时区/语言/maxfile/常用工具]
+  A2、安装各种开发环境[python/nodejs/go]
+  A3、设置虚拟内存[支持命令参数模式]
+  A4、安装装逼神器 oh my zsh & on my tmux
+  A5、buyvm挂载256G硬盘
+  ————————————————————————————————离 线 转 存—————————————————————————————————————
+  B1、安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
+  B2、安装配置aria2一键增强[转自P3TERX]
+  B3、安装qBittorrent/Deluge/Transmission[转自aniverse]                     #未完成
+  B4、安装配置rsshub/flexget自动添加种子                                     #未完成
+  B5、搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
+  ————————————————————————————————网 络 相 关—————————————————————————————————————
+  C1、BBR一键加速[转自-忘记抄的谁的了]
+  C2、一键搭建V2ray[转自233boy]
+  C3、LNMP 一键脚本[转自-lnmp.org]
+  C4、宝塔面板一键脚本[转自-laowangblog.com]
+  ————————————————————————————————EMBY  相 关—————————————————————————————————————
+  D1、自动网盘挂载脚本[支持命令参数模式]
+  D2、安装配置AVDC刮削工具[转自yoshiko2]                                 #未完成
+  D3、EMBY一键安装搭建脚本[转自wuhuai2020 & why]
+  ————————————————————————————————————————————————————————————————————————————————
+  qq、退出脚本${normal}"
+  ————————————————————————————————————————————————————————————————————————————————
+EOF
+  printf "${normal}"
   read -n2 -p "请输入选择 [A1-D3]:" num
   case "$num" in
     A1|a1)
