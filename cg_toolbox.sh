@@ -91,7 +91,7 @@ install_environment() {
   sudo apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev  #yum groupinstall "Development Tools"
   echo -e "${curr_date} [info] 基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >> /root/install_log.txt
   #安装python环境
-  sudo apt-get -y install python python3 python3-pip python3-distutils 
+  sudo apt-get -y install python python3 python3-pip python3-distutils
   sudo pip3 install --upgrade pip
   sudo pip3 install --upgrade setuptools
   sudo pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
@@ -230,7 +230,7 @@ EOF
   echo -e "$curr_date ${red}[Info]您选择的remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download"
   service aria2 restart
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
-  if [[ "$aria2_install_status" == 'success' ]]; then
+  if [[ ${aria2_install_status} == "success" ]]; then
     echo -e "${curr_date} [info] aria2自动上传已安装配置成功！
     本地下载目录为：/home/download
     remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download" >> /root/install_log.txt
