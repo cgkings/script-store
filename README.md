@@ -2,17 +2,17 @@
 
 ### 常用工具及环境安装一键脚本【未完成】
 ```
-bash <(curl -sL https://git.io/cg_tools&environment)
+bash <(curl -sL git.io/cg_tools&environment)
 ```
 [说明]()
 ### BBR加速一键脚本【转自。。】
 ```
-bash <(curl -sL https://git.io/cg_bbr)
+bash <(curl -sL git.io/cg_bbr)
 ```
 
 ### swap一键脚本
 ```
-bash <(curl -sL https://git.io/cg_swap) [参数]
+bash <(curl -sL git.io/cg_swap) [参数]
 ```
 **[用法]**<br>
 *无参数进入主菜单*<br>
@@ -20,33 +20,33 @@ bash <(curl -sL https://git.io/cg_swap) [参数]
 *`m` 手动添加swap*<br>
 *`d` 删除现有swap*<br>
 *`h` 脚本参数帮助*<br>
-[说明](https://github.com/cgkings/script-store/blob/master/Instruction/swap.md)
+[说明](github.com/cgkings/script-store/blob/master/Instruction/swap.md)
 
 ### v2ray一键脚本【转自boy233】
 ```
-bash <(curl -sL https://git.io/cg_v2ray)
+bash <(curl -sL git.io/cg_v2ray)
 ```
-[说明](https://github.com/cgkings/v2ray/blob/master/README.md)
+[说明](github.com/cgkings/v2ray/blob/master/README.md)
 
 ### 离线下载一键脚本【 aira2 & flexget & rsshub & youtube-dl 】【未完成】
 ```
-bash <(curl -sL https://git.io/cg_downloader)
+bash <(curl -sL git.io/cg_downloader)
 ```
 [说明]()
 ### 网盘操作一键脚本【 rclone & fclone 】【未完成】
 ```
-bash <(curl -sL https://git.io/cg_clone_tools)
+bash <(curl -sL git.io/cg_clone_tools)
 ```
 [说明]()
 ### 转存备份一键脚本【 google drive & 6pan 】【未完成】
 ```
-bash <(curl -sL https://git.io/cg_fqcopy)
+bash <(curl -sL git.io/cg_fqcopy)
 ```
 [说明]()
 
 ### 挂载脚本【小组件】【 google drive & 6pan 】
 ```
-bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
+bash <(curl -sL git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
 ```
 **[用法]**<br>
 *注意：无参数则进入主菜单,参数少于3个显示help，即1,2,3为脚本参数执行方式必备!*<br>
@@ -72,7 +72,7 @@ bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4
 bash <(curl -sL xxxx)
 ```
 
-` wget https://raw.githubusercontent.com/cgkings/script-store/master/config/javdb/utils.js -O /home/RSSHub/lib/routes/javdb/utils.js `
+` wget raw.githubusercontent.com/cgkings/script-store/master/config/javdb/utils.js -O /home/RSSHub/lib/routes/javdb/utils.js `
 
 
 

@@ -22,8 +22,8 @@ set -x #脚本调试，逐行执行并输出执行的脚本命令行
 initialization() {
   #安装常用软件
   apt-get update --fix-missing -y &>/dev/null && apt upgrade -y &>/dev/null
-  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core expect e4fsprogs &>/dev/null
-  echo -e "${curr_date} [info] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core expect e4fsprogs" >>install_logo.txt
+  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core expect e4fsprogs ca-certificates findutils gzip dpkg &>/dev/null
+  echo -e "${curr_date} [info] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar git-core expect e4fsprogs ca-certificates findutils gzip dpkg" >>install_logo.txt
   #设置颜色
   cat >>/root/.bashrc <<EOF
 if [ "$TERM" == "xterm" ]; then
@@ -133,16 +133,6 @@ install_beautify() {
   echo -e "${curr_date} [info] 装逼神器之oh my tmux 已安装" >>install_logo.txt
 }
 
-################## 安装rclone/fclone ##################[未完成]
-install_rclone() {
-  check_rclone
-  read -p "即将为你解压sa文件夹及rclone conf文件，请输入解压密码：" zip_password
-  wget -qN https:// -O /root/sa1.zip && unzip -qo /root/sa1.zip -d /root -P $zip_password && rm -f /root/sa1.zip
-  wget -qN https:// -O /root/sa2.zip && unzip -qo /root/sa2.zip -d /root -P $zip_password && rm -f /root/sa2.zip
-  wget -qN https:// -O /root/rclone_conf.zip && unzip -qo /root/rclone_conf.zip -d /root/.config/rclone -P $zip_password && rm -f /root/rclone_conf.zip
-  echo -e "${curr_date} [info] rclone&fclone已安装,sa及conf文件已下载解压" >>install_logo.txt
-}
-
 ################## buyvm挂载256G硬盘 ##################
 buyvm_disk() {
   disk=$(fdisk -l | grep 256 | awk '{print $2}' | tr -d : | sed -n '1p') #获取256G磁盘名
@@ -170,6 +160,7 @@ EOF
       #expect { "Command" { send \"n\r\" ; exp_continue } "Select" { send \"p\r\" ; exp_continue } "Partition" { send \"1\r\" ; #exp_continue } "First" { send \"\r\" ; exp_continue } "Last" { send \"\r\" ; exp_continue } }
       #expect  "Command" { send \"w\r\"}
       #expect eof "
+      partprobe                                            #不重启重新读取分区信息
       mkfs -t ext4 "$disk"1                                #格式化ext4分区
       mkdir -p /home                                       #确保/home目录存在
       mount "$disk"1 /home                                 #将256G硬盘挂载到系统/home文件夹
@@ -184,21 +175,52 @@ EOF
   fi
 }
 
-################## 自动设置虚拟内存 ##################
-swap() {
-  bash <(curl -sL https://git.io/cg_swap)
+################## 安装配置aria2自动下载上传 ##################
+install_aria2(){
+  cd /root
+  bash <(curl -sL git.io/aria2.sh) <<EOF
+1 
+EOF
+  #修改默认本地下载路径为/home/download
+  mkdir -p /home/download
+  bash <(curl -sL git.io/aria2.sh) <<EOF
+7 
+3 
+/home/download 
+EOF
+  #修改完成后执行的脚本为自动上传
+  sed -i 's/clean.sh/upload.sh/g' /root/.aria2c/aria2.conf
+  #修改自动上传的工具，由rclone改为fclone
+  sed -i 's/rclone move/fclone move/g' /root/.aria2c/upload.sh
+  #设置自动上传的fclone remote
+  read -p "请输入自动上传的fclone remote:" fclone_remote
+  sed -i 's/drive-name=.*$/drive-name=${fclone_remote}/g' /root/.aria2c/script.conf
+  #设置自动上传网盘目录
+  sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
+  service aria2 restart
+  aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
+  if [[ "$aria2_install_status" == "success" ]]; then
+    echo -e "${curr_date} [info] aria2自动上传已安装配置成功！" >>install_logo.txt
+  else
+    echo -e "${curr_date} [error] aria2自动上传安装配置失败！" >>install_logo.txt
+  fi
 }
 
-################## rclone自动挂载 ##################
-rclone_mount() {
-  bash <(curl -sL https://git.io/cg_auto_mount)
+################## 安装rclone/fclone ##################[未完成]
+install_rclone() {
+  check_rclone
+  read -p "即将为你解压sa文件夹及rclone conf文件，请输入解压密码：" zip_password
+  wget -qN https:// -O /root/sa1.zip && unzip -qo /root/sa1.zip -d /root -P $zip_password && rm -f /root/sa1.zip
+  wget -qN https:// -O /root/sa2.zip && unzip -qo /root/sa2.zip -d /root -P $zip_password && rm -f /root/sa2.zip
+  wget -qN https:// -O /root/rclone_conf.zip && unzip -qo /root/rclone_conf.zip -d /root/.config/rclone -P $zip_password && rm -f /root/rclone_conf.zip
+  echo -e "${curr_date} [info] rclone&fclone已安装,sa及conf文件已下载解压" >>install_logo.txt
 }
 
 ################## menu_go_on ##################
 menu_go_on() {
   echo
   echo -e "${red}是否继续执行脚本?${normal}"
-  read -n1 -p "Y继续执行，N退出脚本[Y/n]" res
+  read -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
   echo
   case "$res" in
   Y | y) ;;
@@ -208,7 +230,7 @@ menu_go_on() {
     ;;
   *)
     echo "输入错误"
-    menu_go_on
+    exit 1
     ;;
   esac
 }
@@ -223,14 +245,14 @@ main_menu() {
   echo -e "${green}#                                               #${normal}"
   echo -e "${green}#################################################${normal}"
   echo -e "${green}——————————————————系 统 相 关—————— ——————————————${normal}"
-  echo -e "${green}A1、系统初始化设置[颜色/时区/语言/maxfile/常用工具]${normal}"                      #已完成
-  echo -e "${green}A2、安装各种开发环境[python/nodejs/go]${normal}"                                  #已完成
-  echo -e "${green}A3、设置虚拟内存[支持命令参数模式]${normal}"                                       #已完成
-  echo -e "${green}A4、安装装逼神器 oh my zsh & on my tmux${normal}"                                #已完成
-  echo -e "${green}A5、buyvm挂载256G硬盘${normal}"                                                  #已完成
+  echo -e "${green}A1、系统初始化设置[颜色/时区/语言/maxfile/常用工具]${normal}"
+  echo -e "${green}A2、安装各种开发环境[python/nodejs/go]${normal}"
+  echo -e "${green}A3、设置虚拟内存[支持命令参数模式]${normal}"
+  echo -e "${green}A4、安装装逼神器 oh my zsh & on my tmux${normal}"
+  echo -e "${green}A5、buyvm挂载256G硬盘${normal}"
   echo -e "${green}——————————————————离 线 转 存————————————————————${normal}"
   echo -e "${green}B1、安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]${normal}" #已完成
-  echo -e "${green}B2、安装配置aria2一键增强[转自P3TERX]${normal}"                                   #已完成
+  echo -e "${green}B2、安装配置aria2一键增强[转自P3TERX]${normal}"
   echo -e "${green}B3、安装qBittorrent/Deluge/Transmission[转自aniverse]${normal}"                  #已完成
   echo -e "${green}B4、安装配置rsshub/flexget自动添加种子${normal}"                                  #未完成
   echo -e "${green}B5、搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]${normal}"
@@ -244,71 +266,105 @@ main_menu() {
   echo -e "${green}D2、安装配置AVDC刮削工具[转自yoshiko2]${normal}"                                  #未完成
   echo -e "${green}D3、EMBY一键安装搭建脚本[转自wuhuai2020 & why]${normal}"                          #未完成
   echo -e "${green}—————————————————————————————————————————————————${normal}"
-  read -n1 -p "请输入数字 [1-4]:" num
+  echo -e "${green}qq、退出脚本${normal}"
+  read -n2 -p "请输入选择 [A1-D3]:" num
   case "$num" in
-  1)
-    echo
-    remote_chose
-    dir_chose
-    tag_chose
-    mount_creat
-    exit
+    A1|a1)
+      echo
+      initialization
+      menu_go_on
     ;;
-  2)
-    echo
-    remote_chose
-    dir_chose
-    tag_chose
-    mount_server_creat
-    exit
+    A2|a2)
+      echo
+      install_environment
+      menu_go_on
     ;;
-  3)
-    echo
-    mount_del
-    exit
+    A3|a3)
+      echo
+      bash <(curl -sL git.io/cg_swap)
+      menu_go_on
     ;;
-  4)
-    exit
+    A4|a4)
+      echo
+      install_beautify
+      menu_go_on
     ;;
-  *)
-    echo
-    echo "输入错误，请重新输入"
-    mount_menu
+    A5|a5)
+      echo
+      buyvm_disk
+      menu_go_on
     ;;
+    B1|b1)
+      echo
+      install_rclone
+      menu_go_on
+    ;;
+    B2|b2)
+      echo
+      install_aria2
+      menu_go_on
+    ;;
+    B3|b3)
+      echo
+      menu_go_on
+    ;;
+    B4|b4)
+      echo
+      menu_go_on
+    ;;
+    B5|b5)
+      echo
+      menu_go_on
+    ;;
+    C1|c1)
+      echo
+      bash <(curl -sL git.io/cg_bbr)
+      menu_go_on
+    ;;
+    C2|c2)
+      echo
+      bash <(curl -sL git.io/cg_v2ray)
+      menu_go_on
+    ;;
+    C3|c3)
+      echo
+      menu_go_on
+    ;;
+    C4|c4)
+      echo
+      menu_go_on
+    ;;
+    D1|d1)
+      echo
+      bash <(curl -sL git.io/cg_auto_mount)
+      menu_go_on
+    ;;
+    D2|d2)
+      echo
+      menu_go_on
+    ;;
+    D3|d3)
+      echo
+      menu_go_on
+    ;;
+    D4|d4)
+      echo
+      menu_go_on
+    ;;
+    QQ|qq)
+      echo
+      menu_go_on
+    ;;
+    *)
+      echo
+      echo "输入错误，请重新输入"
+      main_menu
+      ;;
   esac
 }
 
 ################## 执  行  命  令 ##################
-if [ -z $1 ]; then
-  swap_menu
-else
-  case "$1" in
-  A | a)
-    echo
-    auto_swap
-    ;;
-  M | m)
-    echo
-    add_swap
-    ;;
-  D | d)
-    echo
-    del_swap
-    ;;
-  H | h)
-    echo
-    swap_help
-    ;;
-  *)
-    echo
-    swap_help
-    ;;
-  esac
-fi
-
-
-
-screenfetch
+main_menu
 
 #   -------------------------------
 #   POWERLINE字体安装
