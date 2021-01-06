@@ -238,9 +238,10 @@ menu_go_on() {
   read -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
   echo
   case "$res" in
-  Y | y) ;;
+  Y|y)
     main_menu
-  N | n)
+    ;;
+  N|n)
     exit 1
     ;;
   *)
