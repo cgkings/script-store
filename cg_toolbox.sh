@@ -234,6 +234,7 @@ EOF
 ################## menu_go_on ##################
 menu_go_on() {
   echo -e "安装日志路径：/root/install_logo.txt"
+  echo -e " ${black}${on_white}${bold}                           menu_go_on                               ${normal} "
   echo -e "${red}是否继续执行脚本?${normal}"
   read -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
   echo
@@ -254,9 +255,10 @@ menu_go_on() {
 ################## 主    菜    单 ##################
 main_menu() {
   clear
-echo -e "${on_blue}${white}${bold}                 VPS一键脚本 for Ubuntu/Debian系统     by cgkings                   ${normal}"
-  printf ${green}
+  echo
+  echo -e "${bailanse}${bold}                 VPS一键脚本 for Ubuntu/Debian系统     by cgkings                   ${normal}"
   cat << EOF
+${bold}
 ————————————————————————————————系 统 相 关—————————————————————————————————————
 A1、系统初始化设置[颜色/时区/语言/maxfile/常用工具]
 A2、安装各种开发环境[python/nodejs/go]
@@ -279,8 +281,9 @@ D1、自动网盘挂载脚本[支持命令参数模式]
 D2、安装配置AVDC刮削工具[转自yoshiko2]                                 #未完成
 D3、EMBY一键安装搭建脚本[转自wuhuai2020 & why]
 ————————————————————————————————————————————————————————————————————————————————
-qq、退出脚本${normal}"
+qq、退出脚本
 ————————————————————————————————————————————————————————————————————————————————
+${normal}
 EOF
   printf ${normal}
   read -n2 -p "请输入选择 [A1-D3]:" num
