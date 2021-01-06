@@ -254,7 +254,7 @@ menu_go_on() {
 ################## 主    菜    单 ##################
 main_menu() {
   clear
-echo -e "${on_blue}${white}${jiacu}                 VPS一键脚本 for Ubuntu/Debian系统     by cgkings                   ${normal}"
+echo -e "${on_blue}${white}${bold}                 VPS一键脚本 for Ubuntu/Debian系统     by cgkings                   ${normal}"
   printf ${green}
   cat << EOF
 ————————————————————————————————系 统 相 关—————————————————————————————————————
