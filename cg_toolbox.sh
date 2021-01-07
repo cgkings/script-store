@@ -111,11 +111,9 @@ install_environment() {
   echo -e "${curr_date} [INFO] 基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >> /root/install_log.txt
   #安装python环境
   apt-get -y install python python3 python3-pip python3-distutils
-  python -m pip install --upgrade pip
-  pip install --upgrade setuptools
   pip install -U --force-reinstall pip
-  python -m pip install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
-  echo -e "${curr_date} [INFO] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
+  pip install wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot setuptools
+  echo -e "${curr_date} [INFO] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot setuptools" >> /root/install_log.txt
   #安装go环境
   if [ -e /home/go ]; then
     rm -rf /home/go
@@ -158,8 +156,6 @@ EOF
   npm install -g yarn n --force
   yarn set version latest
   echo -e "${curr_date} [INFO] nodejs&npm已安装,yarn&n已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
-  apt autoremove -y
-  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效 ${normal}"
 }
 
 ################## buyvm挂载256G硬盘 ##################
