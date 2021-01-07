@@ -100,7 +100,7 @@ install_beautify() {
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s $(which zsh)
-  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效,不生效会影响安装开发环境 ${normal}"
+  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效 ${normal}"
 }
 
 ################## 安装各种开发环境 [受nodejs安装脚本影响，必须zsh生效后方可安装]##################
@@ -134,6 +134,8 @@ export GOPATH=/home/go/gopath
 EOF
     echo 安装完毕
   fi
+  . /root/.bashrc
+  . /root/.zshrc
   echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
   #安装nodejs环境
   #先卸载
@@ -145,19 +147,19 @@ EOF
   sudo mkdir -p /usr/local/lib/nodejs
   wget -qN https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz && sudo tar -xJvf node-v14.15.4-linux-x64.tar.xz -C /usr/local/lib/nodejs && rm -f node-v14.15.4-linux-x64.tar.xz
   node_var="export PATH=/usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin:$PATH"
-  if cat '/root/.bashrc' | grep "$node_var" > /dev/null; then
+  if cat '/root/.profile' | grep "$node_var" > /dev/null; then
     echo 已写过变量配置，安装完毕
   else
-    echo -e "\n${node_var}" >> /root/.bashrc
+    echo -e "\n${node_var}" >> /root/.profile
     echo 安装完毕
   fi
-  . /root/.bashrc
-  . /root/.zshrc
+  . /root/.profile
   sleep 3s
   npm install -g yarn n --force
   yarn set version latest
   echo -e "${curr_date} [INFO] nodejs&npm已安装,yarn&n已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
   apt autoremove -y
+  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效 ${normal}"
 }
 
 ################## buyvm挂载256G硬盘 ##################
