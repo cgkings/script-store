@@ -2,6 +2,7 @@
 
 ### VPS一键脚本【测试中】
 ```
+apt-get install curl -y
 bash <(curl -sL git.io/cg_toolbox)
 ```
 [说明]()
