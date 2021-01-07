@@ -27,7 +27,9 @@ initialization() {
   #设置颜色
   cat >> /root/.bashrc << EOF
 
-  export TERM=xterm-256color
+  if [[ "$TERM" == "xterm" ]]; then
+    export TERM=xterm-256color
+  fi
 EOF
   source ~/.bashrc
   if [ $(tput colors) == 256 ]; then
