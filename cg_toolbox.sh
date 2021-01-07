@@ -117,25 +117,46 @@ install_environment() {
   python -m pip install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
   echo -e "${curr_date} [INFO] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
   #安装go环境
+  if [ -e /home/go ]; then
+    rm -rf /home/go
+  fi
   wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
   tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
-  cat >> /root/.zshrc << EOF
+  go_var="export PATH=$PATH:/home/go/bin"
+  if cat '/root/.bashrc' | grep "$go_var" > /dev/null; then
+    echo 已写过变量配置，安装完毕
+  else
+    cat >> /root/.bashrc << EOF
 
 export PATH=$PATH:/home/go/bin
 export GOROOT=/home/go
 export GOPATH=/home/go/gopath
 EOF
+    echo 安装完毕
+  fi
   echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
   #安装nodejs环境
   #先卸载
-  n-uninstall -y
   sudo npm uninstall npm -g
   sudo apt-get remove nodejs -y
-  curl -sL https://git.io/n-install | bash -s -- -q
+  if [ -e /usr/local/lib/nodejs ]; then
+    rm -rf /usr/local/lib/nodejs
+  fi
+  sudo mkdir -p /usr/local/lib/nodejs
+  wget -qN https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz && sudo tar -xJvf node-v14.15.4-linux-x64.tar.xz -C /usr/local/lib/nodejs && rm -f node-v14.15.4-linux-x64.tar.xz
+  node_var="export PATH=/usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin:$PATH"
+  if cat '/root/.bashrc' | grep "$node_var" > /dev/null; then
+    echo 已写过变量配置，安装完毕
+  else
+    echo -e "\n${node_var}" >> /root/.bashrc
+    echo 安装完毕
+  fi
+  . /root/.bashrc
   . /root/.zshrc
-  npm install -g yarn --force
+  sleep 3s
+  npm install -g yarn n --force
   yarn set version latest
-  echo -e "${curr_date} [INFO] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
+  echo -e "${curr_date} [INFO] nodejs&npm已安装,yarn&n已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
   apt autoremove -y
 }
 
@@ -234,7 +255,7 @@ EOF
 }
 
 ################## LNMP一键脚本 ##################
-install_LNMP(){
+install_LNMP() {
   tmux new -s lnmp -d
   tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
   cat >> /root/install_log.txt << EOF
@@ -290,8 +311,8 @@ main_menu() {
   cat << EOF
 ${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
 ${blue}${bold}————————————————————————————————系 统 环 境—————————————————————————————————————${normal}
-${green}${bold}A、${normal}系统初始化[颜色/时区/语言/maxfile/常用工具/swap/zsh/开发环境python/nodejs/go]
-${green}${bold}B、${normal}安装开发环境[python/nodejs/go][系统初始化生效方可安装]
+${green}${bold}A、${normal}系统初始化[颜色/时区/语言/maxfile/常用工具/swap/zsh]
+${green}${bold}B、${normal}安装开发环境[python/nodejs/go]
 ${green}${bold}C、${normal}buyvm挂载256G硬盘
 ${blue}${bold}————————————————————————————————离 线 转 存—————————————————————————————————————${normal}
 ${green}${bold}D、${normal}安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
