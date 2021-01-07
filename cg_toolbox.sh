@@ -135,7 +135,7 @@ install_beautify() {
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [info] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s $(which zsh)
-  reset
+  echo "重新登录shell工具生效"
 }
 
 ################## buyvm挂载256G硬盘 ##################
