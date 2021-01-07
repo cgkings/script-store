@@ -96,16 +96,6 @@ install_environment() {
   pip install --upgrade setuptools
   pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
   echo -e "${curr_date} [info] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
-  #安装nodejs环境
-  #先卸载
-  n-uninstall -y
-  sudo npm uninstall npm -g
-  sudo apt-get remove nodejs -y
-  curl -sL https://git.io/n-install | bash -s -- -q
-  . /root/.bashrc
-  npm install -g yarn --force
-  yarn set version latest
-  echo -e "${curr_date} [info] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
   #安装go环境
   wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
   tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
@@ -116,8 +106,18 @@ export GOROOT=/home/go
 export GOPATH=/home/go/gopath
 EOF
   echo -e "${curr_date} [info] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
-  apt autoremove -y
+  #安装nodejs环境
+  #先卸载
+  n-uninstall -y
+  sudo npm uninstall npm -g
+  sudo apt-get remove nodejs -y
+  curl -sL https://git.io/n-install | bash -s -- -q
   . /root/.bashrc
+  . /root/.zshrc
+  npm install -g yarn --force
+  yarn set version latest
+  echo -e "${curr_date} [info] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
+  apt autoremove -y
 }
 
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
