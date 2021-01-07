@@ -121,7 +121,7 @@ EOF
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
 install_beautify() {
   #安装oh my zsh
-  cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)
+  cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
   sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc #设置主题
   git clone https://github.com/zsh-users/zsh-syntax-highlighting /root/.oh-my-zsh/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/plugins/zsh-autosuggestions
@@ -129,7 +129,6 @@ install_beautify() {
   [ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >> ~/.zshrc
   sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
   echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
-  source ~/.zshrc
   touch ~/.hushlogin #不显示开机提示语
   echo -e "${curr_date} [info] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
@@ -137,6 +136,8 @@ install_beautify() {
   ln -s -f .tmux/.tmux.conf
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [info] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
+  sudo chsh -s $(which zsh)
+  reset
 }
 
 ################## buyvm挂载256G硬盘 ##################
