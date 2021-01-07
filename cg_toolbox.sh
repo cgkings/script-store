@@ -53,6 +53,7 @@ EOF
   echo -e "${curr_date} [info] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
   #file-max设置，解决too many open files问题
   cat >> /etc/sysctl.conf << EOF
+
 fs.file-max = 6553500
 EOF
   sysctl -p
