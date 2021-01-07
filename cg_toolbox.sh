@@ -23,37 +23,36 @@ initialization() {
   #安装常用软件
   apt-get update --fix-missing -y && apt upgrade -y
   apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg
-  echo -e "${curr_date} [info] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg" >> /root/install_log.txt
+  echo -e "${curr_date} [info] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg" >> /root/install_logo.txt
   #设置颜色
   cat >> /root/.bashrc << EOF
 
-if [[ "$TERM" == "xterm" ]]; then
+if [ ${TERM} == xterm ]; then
   export TERM=xterm-256color
 fi
 EOF
   source ~/.bashrc
   if [ $(tput colors) == 256 ]; then
-    echo -e "${curr_date} [info] 设置256色成功" >> /root/install_log.txt
+    echo -e "${curr_date} [info] 设置256色成功" >> /root/install_logo.txt
   else
-    echo -e "${curr_date} [error] 设置256色失败" >> /root/install_log.txt
+    echo -e "${curr_date} [error] 设置256色失败" >> /root/install_logo.txt
   fi
   #设置时区
   ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
-  echo -e "${curr_date} [info] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
+  echo -e "${curr_date} [info] 设置时区为Asia/Shanghai成功" >> /root/install_logo.txt
   ntpdate cn.ntp.org.cn #同步时间
   #设置语言
-  sudo apt-get install -y locales
+  apt-get install -y locales
   echo "LANG=en_US.UTF-8" > /etc/default/locale
   cat > /etc/locale.gen << EOF
-  
+
   en_US.UTF-8 UTF-8
   zh_CN.UTF-8 UTF-8
 EOF
   locale-gen
-  echo -e "${curr_date} [info] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
+  echo -e "${curr_date} [info] 设置语言为en_US.UTF-8成功" >> /root/install_logo.txt
   #file-max设置，解决too many open files问题
   cat >> /etc/sysctl.conf << EOF
-
 fs.file-max = 6553500
 EOF
   sysctl -p
@@ -74,52 +73,56 @@ root soft nproc 65535
 root hard nproc 65535
 EOF
   cat >> /etc/pam.d/common-session << EOF
-
 session required pam_limits.so
 EOF
   if [ $(ulimit -n) == 65535 ]; then
-    echo -e "${curr_date} [info] file_max 修改成功" >> /root/install_log.txt
+    echo -e "${curr_date} [info] file_max 修改成功" >> /root/install_logo.txt
   else
-    echo -e "${curr_date} [error] file_max 修改失败" >> /root/install_log.txt
+    echo -e "${curr_date} [error] file_max 修改失败" >> /root/install_logo.txt
   fi
 }
 
 ################## 安装各种开发环境 ##################
 install_environment() {
   #安装基础开发环境
-  sudo apt-get update --fix-missing -y && apt upgrade -y
-  sudo apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev  #yum groupinstall "Development Tools"
-  echo -e "${curr_date} [info] 基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >> /root/install_log.txt
+  apt-get update --fix-missing -y && apt upgrade -y
+  apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev #yum groupinstall "Development Tools"
+  echo -e "${curr_date} [info] 基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >> /root/install_logo.txt
   #安装python环境
-  sudo apt-get -y install python python3 python3-pip python3-distutils
-  sudo pip3 install --upgrade pip
-  sudo pip3 install --upgrade setuptools
-  sudo pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
-  echo -e "${curr_date} [info] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
+  apt-get -y install python python3 python3-pip python3-distutils
+  python3 -m pip install --upgrade pip
+  pip install --upgrade setuptools
+  pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
+  echo -e "${curr_date} [info] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_logo.txt
   #安装nodejs环境
-  sudo apt-get -y install nodejs npm
-  sudo npm i --save module-alias
-  sudo npm install yarn n dotenv https-proxy-agent --force
-  #npm install npm@latest -g #更新npm
-  n stable  #更新node
+  #先卸载
+  n-uninstall -y
+  sudo npm uninstall npm -g
+  sudo apt-get remove nodejs -y
+  curl -sL https://git.io/n-install | bash -s -- -q
+  . /root/.zshrc
+  npm install -g yarn --force
   yarn set version latest
-  echo -e "${curr_date} [info] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
+  echo -e "${curr_date} [info] nodejs&npm已安装,yarn&n已安装" >> /root/install_logo.txt
   #安装go环境
-  wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz && tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
-  cat >> /etc/profile << EOF
+  wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
+  tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
+  cat >> /root/.bashrc << EOF
 
 export PATH=$PATH:/home/go/bin
 export GOROOT=/home/go
 export GOPATH=/home/go/gopath
 EOF
-  echo -e "${curr_date} [info] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
+  . /root/.bashrc
+  echo -e "${curr_date} [info] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_logo.txt
   apt autoremove -y
 }
 
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
 install_beautify() {
   #安装oh my zsh
-  cd /root && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  chsh -s /usr/bin/zsh
+  cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
   sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc #设置主题
   git clone https://github.com/zsh-users/zsh-syntax-highlighting /root/.oh-my-zsh/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/plugins/zsh-autosuggestions
@@ -128,11 +131,14 @@ install_beautify() {
   sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
   echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
   source ~/.zshrc
+  chsh -s zsh
   touch ~/.hushlogin #不显示开机提示语
-  echo -e "${curr_date} [info] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
+  echo -e "${curr_date} [info] 装逼神器之oh my zsh 已安装" >> /root/install_logo.txt
   #安装oh my tmux
-  cd /root && git clone https://github.com/gpakosz/.tmux.git && ln -s -f .tmux/.tmux.conf && cp .tmux/.tmux.conf.local .
-  echo -e "${curr_date} [info] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
+  cd /root && git clone https://github.com/gpakosz/.tmux.git
+  ln -s -f .tmux/.tmux.conf
+  cp .tmux/.tmux.conf.local .
+  echo -e "${curr_date} [info] 装逼神器之oh my tmux 已安装" >> /root/install_logo.txt
 }
 
 ################## buyvm挂载256G硬盘 ##################
@@ -171,9 +177,9 @@ EOF
   fi
   mount_status=$(df -h | grep $disk)
   if [ -n $mount_status ]; then
-    echo -e "${curr_date} [info] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
+    echo -e "${curr_date} [info] buyvm 256G硬盘成功挂载到/home" >> /root/install_logo.txt
   else
-    echo -e "${curr_date} [error] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
+    echo -e "${curr_date} [error] buyvm 256G硬盘成功挂载到/home" >> /root/install_logo.txt
   fi
 }
 
@@ -184,13 +190,7 @@ install_rclone() {
   wget -qN https:// -O /root/sa1.zip && unzip -qo /root/sa1.zip -d /root -P $zip_password && rm -f /root/sa1.zip
   wget -qN https:// -O /root/sa2.zip && unzip -qo /root/sa2.zip -d /root -P $zip_password && rm -f /root/sa2.zip
   wget -qN https:// -O /root/rclone_conf.zip && unzip -qo /root/rclone_conf.zip -d /root/.config/rclone -P $zip_password && rm -f /root/rclone_conf.zip
-  echo -e "${curr_date} [info] rclone&fclone已安装,sa及conf文件已下载解压" >> /root/install_log.txt
-  wget -qN https://github.com/cgkings/script-store/raw/master/tools/six-cli_v0.0.7-alpha_linux_amd64.tar.gz -O /root/six-cli.tar.gz && tar -zxf /root/six-cli.tar.gz -C /bin && chmod 777 /bin/six-cli && rm -f /root/six-cli.tar.gz
-  echo -e "${curr_date} [info] 6盘six-cli已安装！" >> /root/install_log.txt
-  wget -qN https://raw.githubusercontent.com/cgkings/script-store/master/tools/aria2cli.py -O /bin/aria2cli.py && chmod 777 /bin/aria2cli.py
-  echo -e "${curr_date} [info] aria2cli.py已安装！" >> /root/install_log.txt
-  wget -qN https://yt-dl.org/downloads/latest/youtube-dl -O /bin/youtube-dl && chmod a+rx /bin/youtube-dl
-  echo -e "${curr_date} [info] youtube-dl已安装！" >> /root/install_log.txt
+  echo -e "${curr_date} [info] rclone&fclone已安装,sa及conf文件已下载解压" >> /root/install_logo.txt
 }
 
 ################## 安装配置aria2自动下载上传 ##################
@@ -230,18 +230,18 @@ EOF
   echo -e "$curr_date ${red}[Info]您选择的remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download"
   service aria2 restart
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
-  if [ ${aria2_install_status} = "success" ]; then
+  if [[ "$aria2_install_status" == "success" ]]; then
     echo -e "${curr_date} [info] aria2自动上传已安装配置成功！
     本地下载目录为：/home/download
-    remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download" >> /root/install_log.txt
+    remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download" >> /root/install_logo.txt
   else
-    echo -e "${curr_date} [error] aria2自动上传安装配置失败！" >> /root/install_log.txt
+    echo -e "${curr_date} [error] aria2自动上传安装配置失败！" >> /root/install_logo.txt
   fi
 }
 
 ################## menu_go_on ##################
 menu_go_on() {
-  echo -e "安装日志路径：/root/install_log.txt"
+  echo -e "安装日志路径：/root/install_logo.txt"
   echo -e " ${black}${on_white}${bold}                           menu_go_on                               ${normal} "
   echo -e "${red}是否继续执行脚本?${normal}"
   read -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
@@ -274,18 +274,19 @@ ${green}${bold}A5、${normal}buyvm挂载256G硬盘
 ${blue}${bold}————————————————————————————————离 线 转 存—————————————————————————————————————${normal}
 ${green}${bold}B1、${normal}安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
 ${green}${bold}B2、${normal}安装配置aria2一键增强[转自P3TERX]
-${green}${bold}B3、${normal}安装配置rsshub/flexget自动添加种子
-${green}${bold}B4、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能] #未完成
+${green}${bold}B3、${normal}安装qBittorrent/Deluge/Transmission[转自aniverse]                     #未完成
+${green}${bold}B4、${normal}安装配置rsshub/flexget自动添加种子                                     #未完成
+${green}${bold}B5、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
 ${blue}${bold}————————————————————————————————网 络 相 关—————————————————————————————————————${normal}
 ${green}${bold}C1、${normal}BBR一键加速[转自-忘记抄的谁的了]
 ${green}${bold}C2、${normal}一键搭建V2ray[转自233boy]
-${green}${bold}C3、${normal}宝塔面板一键脚本[转自-laowangblog.com]
+${green}${bold}C3、${normal}LNMP 一键脚本[转自-lnmp.org]
+${green}${bold}C4、${normal}宝塔面板一键脚本[转自-laowangblog.com]
 ${blue}${bold}————————————————————————————————EMBY  相 关—————————————————————————————————————${normal}
 ${green}${bold}D1、${normal}自动网盘挂载脚本[支持命令参数模式]
 ${green}${bold}D2、${normal}安装配置AVDC刮削工具[转自yoshiko2]
 ${green}${bold}D3、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
-${green}${bold}al、${normal}新机安装[A1-A4,B1-B4,D2]
 ${green}${bold}qq、${normal}退出脚本
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
 EOF
@@ -303,8 +304,8 @@ EOF
       ;;
     A3 | a3)
       echo
-      bash <(curl -sL git.io/cg_swap) a
-      echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_log.txt
+      bash <(curl -sL git.io/cg_swap)
+      echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_logo.txt
       menu_go_on
       ;;
     A4 | a4)
@@ -329,36 +330,65 @@ EOF
       ;;
     B3 | b3)
       echo
-      bash <(curl -sL git.io/cg_flexget)
-      echo -e "${curr_date} [info] 您安装配置了RSSHUB和flexget！" >> /root/install_log.txt
       menu_go_on
       ;;
     B4 | b4)
       echo
       menu_go_on
       ;;
+    B5 | b5)
+      echo
+      menu_go_on
+      ;;
     C1 | c1)
       echo
       bash <(curl -sL git.io/cg_bbr)
-      echo -e "${curr_date} [info] 您设置了BBR加速！" >> /root/install_log.txt
+      echo -e "${curr_date} [info] 您设置了BBR加速！" >> /root/install_logo.txt
       menu_go_on
       ;;
     C2 | c2)
       echo
       bash <(curl -sL git.io/cg_v2ray)
-      echo -e "${curr_date} [info] 您搭建了v2ray！" >> /root/install_log.txt
+      echo -e "${curr_date} [info] 您搭建了v2ray！" >> /root/install_logo.txt
       menu_go_on
       ;;
     C3 | c3)
       echo
+      tmux new -s lnmp -d
+      tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
+      echo -e "${curr_date} [info] 您使用了lnmp一键包！
+安装：mysql5.5(数据库root密码：lnmp.org) & php7.4 
+1、Nginx + MySQL + PHP 的默认安装目录如下：
+   Nginx 目录: /usr/local/nginx/
+   MySQL 目录 : /usr/local/mysql/
+   MySQL 数据库所在目录：/usr/local/mysql/var/
+   PHP 目录 : /usr/local/php/
+   默认网站目录 : /home/wwwroot/default/
+   Nginx 日志目录：/home/wwwlogs/
+2、LNMP 默认的配置文件目录如下：
+   Nginx 主配置(默认虚拟主机)文件：/usr/local/nginx/conf/nginx.conf
+   添加的虚拟主机配置文件：/usr/local/nginx/conf/vhost/域名.conf
+   MySQL 配置文件：/etc/my.cnf
+   PHP 配置文件：/usr/local/php/etc/php.ini
+   php-fpm 配置文件：/usr/local/php/etc/php-fpm.conf
+3、一般维护站点需要用到的命令如下：
+重启 nginx/mysql/php：lnmp nginx/mysql/php restart
+重启所有：lnmp restart
+添加站点：lnmp vhost add
+添加数据库：lnmp database add
+查看帮助：lnmp" >> /root/install_logo.txt
+      menu_go_on
+      ;;
+    C4 | c4)
+      echo
       bash <(curl -sL git.io/cg_baota)
-      echo -e "${curr_date} [info] 您安装了宝塔面板！" >> /root/install_log.txt
+      echo -e "${curr_date} [info] 您安装了宝塔面板！" >> /root/install_logo.txt
       menu_go_on
       ;;
     D1 | d1)
       echo
       bash <(curl -sL git.io/cg_auto_mount)
-      echo -e "${curr_date} [info] 您设置了自动网盘挂载！" >> /root/install_log.txt
+      echo -e "${curr_date} [info] 您设置了自动网盘挂载！" >> /root/install_logo.txt
       menu_go_on
       ;;
     D2 | d2)
@@ -367,31 +397,13 @@ EOF
       echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
             这个小脚本不带参数则帮您安装AVDC
             带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-      echo -e "${curr_date} [info] 您已安装AVDC！" >> /root/install_log.txt
+      echo -e "${curr_date} [info] 您已安装AVDC！" >> /root/install_logo.txt
       menu_go_on
       ;;
     D3 | d3)
       echo
       bash <(curl -sL https://git.io/11plus.sh)
-      echo -e "${curr_date} [info] 您安装搭建了EMBY！" >> /root/install_log.txt
-      menu_go_on
-      ;;
-    AL | al)
-      echo
-      initialization
-      install_environment
-      bash <(curl -sL git.io/cg_swap) a
-      echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_log.txt
-      install_beautify
-      install_rclone
-      install_aria2
-      bash <(curl -sL git.io/cg_flexget) 20
-      echo -e "${curr_date} [info] 您安装配置了RSSHUB和flexget！" >> /root/install_log.txt
-      bash <(curl -sL git.io/cg_avdc)
-      echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
-            这个小脚本不带参数则帮您安装AVDC
-            带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-      echo -e "${curr_date} [info] 您已安装AVDC！" >> /root/install_log.txt
+      echo -e "${curr_date} [info] 您安装搭建了EMBY！" >> /root/install_logo.txt
       menu_go_on
       ;;
     QQ | qq)
