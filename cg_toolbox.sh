@@ -74,6 +74,7 @@ root soft nproc 65535
 root hard nproc 65535
 EOF
   cat >> /etc/pam.d/common-session << EOF
+
 session required pam_limits.so
 EOF
   if [ $(ulimit -n) == 65535 ]; then
