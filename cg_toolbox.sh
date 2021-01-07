@@ -99,7 +99,7 @@ install_environment() {
   #安装go环境
   wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
   tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
-  cat >> /root/.bashrc << EOF
+  cat >> /root/.zshrc << EOF
 
 export PATH=$PATH:/home/go/bin
 export GOROOT=/home/go
@@ -112,7 +112,6 @@ EOF
   sudo npm uninstall npm -g
   sudo apt-get remove nodejs -y
   curl -sL https://git.io/n-install | bash -s -- -q
-  . /root/.bashrc
   . /root/.zshrc
   npm install -g yarn --force
   yarn set version latest
