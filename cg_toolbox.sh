@@ -270,7 +270,7 @@ ${green}${bold}A5、${normal}buyvm挂载256G硬盘
 ${blue}${bold}————————————————————————————————离 线 转 存—————————————————————————————————————${normal}
 ${green}${bold}B1、${normal}安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
 ${green}${bold}B2、${normal}安装配置aria2一键增强[转自P3TERX]
-${green}${bold}B3、${normal}安装qBittorrent/Deluge/Transmission[转自aniverse]                     #未完成
+${green}${bold}B3、${normal}安装qBittorrent/Deluge/Transmission[转自?       ]                     #未完成
 ${green}${bold}B4、${normal}安装配置rsshub/flexget自动添加种子                                     #未完成
 ${green}${bold}B5、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
 ${blue}${bold}————————————————————————————————网 络 相 关—————————————————————————————————————${normal}
@@ -300,7 +300,7 @@ EOF
       ;;
     A3 | a3)
       echo
-      bash <(curl -sL git.io/cg_swap)
+      bash <(curl -sL git.io/cg_swap) a
       echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_log.txt
       menu_go_on
       ;;
@@ -330,6 +330,7 @@ EOF
       ;;
     B4 | b4)
       echo
+      bash <(curl -sL git.io/cg_flexget)
       menu_go_on
       ;;
     B5 | b5)
@@ -404,6 +405,19 @@ EOF
       ;;
     QQ | qq)
       echo
+      exit
+      ;;
+    AL | al)
+      echo
+      initialization
+      install_environment
+      bash <(curl -sL git.io/cg_swap) a
+      echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_log.txt
+      install_beautify
+      install_rclone
+      install_aria2
+
+
       menu_go_on
       ;;
     *)

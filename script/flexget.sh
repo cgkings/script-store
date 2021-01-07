@@ -22,7 +22,9 @@ check_vz
 ################## 搭建RSSHUB ##################
 install_rsshub(){
   mkdir -p /home/RSSHub && git clone https://github.com/cgkings/RSSHub /home/RSSHub
-  cd /home/RSSHub && npm install
+  cd /home/RSSHub
+  npm cache clean --force
+  npm install
   echo -e "CACHE_TYPE=redis\nCACHE_EXPIRE=600" > /home/RSSHub/.env
 }
 
