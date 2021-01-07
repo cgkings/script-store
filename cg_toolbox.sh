@@ -77,11 +77,7 @@ EOF
 
 session required pam_limits.so
 EOF
-  if [ $(ulimit -n) == 65535 ]; then
-    echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
-  else
-    echo -e "${curr_date} [ERROR] file_max 修改失败" >> /root/install_log.txt
-  fi
+  echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
 }
 
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
@@ -94,8 +90,8 @@ install_beautify() {
   git clone https://github.com/zsh-users/zsh-completions /root/.oh-my-zsh/plugins/zsh-completions
   [ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >> ~/.zshrc
   sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
-  sed -i 's/\#DISABLE_UPDATE_PROMPT="true"/DISABLE_UPDATE_PROMPT="true"/g' /root/.zshrc
-  echo -e "source /root/.bashrc\n" >> /root/.zshrc
+  sed -i 's/\# DISABLE_UPDATE_PROMPT="true"/DISABLE_UPDATE_PROMPT="true"/g' /root/.zshrc
+  echo -e "\nsource /root/.bashrc\n" >> /root/.zshrc
   touch ~/.hushlogin #不显示开机提示语
   echo -e "${curr_date} [INFO] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
@@ -104,9 +100,10 @@ install_beautify() {
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s $(which zsh)
+  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效,不生效会影响安装开发环境 ${normal}"
 }
 
-################## 安装各种开发环境 ##################
+################## 安装各种开发环境 [受nodejs安装脚本影响，必须zsh生效后方可安装]##################
 install_environment() {
   #安装基础开发环境
   apt-get update --fix-missing -y && apt upgrade -y
@@ -114,9 +111,10 @@ install_environment() {
   echo -e "${curr_date} [INFO] 基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >> /root/install_log.txt
   #安装python环境
   apt-get -y install python python3 python3-pip python3-distutils
-  python3 -m pip install --upgrade pip
+  python -m pip install --upgrade pip
   pip install --upgrade setuptools
-  pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
+  pip install -U --force-reinstall pip
+  python -m pip install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
   echo -e "${curr_date} [INFO] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
   #安装go环境
   wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
@@ -139,7 +137,6 @@ EOF
   yarn set version latest
   echo -e "${curr_date} [INFO] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
   apt autoremove -y
-  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效 ${normal}"
 }
 
 ################## buyvm挂载256G硬盘 ##################
@@ -294,22 +291,23 @@ main_menu() {
 ${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
 ${blue}${bold}————————————————————————————————系 统 环 境—————————————————————————————————————${normal}
 ${green}${bold}A、${normal}系统初始化[颜色/时区/语言/maxfile/常用工具/swap/zsh/开发环境python/nodejs/go]
-${green}${bold}B、${normal}buyvm挂载256G硬盘
+${green}${bold}B、${normal}安装开发环境[python/nodejs/go][系统初始化生效方可安装]
+${green}${bold}C、${normal}buyvm挂载256G硬盘
 ${blue}${bold}————————————————————————————————离 线 转 存—————————————————————————————————————${normal}
-${green}${bold}C、${normal}安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
-${green}${bold}D、${normal}安装配置aria2一键增强[转自P3TERX]
-${green}${bold}E、${normal}安装配置rsshub/flexget自动添加种子
+${green}${bold}D、${normal}安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
+${green}${bold}E、${normal}安装配置aria2一键增强[转自P3TERX]
+${green}${bold}F、${normal}安装配置rsshub/flexget自动添加种子
 ${blue}${bold}————————————————————————————————网 络 工 具—————————————————————————————————————${normal}
-${green}${bold}F、${normal}BBR一键加速[转自-忘记抄的谁的了]
-${green}${bold}G、${normal}一键搭建V2ray[转自233boy]
-${green}${bold}H、${normal}LNMP 一键脚本[转自-lnmp.org]
-${green}${bold}I、${normal}宝塔面板一键脚本[转自-laowangblog.com]
+${green}${bold}G、${normal}BBR一键加速[转自-忘记抄的谁的了]
+${green}${bold}H、${normal}一键搭建V2ray[转自233boy]
+${green}${bold}I、${normal}LNMP 一键脚本[转自-lnmp.org]
+${green}${bold}G、${normal}宝塔面板一键脚本[转自-laowangblog.com]
 ${blue}${bold}————————————————————————————————EMBY  相 关—————————————————————————————————————${normal}
-${green}${bold}J、${normal}自动网盘挂载脚本[支持命令参数模式]
-${green}${bold}K、${normal}安装配置AVDC刮削工具[转自yoshiko2]
-${green}${bold}L、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
+${green}${bold}K、${normal}自动网盘挂载脚本[支持命令参数模式]
+${green}${bold}L、${normal}安装配置AVDC刮削工具[转自yoshiko2]
+${green}${bold}M、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
 ${blue}${bold}————————————————————————————————便 捷 操 作—————————————————————————————————————${normal}
-${green}${bold}M、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
+${green}${bold}N、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
 ${green}${bold}Q、${normal}退出脚本
 注：本脚本所有操作日志路径：/root/install_log.txt
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
@@ -322,59 +320,63 @@ EOF
       bash <(curl -sL git.io/cg_swap) a
       echo -e "${curr_date} [INFO] 您设置了虚拟内存！" >> /root/install_log.txt
       install_beautify
-      install_environment
       menu_go_on
       ;;
     B | b)
       echo
-      buyvm_disk
+      install_environment
       menu_go_on
       ;;
     C | c)
       echo
-      install_rclone
+      buyvm_disk
       menu_go_on
       ;;
     D | d)
       echo
-      install_aria2
+      install_rclone
       menu_go_on
       ;;
     E | e)
       echo
-      bash <(curl -sL git.io/cg_flexget)
+      install_aria2
       menu_go_on
       ;;
     F | f)
+      echo
+      bash <(curl -sL git.io/cg_flexget)
+      menu_go_on
+      ;;
+    G | g)
       echo
       bash <(curl -sL git.io/cg_bbr)
       echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
       menu_go_on
       ;;
-    G | g)
+    H | h)
       echo
       bash <(curl -sL git.io/cg_v2ray)
       echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
       menu_go_on
       ;;
-    H | h)
+    I | i)
       echo
       install_LNMP
       menu_go_on
       ;;
-    I | i)
+    J | j)
       echo
       bash <(curl -sL git.io/cg_baota)
       echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
       menu_go_on
       ;;
-    J | j)
+    K | k)
       echo
       bash <(curl -sL git.io/cg_auto_mount)
       echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
       menu_go_on
       ;;
-    K | k)
+    L | l)
       echo
       bash <(curl -sL git.io/cg_avdc)
       echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
@@ -383,13 +385,13 @@ EOF
       echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
       menu_go_on
       ;;
-    L | l)
+    M | m)
       echo
       bash <(curl -sL https://git.io/11plus.sh)
       echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
       menu_go_on
       ;;
-    M | m)
+    N | n)
       echo
       echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
       menu_go_on
