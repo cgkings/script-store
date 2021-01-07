@@ -113,9 +113,9 @@ export PATH=$PATH:/home/go/bin
 export GOROOT=/home/go
 export GOPATH=/home/go/gopath
 EOF
-  . /root/.bashrc
   echo -e "${curr_date} [info] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
   apt autoremove -y
+  . /root/.bashrc
 }
 
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
