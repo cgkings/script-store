@@ -1,9 +1,9 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/cg_shellbot
-# File Name: vps_onekey.sh
-# Author: cgking
-# Created Time : 2020.12.7
+# File Name: cg_toolbox.sh
+# Author: cgkings
+# Created Time : 2020.1.7
 # Description:vps装机一键脚本
 # System Required: Debian/Ubuntu
 # Version: 1.0
@@ -23,23 +23,23 @@ initialization() {
   #安装常用软件
   apt-get update --fix-missing -y && apt upgrade -y
   apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg
-  echo -e "${curr_date} [info] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg" >> /root/install_log.txt
+  echo -e "${curr_date} [INFO] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg" >> /root/install_log.txt
   #设置颜色
   cat >> /root/.bashrc << EOF
 
-  if [[ "$TERM" == "xterm" ]]; then
-    export TERM=xterm-256color
-  fi
+if [[ "$TERM" == "xterm" ]]; then
+  export TERM=xterm-256color
+fi
 EOF
   source ~/.bashrc
   if [ $(tput colors) == 256 ]; then
-    echo -e "${curr_date} [info] 设置256色成功" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] 设置256色成功" >> /root/install_log.txt
   else
-    echo -e "${curr_date} [error] 设置256色失败" >> /root/install_log.txt
+    echo -e "${curr_date} [ERROR] 设置256色失败" >> /root/install_log.txt
   fi
   #设置时区
   ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
-  echo -e "${curr_date} [info] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
+  echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   ntpdate cn.ntp.org.cn #同步时间
   #设置语言
   apt-get install -y locales
@@ -50,7 +50,7 @@ EOF
   zh_CN.UTF-8 UTF-8
 EOF
   locale-gen
-  echo -e "${curr_date} [info] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
+  echo -e "${curr_date} [INFO] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
   #file-max设置，解决too many open files问题
   cat >> /etc/sysctl.conf << EOF
 
@@ -78,45 +78,10 @@ EOF
 session required pam_limits.so
 EOF
   if [ $(ulimit -n) == 65535 ]; then
-    echo -e "${curr_date} [info] file_max 修改成功" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
   else
-    echo -e "${curr_date} [error] file_max 修改失败" >> /root/install_log.txt
+    echo -e "${curr_date} [ERROR] file_max 修改失败" >> /root/install_log.txt
   fi
-}
-
-################## 安装各种开发环境 ##################
-install_environment() {
-  #安装基础开发环境
-  apt-get update --fix-missing -y && apt upgrade -y
-  apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev #yum groupinstall "Development Tools"
-  echo -e "${curr_date} [info] 基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >> /root/install_log.txt
-  #安装python环境
-  apt-get -y install python python3 python3-pip python3-distutils
-  python3 -m pip install --upgrade pip
-  pip install --upgrade setuptools
-  pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
-  echo -e "${curr_date} [info] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
-  #安装go环境
-  wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
-  tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
-  cat >> /root/.zshrc << EOF
-
-export PATH=$PATH:/home/go/bin
-export GOROOT=/home/go
-export GOPATH=/home/go/gopath
-EOF
-  echo -e "${curr_date} [info] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
-  #安装nodejs环境
-  #先卸载
-  n-uninstall -y
-  sudo npm uninstall npm -g
-  sudo apt-get remove nodejs -y
-  curl -sL https://git.io/n-install | bash -s -- -q
-  . /root/.zshrc
-  npm install -g yarn --force
-  yarn set version latest
-  echo -e "${curr_date} [info] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
-  apt autoremove -y
 }
 
 ################## 安装装逼神器 oh my zsh & on my tmux ##################
@@ -129,16 +94,50 @@ install_beautify() {
   git clone https://github.com/zsh-users/zsh-completions /root/.oh-my-zsh/plugins/zsh-completions
   [ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >> ~/.zshrc
   sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
-  echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
   touch ~/.hushlogin #不显示开机提示语
-  echo -e "${curr_date} [info] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
+  echo -e "${curr_date} [INFO] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
   cd /root && git clone https://github.com/gpakosz/.tmux.git
   ln -s -f .tmux/.tmux.conf
   cp .tmux/.tmux.conf.local .
-  echo -e "${curr_date} [info] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
+  echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s $(which zsh)
-  echo "重新登录shell工具生效"
+}
+
+################## 安装各种开发环境 ##################
+install_environment() {
+  #安装基础开发环境
+  apt-get update --fix-missing -y && apt upgrade -y
+  apt-get -y install build-essential libncurses5-dev libpcap-dev libffi-dev #yum groupinstall "Development Tools"
+  echo -e "${curr_date} [INFO] 基础开发环境build-essential&libncurses5-dev&libpcap-dev&libffi-dev已安装" >> /root/install_log.txt
+  #安装python环境
+  apt-get -y install python python3 python3-pip python3-distutils
+  python3 -m pip install --upgrade pip
+  pip install --upgrade setuptools
+  pip install requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot
+  echo -e "${curr_date} [INFO] python已安装,pip已升级，依赖安装列表：requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot" >> /root/install_log.txt
+  #安装go环境
+  wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
+  tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
+  cat >> /root/.zshrc << EOF
+
+export PATH=$PATH:/home/go/bin
+export GOROOT=/home/go
+export GOPATH=/home/go/gopath
+EOF
+  echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
+  #安装nodejs环境
+  #先卸载
+  n-uninstall -y
+  sudo npm uninstall npm -g
+  sudo apt-get remove nodejs -y
+  curl -sL https://git.io/n-install | bash -s -- -q
+  . /root/.zshrc
+  npm install -g yarn --force
+  yarn set version latest
+  echo -e "${curr_date} [INFO] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
+  apt autoremove -y
+  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效 ${normal}"
 }
 
 ################## buyvm挂载256G硬盘 ##################
@@ -177,16 +176,16 @@ EOF
   fi
   mount_status=$(df -h | grep $disk)
   if [ -n $mount_status ]; then
-    echo -e "${curr_date} [info] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
   else
-    echo -e "${curr_date} [error] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
+    echo -e "${curr_date} [ERROR] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
   fi
 }
 
 ################## 安装rclone/fclone ##################[未完成]
 install_rclone() {
   check_rclone
-  echo -e "${curr_date} [info] rclone&fclone已安装,sa及conf文件已下载解压" >> /root/install_log.txt
+  echo -e "${curr_date} [INFO] rclone&fclone已安装,sa及conf文件已下载解压" >> /root/install_log.txt
 }
 
 ################## 安装配置aria2自动下载上传 ##################
@@ -211,7 +210,7 @@ EOF
   fclone backend lsdrives $fclone_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$fclone_remote"_drivelist.txt
   drive_id=$(sed -n '/'$fclone_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
   if [ -z $drive_id ]; then
-    echo -e "$curr_date ${red}[error]您的remote或remote下的team_drive id为空${normal}"
+    echo -e "$curr_date ${red}[ERROR]您的remote或remote下的team_drive id为空${normal}"
     return
   fi
   #清空~/.config/rclone/rclone.conf内的相应root id
@@ -223,23 +222,53 @@ EOF
   sed -i 's/drive-name=.*$/drive-name='$fclone_remote'/g' /root/.aria2c/script.conf
   #设置自动上传网盘目录
   sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
-  echo -e "$curr_date ${red}[Info]您选择的remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download"
+  echo -e "$curr_date ${red}[INFO]您选择的remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download"
   service aria2 restart
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
   if [ ${aria2_install_status} == success ]; then
-    echo -e "${curr_date} [info] aria2自动上传已安装配置成功！
+    echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！
     本地下载目录为：/home/download
     remote为：${fclone_remote}，自动上传目录为：${drive_name}/Download" >> /root/install_log.txt
   else
-    echo -e "${curr_date} [error] aria2自动上传安装配置失败！" >> /root/install_log.txt
+    echo -e "${curr_date} [ERROR] aria2自动上传安装配置失败！" >> /root/install_log.txt
   fi
+}
+
+################## LNMP一键脚本 ##################
+install_LNMP(){
+  tmux new -s lnmp -d
+  tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
+  cat >> /root/install_log.txt << EOF
+
+${curr_date} [INFO] 您使用了lnmp一键包！
+安装：mysql5.5(数据库root密码：lnmp.org) & php7.4 
+1、Nginx + MySQL + PHP 的默认安装目录如下：
+   Nginx 目录: /usr/local/nginx/
+   MySQL 目录 : /usr/local/mysql/
+   MySQL 数据库所在目录：/usr/local/mysql/var/
+   PHP 目录 : /usr/local/php/
+   默认网站目录 : /home/wwwroot/default/
+   Nginx 日志目录：/home/wwwlogs/
+2、LNMP 默认的配置文件目录如下：
+   Nginx 主配置(默认虚拟主机)文件：/usr/local/nginx/conf/nginx.conf
+   添加的虚拟主机配置文件：/usr/local/nginx/conf/vhost/域名.conf
+   MySQL 配置文件：/etc/my.cnf
+   PHP 配置文件：/usr/local/php/etc/php.ini
+   php-fpm 配置文件：/usr/local/php/etc/php-fpm.conf
+3、一般维护站点需要用到的命令如下：
+  重启 nginx/mysql/php：lnmp nginx/mysql/php restart
+  重启所有：lnmp restart
+  添加站点：lnmp vhost add
+  添加数据库：lnmp database add
+  查看帮助：lnmp
+EOF
 }
 
 ################## menu_go_on ##################
 menu_go_on() {
   echo -e "安装日志路径：/root/install_log.txt"
-  echo -e " ${black}${on_white}${bold}                           menu_go_on                               ${normal} "
-  echo -e "${red}是否继续执行脚本?${normal}"
+  echo -e "${black}${on_white}${bold}                            我们的生活充满阳光                                 ${normal}"
+  echo -e "${red}是否还要继续?${normal}"
   read -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
   echo
   case "$res" in
@@ -261,168 +290,111 @@ main_menu() {
   clear
   cat << EOF
 ${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
-${blue}${bold}————————————————————————————————系 统 相 关—————————————————————————————————————${normal}
-${green}${bold}A1、${normal}系统初始化设置[颜色/时区/语言/maxfile/常用工具]
-${green}${bold}A2、${normal}安装各种开发环境[python/nodejs/go]
-${green}${bold}A3、${normal}设置虚拟内存[支持命令参数模式]
-${green}${bold}A4、${normal}安装装逼神器 oh my zsh & on my tmux
-${green}${bold}A5、${normal}buyvm挂载256G硬盘
+${blue}${bold}————————————————————————————————系 统 环 境—————————————————————————————————————${normal}
+${green}${bold}A、${normal}系统初始化[颜色/时区/语言/maxfile/常用工具/swap/zsh/开发环境python/nodejs/go]
+${green}${bold}B、${normal}buyvm挂载256G硬盘
 ${blue}${bold}————————————————————————————————离 线 转 存—————————————————————————————————————${normal}
-${green}${bold}B1、${normal}安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
-${green}${bold}B2、${normal}安装配置aria2一键增强[转自P3TERX]
-${green}${bold}B3、${normal}安装qBittorrent/Deluge/Transmission[转自?]                     #未完成
-${green}${bold}B4、${normal}安装配置rsshub/flexget自动添加种子
-${green}${bold}B5、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
-${blue}${bold}————————————————————————————————网 络 相 关—————————————————————————————————————${normal}
-${green}${bold}C1、${normal}BBR一键加速[转自-忘记抄的谁的了]
-${green}${bold}C2、${normal}一键搭建V2ray[转自233boy]
-${green}${bold}C3、${normal}LNMP 一键脚本[转自-lnmp.org]
-${green}${bold}C4、${normal}宝塔面板一键脚本[转自-laowangblog.com]
+${green}${bold}C、${normal}安装rclone/fclone/6pan-cli/aria2cli/youtube-dl[包括sa/conf备份还原]
+${green}${bold}D、${normal}安装配置aria2一键增强[转自P3TERX]
+${green}${bold}E、${normal}安装配置rsshub/flexget自动添加种子
+${blue}${bold}————————————————————————————————网 络 工 具—————————————————————————————————————${normal}
+${green}${bold}F、${normal}BBR一键加速[转自-忘记抄的谁的了]
+${green}${bold}G、${normal}一键搭建V2ray[转自233boy]
+${green}${bold}H、${normal}LNMP 一键脚本[转自-lnmp.org]
+${green}${bold}I、${normal}宝塔面板一键脚本[转自-laowangblog.com]
 ${blue}${bold}————————————————————————————————EMBY  相 关—————————————————————————————————————${normal}
-${green}${bold}D1、${normal}自动网盘挂载脚本[支持命令参数模式]
-${green}${bold}D2、${normal}安装配置AVDC刮削工具[转自yoshiko2]
-${green}${bold}D3、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
-${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
-${green}${bold}QQ、${normal}退出脚本
-${green}${bold}AL、${normal}新鸡重装[A1-A4,B1,B2,D2]
+${green}${bold}J、${normal}自动网盘挂载脚本[支持命令参数模式]
+${green}${bold}K、${normal}安装配置AVDC刮削工具[转自yoshiko2]
+${green}${bold}L、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
+${blue}${bold}————————————————————————————————便 捷 操 作—————————————————————————————————————${normal}
+${green}${bold}M、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
+${green}${bold}Q、${normal}退出脚本
+注：本脚本所有操作日志路径：/root/install_log.txt
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
 EOF
-  read -n2 -p "${green}${bold}请输入选择 [A1-D3]:${normal}" num
+  read -n1 -p "${green}${bold}请输入选择 [A-Q]:${normal}" num
   case "$num" in
-    A1 | a1)
+    A | a)
       echo
       initialization
-      menu_go_on
-      ;;
-    A2 | a2)
-      echo
+      bash <(curl -sL git.io/cg_swap) a
+      echo -e "${curr_date} [INFO] 您设置了虚拟内存！" >> /root/install_log.txt
+      install_beautify
       install_environment
       menu_go_on
       ;;
-    A3 | a3)
-      echo
-      bash <(curl -sL git.io/cg_swap) a
-      echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_log.txt
-      menu_go_on
-      ;;
-    A4 | a4)
-      echo
-      install_beautify
-      menu_go_on
-      ;;
-    A5 | a5)
+    B | b)
       echo
       buyvm_disk
       menu_go_on
       ;;
-    B1 | b1)
+    C | c)
       echo
       install_rclone
       menu_go_on
       ;;
-    B2 | b2)
+    D | d)
       echo
       install_aria2
       menu_go_on
       ;;
-    B3 | b3)
-      echo
-      menu_go_on
-      ;;
-    B4 | b4)
+    E | e)
       echo
       bash <(curl -sL git.io/cg_flexget)
       menu_go_on
       ;;
-    B5 | b5)
-      echo
-      menu_go_on
-      ;;
-    C1 | c1)
+    F | f)
       echo
       bash <(curl -sL git.io/cg_bbr)
-      echo -e "${curr_date} [info] 您设置了BBR加速！" >> /root/install_log.txt
+      echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
       menu_go_on
       ;;
-    C2 | c2)
+    G | g)
       echo
       bash <(curl -sL git.io/cg_v2ray)
-      echo -e "${curr_date} [info] 您搭建了v2ray！" >> /root/install_log.txt
+      echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
       menu_go_on
       ;;
-    C3 | c3)
+    H | h)
       echo
-      tmux new -s lnmp -d
-      tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
-      echo -e "${curr_date} [info] 您使用了lnmp一键包！
-安装：mysql5.5(数据库root密码：lnmp.org) & php7.4 
-1、Nginx + MySQL + PHP 的默认安装目录如下：
-   Nginx 目录: /usr/local/nginx/
-   MySQL 目录 : /usr/local/mysql/
-   MySQL 数据库所在目录：/usr/local/mysql/var/
-   PHP 目录 : /usr/local/php/
-   默认网站目录 : /home/wwwroot/default/
-   Nginx 日志目录：/home/wwwlogs/
-2、LNMP 默认的配置文件目录如下：
-   Nginx 主配置(默认虚拟主机)文件：/usr/local/nginx/conf/nginx.conf
-   添加的虚拟主机配置文件：/usr/local/nginx/conf/vhost/域名.conf
-   MySQL 配置文件：/etc/my.cnf
-   PHP 配置文件：/usr/local/php/etc/php.ini
-   php-fpm 配置文件：/usr/local/php/etc/php-fpm.conf
-3、一般维护站点需要用到的命令如下：
-重启 nginx/mysql/php：lnmp nginx/mysql/php restart
-重启所有：lnmp restart
-添加站点：lnmp vhost add
-添加数据库：lnmp database add
-查看帮助：lnmp" >> /root/install_log.txt
+      install_LNMP
       menu_go_on
       ;;
-    C4 | c4)
+    I | i)
       echo
       bash <(curl -sL git.io/cg_baota)
-      echo -e "${curr_date} [info] 您安装了宝塔面板！" >> /root/install_log.txt
+      echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
       menu_go_on
       ;;
-    D1 | d1)
+    J | j)
       echo
       bash <(curl -sL git.io/cg_auto_mount)
-      echo -e "${curr_date} [info] 您设置了自动网盘挂载！" >> /root/install_log.txt
+      echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
       menu_go_on
       ;;
-    D2 | d2)
+    K | k)
       echo
       bash <(curl -sL git.io/cg_avdc)
       echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
             这个小脚本不带参数则帮您安装AVDC
             带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-      echo -e "${curr_date} [info] 您已安装AVDC！" >> /root/install_log.txt
+      echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
       menu_go_on
       ;;
-    D3 | d3)
+    L | l)
       echo
       bash <(curl -sL https://git.io/11plus.sh)
-      echo -e "${curr_date} [info] 您安装搭建了EMBY！" >> /root/install_log.txt
+      echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
       menu_go_on
       ;;
-    QQ | qq)
+    M | m)
+      echo
+      echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
+      menu_go_on
+      ;;
+    Q | q)
       echo
       exit
-      ;;
-    AL | al)
-      echo
-      initialization
-      install_environment
-      bash <(curl -sL git.io/cg_swap) a
-      echo -e "${curr_date} [info] 您设置了虚拟内存！" >> /root/install_log.txt
-      install_beautify
-      install_rclone
-      install_aria2
-      bash <(curl -sL git.io/cg_avdc)
-      echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
-            这个小脚本不带参数则帮您安装AVDC
-            带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-      echo -e "${curr_date} [info] 您已安装AVDC！" >> /root/install_log.txt
-      menu_go_on
       ;;
     *)
       echo
