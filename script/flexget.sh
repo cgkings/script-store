@@ -22,6 +22,7 @@ check_vz
 ################## 搭建RSSHUB ##################
 install_rsshub(){
   mkdir -p /home/RSSHub && git clone https://github.com/cgkings/RSSHub /home/RSSHub
+  sleep 5s
   cd /home/RSSHub
   npm cache clean --force
   npm install
@@ -47,7 +48,7 @@ install_flexget(){
 ################## 配置flexget刷新时间 ##################
 config_flexget(){
   read -t 5 -p "flexget刷新时间设置为(单位：分钟,5秒超时或回车默认20分钟)：" fresh_time
-  fresh_time=${fresh_time:-20}
+  fresh_time=${fresh_time:-15}
   config_flexget_do
 }
 
@@ -65,6 +66,7 @@ config_flexget_do(){
     crontab -l | { cat; echo "${cron_config}"; } | crontab -
     fi
   fi
+  flexget --test execute
 }
 
 ################## 执  行  命  令 ##################
