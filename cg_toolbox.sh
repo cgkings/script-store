@@ -100,7 +100,7 @@ install_environment() {
   sudo npm uninstall npm -g
   sudo apt-get remove nodejs -y
   curl -sL https://git.io/n-install | bash -s -- -q
-  . /root/.zshrc
+  . /root/.bashrc
   npm install -g yarn --force
   yarn set version latest
   echo -e "${curr_date} [info] nodejs&npm已安装,yarn&n已安装" >> /root/install_log.txt
