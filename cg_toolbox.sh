@@ -85,7 +85,7 @@ install_beautify() {
   [ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >> ~/.zshrc
   sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
   sed -i 's/\# DISABLE_UPDATE_PROMPT="true"/DISABLE_UPDATE_PROMPT="true"/g' /root/.zshrc
-  echo -e "\nsource /root/.profile" >> /root/.zshrc
+  echo -e "\nsource /root/.bashrc" >> /root/.zshrc
   touch ~/.hushlogin #不显示开机提示语
   echo -e "${curr_date} [INFO] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
