@@ -21,7 +21,7 @@ check_vz
 
 ################## 安装avdc ##################
 install_avdc() {
-  wget -qN https://github.com/cgkings/script-store/raw/master/tools/avdc.zip -O /root/avdc.zip && unzip -qo /root/avdc.zip -d /bin && chmod 777 /bin/AV_Data_Capture && rm -f /root/avdc.zip
+  wget -qN https://github.com/cgkings/script-store/raw/master/tools/avdc.zip -O /root/avdc.zip && unzip -qo /root/avdc.zip -d /usr/bin/ && chmod 777 /usr/bin/AV_Data_Capture && rm -f /root/avdc.zip
   echo -e "${curr_date} [info] AV_Data_Capture-CLI-4.3.2已安装！" >> /root/install_logo.txt
   read -p "你输入你要刮削的绝对路径(将config.ini放入其中，如不需要放，请回车拒绝)：" avdc_chose
   if [ -n $avdc_chose ]; then
