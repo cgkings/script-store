@@ -84,7 +84,6 @@ check_fuse() {
 check_rclone() {
   bash <(curl -L -s https://rclone.org/install.sh)
   if [ ! -f /usr/bin/fclone ]; then
-    wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip
-    unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && chmod +x /usr/bin/fclone && fclone version
+    wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
   fi
 }
