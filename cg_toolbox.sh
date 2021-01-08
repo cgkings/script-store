@@ -21,9 +21,9 @@ check_vz
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
 initialization() {
   #安装常用软件
-  apt-get update --fix-missing -y && apt upgrade -y
-  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg
-  echo -e "${curr_date} [INFO] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg" >> /root/install_log.txt
+  sudo apt-get update --fix-missing -y && apt upgrade -y
+  sudo apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg unar p7zip-full p7zip-rar
+  echo -e "${curr_date} [INFO] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg unar p7zip-full p7zip-rar" >> /root/install_log.txt
   #设置颜色
   cat >> /root/.bashrc << EOF
 
@@ -52,10 +52,7 @@ EOF
   locale-gen
   echo -e "${curr_date} [INFO] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
   #file-max设置，解决too many open files问题
-  cat >> /etc/sysctl.conf << EOF
-
-fs.file-max = 6553500
-EOF
+  echo -e "\nfs.file-max = 6553500" >> /etc/sysctl.conf
   sysctl -p
   cat >> /etc/security/limits.conf << EOF
 
@@ -73,10 +70,7 @@ root hard nofile 65535
 root soft nproc 65535
 root hard nproc 65535
 EOF
-  cat >> /etc/pam.d/common-session << EOF
-
-session required pam_limits.so
-EOF
+  echo -e "\nsession required pam_limits.so" >> /etc/pam.d/common-session
   echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
 }
 
@@ -133,7 +127,6 @@ EOF
     echo 安装完毕
   fi
   . /root/.bashrc
-  . /root/.zshrc
   echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
   #安装nodejs环境
   #先卸载
@@ -144,15 +137,9 @@ EOF
   fi
   sudo mkdir -p /usr/local/lib/nodejs
   wget -qN https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz && sudo tar -xJvf node-v14.15.4-linux-x64.tar.xz -C /usr/local/lib/nodejs && rm -f node-v14.15.4-linux-x64.tar.xz
-  node_var="export PATH=/usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin:$PATH"
-  if cat '/root/.profile' | grep "$node_var" > /dev/null; then
-    echo 已写过变量配置，安装完毕
-  else
-    echo -e "\n${node_var}" >> /root/.profile
-    echo 安装完毕
-  fi
-  . /root/.profile
-  sleep 3s
+  sudo ln -s /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npm /usr/local/bin/
+  sudo ln -s /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npx /usr/local/bin/
+  sudo ln -s /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/node /usr/local/bin/
   npm install -g yarn n --force
   yarn set version latest
   echo -e "${curr_date} [INFO] nodejs&npm已安装,yarn&n已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
