@@ -178,8 +178,8 @@ EOF
       echo -e "256G磁盘已挂载，无须重复操作"
     fi
   fi
-  mount_status=$(df -h | grep "$disk")
-  if [ -z $mount_status ]; then
+  mount_status_update=$(df -h | grep "$disk")
+  if [ -z $mount_status_update ]; then
     echo -e "${curr_date} [ERROR] buyvm 256G硬盘尚未挂载到/home" >> /root/install_log.txt
   else
     echo -e "${curr_date} [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
