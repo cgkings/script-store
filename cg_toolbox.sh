@@ -148,15 +148,12 @@ EOF
 ################## buyvm挂载256G硬盘 ##################
 buyvm_disk() {
   disk=$(fdisk -l | grep 256 | awk '{print $2}' | tr -d : | sed -n '1p') #获取256G磁盘名
-  mount_status=$(df -h | grep $disk)                                     #挂载状态
+  mount_status=$(df -h | grep "$disk")                                     #挂载状态
   if [ -z $disk ]; then
     echo -e "未找到256G磁盘，请到控制台先加卷后再运行本脚本"
     exit
   else
-    if [ -n $mount_status ]; then
-      echo -e "256G磁盘已挂载，无须重复操作"
-      exit
-    else
+    if [ -z $mount_status ]; then
       #使用fdisk创建分区
       fdisk $disk << EOF
 n
@@ -177,13 +174,15 @@ EOF
       mkdir -p /home                                       #确保/home目录存在
       mount "$disk"1 /home                                 #将256G硬盘挂载到系统/home文件夹
       echo "${disk}1 /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
+    else
+      echo -e "256G磁盘已挂载，无须重复操作"
     fi
   fi
-  mount_status=$(df -h | grep $disk)
-  if [ -n $mount_status ]; then
-    echo -e "${curr_date} [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
+  mount_status=$(df -h | grep "$disk")
+  if [ -z $mount_status ]; then
+    echo -e "${curr_date} [ERROR] buyvm 256G硬盘尚未挂载到/home" >> /root/install_log.txt
   else
-    echo -e "${curr_date} [ERROR] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
   fi
 }
 
