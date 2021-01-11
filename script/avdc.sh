@@ -12,8 +12,6 @@
 
 ################## 前置变量设置 ##################
 source <(wget -qO- https://git.io/cg_script_option)
-curr_date=$(date "+%Y-%m-%d %H:%M:%S")
-setcolor
 check_root
 check_vz
 #set -e #异常则退出整个脚本，避免错误累加

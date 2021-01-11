@@ -11,8 +11,6 @@
 
 ################## 前置变量 ##################
 source <(wget -qO- https://git.io/cg_script_option)
-curr_date=$(date "+%Y-%m-%d %H:%M:%S")
-setcolor
 check_root
 check_vz
 #set -e #异常则退出整个脚本，避免错误累加
@@ -23,7 +21,7 @@ initialization() {
   #安装常用软件
   apt-get update --fix-missing -y && apt upgrade -y
   sleep 3s
-  apt-get -y install git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg unar p7zip-full
+  apt-get -y install git make curl wget tree vim nano tmux htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip unar p7zip-full
   echo -e "${curr_date} [INFO] 常用软件安装列表：git make curl wget tree vim nano tmux unzip htop zsh parted nethogs screen sudo ntpdate manpages-zh screenfetch fonts-powerline file zip jq tar expect ca-certificates findutils gzip dpkg unar p7zip-full p7zip-rar" >> /root/install_log.txt
   #设置颜色
   cat >> /root/.bashrc << EOF

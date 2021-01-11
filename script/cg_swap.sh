@@ -12,7 +12,6 @@
 
 ################## 前置变量 ##################
 source <(wget -qO- https://git.io/cg_script_option)
-setcolor
 check_root
 check_vz
 #set -e #异常则退出整个脚本，避免错误累加
