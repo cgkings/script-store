@@ -14,6 +14,7 @@
 source <(wget -qO- https://git.io/cg_script_option)
 check_root
 check_vz
+check_rclone
 #set -e #异常则退出整个脚本，避免错误累加
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
 
@@ -308,7 +309,6 @@ mount_menu() {
 }
 
 ################## 执  行  命  令 ##################
-check_rclone
 if [ -z $1 ]; then
   mount_menu
 else

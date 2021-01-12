@@ -86,8 +86,16 @@ check_fuse() {
 }
 ################## 检查rclone&fclone安装情况 ##################
 check_rclone() {
-  bash <(curl -L -s https://rclone.org/install.sh)
-  if [ ! -f /usr/bin/fclone ]; then
+  rclone_install_status=$(command -v rclone)
+  if [ -z $rclone_install_status ]; then
+    echo -e "`curr_date` ${red}$1${normal} 不存在.正在为您安装，请稍后..."
+    bash <(curl -L -s https://rclone.org/install.sh)
+  fi
+  if [ ! -f /root/.config/rclone/rclone.conf ]; then
+    echo -e "`curr_date` ${red}未检测到rclone配置文件.请配置后重新运行脚本.${normal}" && exit 1
+  fi
+  fclone_install_status=$(command -v fclone)
+  if [ -z $fclone_install_status ]; then
     wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
   fi
 }
