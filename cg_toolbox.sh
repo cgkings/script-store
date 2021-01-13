@@ -90,7 +90,7 @@ install_beautify() {
   echo -e "${curr_date} [INFO] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
   cd /root && git clone https://github.com/gpakosz/.tmux.git
-  ln -s -f .tmux/.tmux.conf
+  ln -sf .tmux/.tmux.conf
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s $(which zsh)
@@ -137,9 +137,9 @@ EOF
   fi
   sudo mkdir -p /usr/local/lib/nodejs
   wget -qN https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz && sudo tar -xJvf node-v14.15.4-linux-x64.tar.xz -C /usr/local/lib/nodejs && rm -f node-v14.15.4-linux-x64.tar.xz
-  ln -s /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npm /usr/local/bin/
-  ln -s /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npx /usr/local/bin/
-  ln -s /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/node /usr/local/bin/
+  ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npm /usr/local/bin/
+  ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npx /usr/local/bin/
+  ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/node /usr/local/bin/
   npm install -g yarn n --force
   yarn set version latest
   echo -e "${curr_date} [INFO] nodejs&npm已安装,yarn&n已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
