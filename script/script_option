@@ -85,18 +85,18 @@ check_fuse() {
 }
 ################## 检查rclone&fclone安装情况 ##################
 check_rclone() {
-  rclone_install_status=$(command -v rclone)
-  if [ -z $rclone_install_status ]; then
-    echo -e "`curr_date` ${red}$1${normal} 不存在.正在为您安装，请稍后..."
+  if [ -z $(command -v rclone) ]; then
+    echo -e "`curr_date` ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
     bash <(curl -L -s https://rclone.org/install.sh)
   fi
   if [ ! -f /root/.config/rclone/rclone.conf ]; then
     echo -e "`curr_date` ${red}未检测到rclone配置文件.请配置后重新运行脚本.${normal}" && exit 1
   fi
-  fclone_install_status=$(command -v fclone)
-  if [ -z $fclone_install_status ]; then
+  if [ -z $(command -v fclone) ]; then
+    echo -e "`curr_date` ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
     wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
   fi
+  echo -e "${curr_date} [INFO] rclone&fclone已安装" >> /root/install_log.txt
 }
 
 ################## 检查安装情况 ##################
@@ -130,9 +130,10 @@ check_command() {
     echo -e "$(curr_date) ${red}$command_arges${normal} 不存在.正在为您安装，请稍后..."
     if [[ "${release}" = "centos" ]]; then
       yum install $command_arges -y
+      echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
     elif [[ "${release}" = "debian" || "${release}" = "ubuntu" || "${release}" = "armdebian"  ]]; then
-      apt-get update --fix-missing -y && apt upgrade -y
-      apt-get install $1command_arges -y
+      apt-get install $command_arges -y --upgrade
+      echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
     else
       echo -e "$(curr_date) ${red}对不起！您的系统暂不支持该脚本，请联系作者做定制优化，谢谢！${normal}"
       exit 1
@@ -149,4 +150,46 @@ check_dir_file(){
     return 0
   fi
   return 1
+}
+
+################## 网盘选择列表 ##################[done]
+drive_chose_list() {
+  echo -e "$mount_remote 的网盘列表："
+  sleep 2s
+  echo -e "${red} +-------------------------+"
+  echo -e "${red}$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt)${normal}"
+  echo -e "${red} +-------------------------+"
+  read -p "请选择需要挂载的网盘（输入数字即可）：" drive_chose_num
+  drive_change_id=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '{print $2}' | sed -n ''$drive_chose_num'p')
+  echo $drive_change_id
+}
+
+################## 修改挂载盘 ##################[done]
+drive_change() {
+  fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' >~/.config/rclone/"$mount_remote"_drivelist.txt
+  drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
+  if [ -z $drive_id ]; then
+    echo -e "$curr_date ${red}[Info]您的team_drive id为空，在下面添加一个吧${normal}"
+    drive_chose_list
+    rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
+    sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
+    team_drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'team_drive' | sed -n '1p')
+    sed -i "s/$team_drive_id/team_drive = $drive_change_id/g" ~/.config/rclone/rclone.conf
+    drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
+    drive_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_id'/{print $3}')
+    echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
+    return
+  fi
+  if [ -z $drive_change_id ]; then
+    return
+  fi
+  if [ $drive_change_id == $drive_id ]; then
+    echo -e "$curr_date ${red}[Info]你要改的挂载盘id与conf文件id相同，无需修改${normal}"
+  else
+    echo -e "$curr_date ${red}[Info]即将修改挂载盘ID为：${drive_change_id}${normal}..."
+    sed -i "s/$drive_id/$drive_change_id/g" ~/.config/rclone/rclone.conf
+    drive_change_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_change_id'/{print $3}')
+    echo -e "$curr_date ${red}[Info]已将挂载盘ID修改为：${drive_change_id},挂载盘名为：${drive_change_name}[done]${normal}"
+    sleep 3s
+  fi
 }

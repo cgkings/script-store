@@ -14,6 +14,7 @@
 source <(wget -qO- https://git.io/cg_script_option)
 check_root
 check_vz
+setcolor
 #set -e #异常则退出整个脚本，避免错误累加
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
 totalmem=$(free -m | awk '/Mem:/{print $2}')
