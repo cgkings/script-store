@@ -117,14 +117,11 @@ EOF
   fi
 }
 
-################## 安装装逼神器 oh my zsh & on my tmux ##################
+################## 安装装逼神器 oh my zsh & on my tmux ##################待完善
 install_beautify() {
   #安装oh my zsh
   check_command zsh
-
-
-
-
+  #调用oh my zsh安装脚本
   cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
   sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc #设置主题
   git clone https://github.com/zsh-users/zsh-syntax-highlighting /root/.oh-my-zsh/plugins/zsh-syntax-highlighting
@@ -192,42 +189,21 @@ EOF
   [ -z "$(grep "upload.sh" /root/.aria2c/aria2.conf)" ] && sed -i 's/clean.sh/upload.sh/g' /root/.aria2c/aria2.conf
   #修改自动上传的工具，由rclone改为fclone
   [ -z "$(grep "fclone move" /root/.aria2c/upload.sh)" ] && sed -i 's/rclone move/fclone move/g' /root/.aria2c/upload.sh
-  #输入自动上传的fclone remote
-  read -p "请输入自动上传的fclone remote:" mount_remote
-  
-
-  drive_change
-  
-
-
-
-
-
-  #获取你输入remote的team drive id
-  drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
-  #如果你的team drive id为空，就让你重新设置一个
-  if [ -z $drive_id ]; then
-    echo -e "$curr_date ${red}[ERROR]您的remote或remote下的team_drive id为空${normal}"
-    #清空~/.config/rclone/rclone.conf内的相应root id
-    rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
-    sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
-    return
-  fi
-  
-  #获取drive_name
-  fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$mount_remote"_drivelist.txt  
-  drive_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_id'/{print $3}')
-  #设置自动上传的fclone remote
-  sed -i 's/drive-name=.*$/drive-name='$mount_remote'/g' /root/.aria2c/script.conf
+  #选择fclone remote
+  remote_choose
+  #设置自动上传的fclone remote*****从此行开始未修改******
+  sed -i 's/drive-name=.*$/drive-name='$my_remote'/g' /root/.aria2c/script.conf
   #设置自动上传网盘目录
   sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
-  echo -e "$curr_date ${red}[INFO]您选择的remote为：${mount_remote}，自动上传目录为：${drive_name}/Download"
+  #通知remote选择结果及自动上传目录
+  echo -e "$curr_date ${red}[INFO]您选择的remote为：${my_remote}，自动上传目录为：${td_name}/Download"
   service aria2 restart
+  #检查是否安装成功
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
   if [ ${aria2_install_status} == success ]; then
     echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！
     本地下载目录为：/home/download
-    remote为：${mount_remote}，自动上传目录为：${drive_name}/Download" >> /root/install_log.txt
+    remote为：${my_remote}，自动上传目录为：${td_name}/Download" >> /root/install_log.txt
   else
     echo -e "${curr_date} [ERROR] aria2自动上传安装配置失败！" >> /root/install_log.txt
   fi
@@ -406,6 +382,7 @@ EOF
 
 ################## 执  行  命  令 ##################
 initialization
+check_rclone
 main_menu
 
 #   -------------------------------

@@ -85,16 +85,22 @@ check_fuse() {
 }
 ################## 检查rclone&fclone安装情况 ##################
 check_rclone() {
+  #检查fclone安装状态，没装就安装
+  if [ -z $(command -v fclone) ]; then
+    echo -e "`curr_date` ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
+    wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
+  fi
+  #检查rclone安装状态，没装就安装
   if [ -z $(command -v rclone) ]; then
     echo -e "`curr_date` ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
     bash <(curl -L -s https://rclone.org/install.sh)
   fi
+  #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
   if [ ! -f /root/.config/rclone/rclone.conf ]; then
-    echo -e "`curr_date` ${red}未检测到rclone配置文件.请配置后重新运行脚本.${normal}" && exit 1
-  fi
-  if [ -z $(command -v fclone) ]; then
-    echo -e "`curr_date` ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
-    wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
+    echo -e "`curr_date` ${red}未检测到rclone配置文件.请使用“fclone config”命令配置后重新运行脚本.\n注意：配置时请不要设置root_folder_id，而是设置team_drive${normal}" && exit 1
+  else
+    #检查conf文件内root_folder_id是否为空，如不为空就全部清空
+    [[ -n $(cat ~/.config/rclone/rclone.conf | awk '/root_folder_id/{print $3}') ]] && sed -i "s/root_folder_id = .*$/root_folder_id = /g" ~/.config/rclone/rclone.conf  
   fi
   echo -e "${curr_date} [INFO] rclone&fclone已安装" >> /root/install_log.txt
 }
@@ -152,44 +158,93 @@ check_dir_file(){
   return 1
 }
 
-################## 网盘选择列表 ##################[done]
-drive_chose_list() {
-  echo -e "$mount_remote 的网盘列表："
-  sleep 2s
+################## 选择remote ##################[done]
+remote_choose() {
+  #选择remote
+  rclone listremotes | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}' > ~/.config/rclone/remote_list.txt
+  echo -e "   本地已配置remote列表:"
   echo -e "${red} +-------------------------+"
-  echo -e "${red}$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt)${normal}"
+  echo -e "${red}$(cat /root/.config/rclone/remote_list.txt)${normal}"
   echo -e "${red} +-------------------------+"
-  read -p "请选择需要挂载的网盘（输入数字即可）：" drive_chose_num
-  drive_change_id=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '{print $2}' | sed -n ''$drive_chose_num'p')
-  echo $drive_change_id
+  read -n1 -p "请选择用于后续操作rclone remote（输入数字即可）：" remote_choose_num
+  echo
+  #判断是否选择错误
+  if [[ -z $(cat /root/.config/rclone/remote_list.txt|awk '{print $1}'|grep ${remote_choose_num}) ]]; then
+    echo
+    echo "输入不正确，请重新输入。"
+    echo
+    remote_choose
+  else
+    #选择无误，识别选择的remote
+    my_remote=$(cat /root/.config/rclone/remote_list.txt|awk '{print $2}'|sed -n ${remote_choose_num}p)
+    #输出remote的团队盘列表备用
+    fclone backend lsdrives $my_remote:|awk '{ print FNR " " $0}' >~/.config/rclone/"$my_remote"_td_list.txt
+    #识别conf文件中该remote的team drive id
+    td_id=$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf|awk '/team_drive/{print $3}'|sed -n '1p')
+    #如果你remote的team drive id为空，就帮你设置该remote的team drive id
+    if [ -z $td_id ]; then
+      drive_change
+    else
+      #识别remote td盘id的盘名
+      td_name=$(cat ~/.config/rclone/"$my_remote"_td_list.txt | awk '/'$td_id'/{print $3}')
+      echo
+      echo -e "$curr_date ${red}[Info]您选择的remote为：${my_remote}，td盘名为：${td_name},td盘id为${td_id}${normal}"
+      read -n1 -p "是否要修改td盘id[Y/n],除输入Y|y，其他默认n ：" remote_confirm_result
+      remote_confirm_result=${remote_confirm_result:-n}
+      case ${remote_confirm_result} in
+      Y | y)
+        drive_change
+        ;;
+      n | N)
+        echo
+        return
+        ;;
+      *)
+        echo
+        return
+        ;;
+      esac
+    fi
+  fi
 }
 
-################## 修改挂载盘 ##################[done]
-drive_change() {
-  fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' >~/.config/rclone/"$mount_remote"_drivelist.txt
-  drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
-  if [ -z $drive_id ]; then
-    echo -e "$curr_date ${red}[Info]您的team_drive id为空，在下面添加一个吧${normal}"
-    drive_chose_list
-    rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
-    sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
-    team_drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'team_drive' | sed -n '1p')
-    sed -i "s/$team_drive_id/team_drive = $drive_change_id/g" ~/.config/rclone/rclone.conf
-    drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
-    drive_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_id'/{print $3}')
-    echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
-    return
-  fi
-  if [ -z $drive_change_id ]; then
-    return
-  fi
-  if [ $drive_change_id == $drive_id ]; then
-    echo -e "$curr_date ${red}[Info]你要改的挂载盘id与conf文件id相同，无需修改${normal}"
+################## 网盘选择列表 ##################[done]
+drive_choose_list() {
+  echo -e "$my_remote 的网盘列表："
+  sleep 2s
+  echo -e "${red} +-------------------------+"
+  echo -e "${red}$(cat ~/.config/rclone/"$my_remote"_td_list.txt)${normal}"
+  echo -e "${red} +-------------------------+"
+  read -p "请选择你要设置的td网盘（输入数字即可）：" drive_choose_num
+  #判断是否选择错误
+  if [[ $(cat ~/.config/rclone/"$my_remote"_td_list.txt | awk '{print $1}') =~ ${drive_choose_num} ]]; then
+    #选择无误，将你的选择给td_change_id函数赋值
+    td_change_id=$(cat ~/.config/rclone/"$my_remote"_td_list.txt | awk '{print $2}' | sed -n ''$drive_choose_num'p')
+    echo "你选择的team drive id为：$td_change_id"
   else
-    echo -e "$curr_date ${red}[Info]即将修改挂载盘ID为：${drive_change_id}${normal}..."
-    sed -i "s/$drive_id/$drive_change_id/g" ~/.config/rclone/rclone.conf
-    drive_change_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_change_id'/{print $3}')
-    echo -e "$curr_date ${red}[Info]已将挂载盘ID修改为：${drive_change_id},挂载盘名为：${drive_change_name}[done]${normal}"
-    sleep 3s
+    echo -e "${curr_date} [ERROR] 您的选择有误，请重新选择！"
+    drive_choose_list
   fi
+}
+
+################## 修改team drive id ##################[done]
+drive_change() {
+  #检查td_change_id函数是否已被赋值
+  if [ -n "$td_change_id" ]; then
+    #如已赋值，输出remote的团队盘列表备用
+    fclone backend lsdrives $my_remote:|awk '{ print FNR " " $0}' >~/.config/rclone/"$my_remote"_td_list.txt
+    #执行team drive id修改,目前的修改命令*******待优化*******
+    sed -i "s/$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf|grep "team_drive"|sed -n '1p')/team_drive = ${td_change_id}/g" ~/.config/rclone/rclone.conf
+  else
+    #如未赋值，则帮你选择td盘，根据你的选择，给该函数赋值，赋值后执行修改
+    echo -e "$curr_date ${red}[ERROR]您选择的remote：$my_remote 下的team_drive id为空,选一个吧${normal}"
+    #team drive id选择
+    drive_choose_list
+    #执行team drive id修改,目前的修改命令*******待优化*******
+    sed -i "s/$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf|grep "team_drive"|sed -n '1p')/team_drive = ${td_change_id}/g" ~/.config/rclone/rclone.conf
+  fi
+  #刷新获取conf文件中remote下的td盘id和盘名
+  td_id=$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
+  td_name=$(cat ~/.config/rclone/"$my_remote"_td_list.txt | awk '/'$td_id'/{print $3}')
+  echo -e "$curr_date ${red}[Info]您设置的remote为：${my_remote}，td盘名为：${td_name},td盘ID为${td_id}${normal}"
 }

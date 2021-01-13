@@ -17,52 +17,6 @@ set -e #异常则退出整个脚本，避免错误累加
 source <(wget -qO- https://git.io/cg_script_option)
 setcolor
 
-################## 选择remot ##################[done]
-remote_chose() {
-  remote_list=$(sed -n "/\[.*\]/p" ~/.config/rclone/rclone.conf | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}')
-  echo -e "   本地已配置remote列表:"
-  echo -e "${red} +-------------------------+"
-  echo -e "${red}$remote_list${normal}"
-  echo -e "${red} +-------------------------+"
-  read -n1 -p "请选择需要挂载的remote（输入数字即可）：" rclone_chose_num
-  echo
-  if [[ ${remote_list} =~ ${rclone_chose_num} ]]; then
-    mount_remote=$(echo -e "$remote_list" | awk '{print $2}' | sed -n ''$rclone_chose_num'p')
-    fclone backend lsdrives $mount_remote: | awk '{ print FNR " " $0}' >~/.config/rclone/"$mount_remote"_drivelist.txt
-    drive_id=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
-    if [ -z $drive_id ]; then
-      echo -e "$curr_date ${red}[Info]您的team_drive id为空，在下面添加一个吧${normal}"
-      sleep 3s
-      drive_chose_list
-      rootid=$(sed -n '/'$mount_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep 'root_folder_id' | sed -n '1p')
-      sed -i "s/$rootid/root_folder_id = /g" ~/.config/rclone/rclone.conf
-      drive_change
-    fi
-    drive_name=$(cat ~/.config/rclone/"$mount_remote"_drivelist.txt | awk '/'$drive_id'/{print $3}')
-    echo
-    echo -e "$curr_date ${red}[Info]您选择的remote为：${mount_remote}，挂载盘名为：${drive_name},挂载盘ID为${drive_id}${normal}"
-    read -n1 -p "是否要修改挂载盘[Y/n],除输入Y|y默认n ：" result
-    result=${result:-n}
-    case ${result} in
-    Y | y)
-      drive_chose_list
-      drive_change
-      ;;
-    n | N)
-      echo
-      ;;
-    *)
-      echo
-      ;;
-    esac
-  else
-    echo
-    echo "输入不正确，请重新输入。"
-    echo
-    remote_chose
-  fi
-}
-
 ################## 选择挂载路径 ##################[done]
 dir_check() {
   if [[ ${mount_path} =~ "/" ]]; then
