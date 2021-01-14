@@ -44,7 +44,8 @@ EOF && source ~/.bashrc
 
   en_US.UTF-8 UTF-8
   zh_CN.UTF-8 UTF-8
-EOF && locale-gen
+EOF
+  locale-gen
   echo -e "${curr_date} [INFO] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
   #file-max设置，解决too many open files问题
   if [[ $(ulimit -n) == 65535 ]]; then
@@ -70,23 +71,22 @@ root soft nproc 65535
 root hard nproc 65535
 EOF
     echo -e "\nsession required pam_limits.so" >> /etc/pam.d/common-session
-    sleep 3s
   fi
   #设置虚拟内存
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
   #安装python环境
   check_command python python3 python3-pip python3-distutils
   if [ -z "$(grep "pythonh环境已安装" /root/install_log.txt)" ]; then
-  pip3 install -U pip
-  #python-telegram-bot依赖与flexget依赖版本冲突，后续考虑安装flexget的docker版
-  pip3 install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py setuptools virtualenv
-  echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
+    pip3 install -U pip
+    #python-telegram-bot依赖与flexget依赖版本冲突，后续考虑安装flexget的docker版
+    pip3 install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py setuptools virtualenv
+    echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
   fi
   #安装go环境
   if [ -z $(command -v go) ]; then
-    echo -e "`curr_date` ${red}go命令${normal} 不存在.正在为您安装，请稍后..."
+    echo -e "$(curr_date) ${red}go命令${normal} 不存在.正在为您安装，请稍后..."
     if [ -e /home/go ]; then
-    rm -rf /home/go
+      rm -rf /home/go
     fi
     wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
     tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
@@ -102,7 +102,7 @@ EOF
   #安装nodejs环境
   if [ -z $(command -v node) ]; then
     if [ -e /usr/local/lib/nodejs ]; then
-    rm -rf /usr/local/lib/nodejs
+      rm -rf /usr/local/lib/nodejs
     fi
     mkdir -p 755 /usr/local/lib/nodejs
     wget -qN https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz && sudo tar -xJvf node-v14.15.4-linux-x64.tar.xz -C /usr/local/lib/nodejs && rm -f node-v14.15.4-linux-x64.tar.xz
