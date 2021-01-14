@@ -374,29 +374,3 @@ EOF
 initialization
 check_rclone
 main_menu
-
-#   -------------------------------
-#   POWERLINE字体安装
-#   -------------------------------
-# printf '\n      >>> Installing powerline....\n'
-# sudo rm -v PowerlineSymbols*
-# sudo rm -v 10-powerline-symbols*
-# wget https://github.com/powerline/powerline/raw/develop/font/PowerlineSymbols.otf
-# wget https://github.com/powerline/powerline/raw/develop/font/10-powerline-symbols.conf
-# mkdir -p ~/.fonts/
-# mv -v PowerlineSymbols.otf ~/.fonts/
-# fc-cache -vf ~/.fonts/ #Clean fonts cache
-# mkdir -pv .config/fontconfig/conf.d #if directory doesn't exists
-# mv -v 10-powerline-symbols.conf ~/.config/fontconfig/conf.d/
-
-##### 修补字体安装 #####
-# mv -v 'SomeFont for Powerline.otf' ~/.fonts/
-# fc-cache -vf ~/.fonts/
-# After installing patched font terminal emulator, GVim or whatever application powerline should work with must be configured to use the patched font. The correct font usually ends with for Powerline.
-
-##### 电力线字体 #####
-# sudo git clone https://github.com/powerline/fonts.git --depth=1
-# pusd ./fonts
-# ./install.sh
-# popd
-# rm -rvf fonts
