@@ -38,11 +38,23 @@ run_rsshub(){
 
 ################## 安装flexget ##################
 install_flexget(){
-  pip3 install --ignore-installed flexget
-  mkdir -p ~/.config/flexget
-  wget -qN https://raw.githubusercontent.com/cgkings/script-store/master/config/config.yml -O ~/.config/flexget/config.yml
+  #建立flexget独立的 python3 虚拟环境
+  mkdir -p /home/software/flexget/
+  virtualenv --system-site-packages --no-setuptools --no-wheel /home/software/flexget/
+  #在python3虚拟环境里安装flexget
+  /home/software/flexget/bin/pip3 install -U flexget
+  #建立 flexget 日志存放
+  mkdir -p /var/log/flexget && chown root:adm /var/log/flexget
+  #建立 flexget 的配置文件
+  read -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址，有需要自行修改，路径为：/home/software/flexget/config.yml)：" config_yml_ip
+  config_yml_ip=${config_yml_ip:-https://raw.githubusercontent.com/cgkings/script-store/master/config/config.yml}
+  wget -qN ${config_yml_ip} -O /home/software/flexget/config.yml
   aria2_key=$(cat /root/.aria2c/aria2.conf | grep "rpc-secret" | awk -F= '{print $2}')
-  sed -i 's/secret:.*$/secret: '$aria2_key'/g' ~/.config/flexget/config.yml
+  sed -i 's/secret:.*$/secret: '$aria2_key'/g' /home/software/flexget/config.yml
+  #建立软连接
+  ln -sf /home/software/flexget/bin/flexget /usr/local/bin/
+  #设置为自动启动，在 rc.local 中增加启动命令
+  /home/software/flexget/bin/flexget -L error -l /var/log/flexget/flexget.log daemon start -d
 }
 
 ################## 配置flexget刷新时间 ##################

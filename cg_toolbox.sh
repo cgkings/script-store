@@ -77,8 +77,9 @@ EOF
   #安装python环境
   check_command python python3 python3-pip python3-distutils
   if [ -z "$(grep "pythonh环境已安装" /root/install_log.txt)" ]; then
-  pip3 install --upgrade pip
-  pip3 install wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py python-telegram-bot setuptools --upgrade
+  pip3 install -U pip
+  #python-telegram-bot依赖与flexget依赖版本冲突，后续考虑安装flexget的docker版
+  pip3 install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py setuptools virtualenv
   echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
   fi
   #安装go环境
