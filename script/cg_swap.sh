@@ -10,13 +10,12 @@
 # Version: 1.0
 #=============================================================
 
-################## 前置变量 ##################
-source <(wget -qO- https://git.io/cg_script_option)
-check_root
-check_vz
-setcolor
 #set -e #异常则退出整个脚本，避免错误累加
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
+
+################## 前置变量 ##################
+source <(wget -qO- https://git.io/cg_script_option)
+setcolor
 totalmem=$(free -m | awk '/Mem:/{print $2}')
 totalswap=$(free -m | awk '/Swap:/{print $2}')
 
@@ -103,7 +102,8 @@ del_swap() {
 
 ################## 脚本参数帮助 ##################
 swap_help() {
-  echo -e "用法(Usage):
+  cat <<EOF
+用法(Usage):
   bash <(curl -sL https://git.io/cg_swap) [flags]
 
 可用参数(Available flags)：
@@ -111,26 +111,25 @@ swap_help() {
   bash <(curl -sL https://git.io/cg_swap) m  手动添加swap
   bash <(curl -sL https://git.io/cg_swap) d  删除现有swap
   bash <(curl -sL https://git.io/cg_swap) h  命令帮助
-  注：无参数则进入主菜单"
+注：无参数则进入主菜单
+EOF
 }
 
 ################## 开  始  菜  单 ##################
 swap_menu() {
   clear
-  printf "${green}"
   cat <<EOF
 —————————————————————————————————————————————————————————
-  当前SWAP：$totalswap MB"
+  ${green}当前SWAP：$totalswap MB"
   swap一键脚本 by cgkings
   1、全自动添加swap[默认值][内存*2，最小设置2G]
   2、自定义添加swap
   3、删除swap
   4、退出
   注：输入2、3、4外任意字符，默认选1.自动添加
-  感谢wuhuai2020、moerats、github众多作者，我只是整合代码
+  感谢wuhuai2020、moerats、github众多作者，我只是整合代码${normal}
 —————————————————————————————————————————————————————————
 EOF
-  printf "${normal}"
   read -n1 -p "请输入数字 [1-4]:" num
   case "$num" in
   1)
@@ -156,6 +155,8 @@ EOF
 }
 
 ################## 执  行  命  令 ##################
+check_root
+check_vz
 if [ -z $1 ]; then
   swap_menu
 else

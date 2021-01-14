@@ -21,68 +21,70 @@ setcolor
 dir_check() {
   if [[ ${mount_path} =~ "/" ]]; then
     if [ ! -d "$mount_path" ]; then
-      echo -e "$curr_date [警告]${mount_path} 不存在，正在创建..."
+      echo -e "$curr_date [警告] ${mount_path} 不存在，正在创建..."
       mkdir -p 755 ${mount_path}
       sleep 1s
-      echo -e "$curr_date [Info]创建完成！"
+      echo -e "$curr_date [Info] ${mount_path}创建完成！"
     fi
   else
-    mount_path="/home/$mount_path"
+    mount_path="/mnt/$mount_path"
     if [ ! -d "$mount_path" ]; then
-      echo -e "$curr_date [警告]${mount_path} 不存在，正在创建..."
+      echo -e "$curr_date [警告] ${mount_path} 不存在，正在创建..."
       mkdir -p 755 ${mount_path}
       sleep 1s
-      echo -e "$curr_date [Info]创建完成！"
+      echo -e "$curr_date [Info] /mnt/$mount_path创建完成！"
     fi
   fi
   mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
 }
 
-dir_chose() {
-  read -p "请输入需要挂载目录的路径（回车默认/home,非绝对路径：含/创建该路径，不含为/home/输入文件夹名）:" mount_path
-  mount_path=${mount_path:-/home}
+dir_choose() {
+  read -p "请输入需要挂载目录的路径（回车默认/mnt,非绝对路径：含/创建该路径，不含为/mnt/输入文件夹名）:" mount_path
+  mount_path=${mount_path:-/mnt}
   dir_check
   echo -e "您的挂载目录为 ${mount_path}"
 }
 
 ################## 删除服务 ##################
 mount_del() {
-  check_fuse
+  check_command fuse
   if [ -z ${mount_path} ]; then
     read -p "请输入需要删除的挂载目录路径:" mount_path
   fi
   if [ -z ${mount_path_name} ]; then
     mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
   fi
-  echo -e "$curr_date [Info]正在执行fusermount -qzu "${mount_path}"..."
+  echo -e "$curr_date [Info] 正在执行fusermount -qzu "${mount_path}"..."
   fusermount -qzu "${mount_path}"
-  echo -e "$curr_date [Info]fusermount -qzu "${mount_path}"[done]"
-  echo -e "$curr_date [Info]正在检查服务是否存在..."
+  echo -e "$curr_date [Info] fusermount -qzu "${mount_path}"[done]"
+  echo -e "$curr_date [Info] 正在检查服务是否存在..."
   if [ -f /lib/systemd/system/rclone-${mount_path_name}.service ]; then
-    echo -e "$curr_date [Info]找到服务 "${red}rclone-${mount_path_name}.service${normal}"正在删除，请稍等..."
-    systemctl stop rclone-${mount_path_name}.service &>/dev/null
-    systemctl disable rclone-${mount_path_name}.service &>/dev/null
-    rm /lib/systemd/system/rclone-${mount_path_name}.service &>/dev/null
+    echo -e "$curr_date [Info] 找到服务 ${red}rclone-${mount_path_name}.service${normal} 正在删除，请稍等..."
+    systemctl stop rclone-${mount_path_name}.service
+    systemctl disable rclone-${mount_path_name}.service
+    rm /lib/systemd/system/rclone-${mount_path_name}.service
     sleep 2s
-    echo -e "$curr_date [Info]删除服务[done]"
+    echo -e "$curr_date [Info] 删除服务[done]"
   else
-    echo -e "$curr_date [Debug]你没创建过服务!"
+    echo -e "$curr_date [Debug] 你没创建过服务!"
   fi
-  echo -e "$curr_date [Info]删除挂载[done]"
+  echo -e "$curr_date [Info] 删除挂载[done]"
 }
 
 ################## 挂载参数选择 ##################
-tag_chose() {
-  echo -e "1、256G硬盘或以上[回车默认值]
+tag_choose() {
+  cat << EOF
+1、256G硬盘或以上[回车默认值]
 2、小硬盘，2G内存以上
 3、小硬盘，512M-1G内存
-注：如参数不合适，可自行修改脚本内挂载参数行，已备注"
-  read -n1 -p "请选择挂载参数:" tag_chose_result
-  tag_chose_result=${tag_chose_result:-1}
-  case $tag_chose_result in
+注：如参数不合适，可自行修改脚本内挂载参数行，已备注
+EOF
+  read -n1 -p "请选择挂载参数:(回车默认1)" tag_choose_result
+  tag_choose_result=${tag_choose_result:-1}
+  case $tag_choose_result in
   1)
     echo
-    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
     ;;
   2)
     echo
@@ -105,46 +107,47 @@ tag_chose() {
 mount_creat() {
   mount_del
   echo -e "$curr_date [Info] 开始临时挂载..."
-  echo -e "$curr_date [Info] fclone mount "$mount_remote": "$mount_path" "$mount_tag" &"
-  fclone mount $mount_remote: $mount_path $mount_tag &
+  echo -e "$curr_date [Info] 挂载命令：fclone mount ${my_remote}: ${mount_path} ${mount_tag} &"
+  fclone mount $my_remote: $mount_path $mount_tag &
   sleep 5s
   echo -e "$curr_date [Info] 临时挂载[done]"
+  echo -e "$curr_date [Info] 如挂载性能不好，请反馈作者"
   df -h
 }
 
 ################## 创建开机挂载服务 ##################
 mount_server_creat() {
   mount_del
-  echo -e "$curr_date [Info] 正在创建服务 \"${red}rclone-${mount_path_name}.service${normal}\"请稍等..."
+  echo -e "$curr_date [Info] 正在创建服务 ${red}rclone-${mount_path_name}.service${normal} 请稍等..."
   cat >/lib/systemd/system/rclone-${mount_path_name}.service <<EOF
-  [Unit]
-  Description = rclone-${mount_path_name}
-  AssertPathIsDirectory = ${mount_path}
-  Wants = network-online.target
-  After = network-online.target
-  
-  [Service]
-  Type = notify
-  KillMode = none
-  Restart = on-failure
-  RestartSec = 5
-  User = root
-  ExecStart = fclone mount ${mount_remote}: ${mount_path} ${mount_tag}
-  ExecStop = fusermount -qzu ${mount_path}
+[Unit]
+Description = rclone-${mount_path_name}
+AssertPathIsDirectory = ${mount_path}
+Wants = network-online.target
+After = network-online.target
 
-  [Install]
-  WantedBy = multi-user.target
+[Service]
+Type = notify
+KillMode = none
+Restart = on-failure
+RestartSec = 5
+User = root
+ExecStart = fclone mount ${my_remote}: ${mount_path} ${mount_tag}
+ExecStop = fusermount -qzu ${mount_path}
+
+[Install]
+WantedBy = multi-user.target
 EOF
   sleep 2s
   echo -e "$curr_date [Info] 服务创建成功。"
   sleep 2s
   echo -e "$curr_date [Info] 启动服务..."
-  systemctl start rclone-${mount_path_name}.service &>/dev/null
+  systemctl start rclone-${mount_path_name}.service
   sleep 1s
   echo -e "$curr_date [Info] 添加开机启动..."
-  systemctl enable rclone-${mount_path_name}.service &>/dev/null
+  systemctl enable rclone-${mount_path_name}.service
   if [[ $? ]]; then
-    echo -e "$curr_date [Info] 已为网盘 ${red}${mount_path_name}${normal} 创建服务 ${red}reclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
+    echo -e "$curr_date [Info] 创建服务 ${red}reclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
     sleep 2s
   else
     echo
@@ -155,7 +158,8 @@ EOF
 
 ################## 脚本参数帮助 ##################
 mount_help() {
-  echo -e "用法(Usage):
+  cat << EOF
+用法(Usage):
   bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
   注意：无参数则进入主菜单,参数少于3个显示help，即1,2,3为脚本参数执行方式必备!
 
@@ -172,34 +176,37 @@ mount_help() {
   flags3 为挂载路径
 [flags4]可用参数(Available flags)：
   flags4 为要修改为的挂载盘ID"
+EOF
 }
 
 ################## 开  始  菜  单 ##################
 
 mount_menu() {
   clear
-  echo -e "———————————————————————————————————————"
-  echo -e "${green}mount一键脚本 by cgkings${normal}"
-  echo -e "${green}1、临时挂载${normal}"
-  echo -e "${green}2、服务挂载${normal}"
-  echo -e "${green}3、删除挂载${normal}"
-  echo -e "${green}4、退出${normal}"
-  echo -e "———————————————————————————————————————"
+  cat << EOF
+———————————————————————————————————————
+{green}mount一键脚本 by cgkings${normal}
+${green}1、临时挂载${normal}"
+${green}2、服务挂载${normal}
+${green}3、删除挂载${normal}
+${green}4、退出${normal}"
+———————————————————————————————————————
+EOF
   read -n1 -p "请输入数字 [1-4]:" num
   case "$num" in
   1)
     echo
-    remote_chose
-    dir_chose
-    tag_chose
+    remote_choose
+    dir_choose
+    tag_choose
     mount_creat
     exit
     ;;
   2)
     echo
-    remote_chose
-    dir_chose
-    tag_chose
+    remote_choose
+    dir_choose
+    tag_choose
     mount_server_creat
     exit
     ;;
@@ -226,13 +233,13 @@ check_rclone
 if [ -z $1 ]; then
   mount_menu
 else
-  mount_remote=$2
+  my_remote=$2
   mount_path=$3
-  drive_change_id=$4
+  td_change_id=$4
   case "$1" in
   L1 | l1)
     echo
-    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
     dir_check
     drive_change
     mount_creat
@@ -253,7 +260,7 @@ else
     ;;
   S1 | s1)
     echo
-    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
     dir_check
     drive_change
     mount_server_creat

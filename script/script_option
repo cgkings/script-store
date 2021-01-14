@@ -67,22 +67,6 @@ check_vz() {
   fi
 }
 
-################## 检查fuse安装情况 ##################
-check_fuse() {
-  if [ ! -f /etc/fuse.conf ]; then
-    echo -e "$curr_date 未找到fuse包.正在安装..."
-    sleep 1s
-    apt-get install fuse -y
-    #if [[ "${release}" = "centos" ]];then
-    #yum install fuse -y
-    #elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]];then
-    #apt-get install fuse -y
-    #fi
-    echo
-    echo -e "$curr_date fuse安装完成"
-    echo
-  fi
-}
 ################## 检查rclone&fclone安装情况 ##################
 check_rclone() {
   #检查fclone安装状态，没装就安装
@@ -162,10 +146,12 @@ check_dir_file(){
 remote_choose() {
   #选择remote
   rclone listremotes | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}' > ~/.config/rclone/remote_list.txt
-  echo -e "   本地已配置remote列表:"
-  echo -e "${red} +-------------------------+"
-  echo -e "${red}$(cat /root/.config/rclone/remote_list.txt)${normal}"
-  echo -e "${red} +-------------------------+"
+  cat <<EOF
+${red}本地已配置remote列表:${normal}
+${red} +-------------------------+${normal}
+${red}$(cat /root/.config/rclone/remote_list.txt)${normal}
+${red} +-------------------------+${normal}
+EOF
   read -n1 -p "请选择用于后续操作rclone remote（输入数字即可）：" remote_choose_num
   echo
   #判断是否选择错误
@@ -210,6 +196,7 @@ remote_choose() {
 
 ################## 网盘选择列表 ##################[done]
 drive_choose_list() {
+
   echo -e "$my_remote 的网盘列表："
   sleep 2s
   echo -e "${red} +-------------------------+"

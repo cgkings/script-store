@@ -104,7 +104,7 @@ EOF
     if [ -e /usr/local/lib/nodejs ]; then
     rm -rf /usr/local/lib/nodejs
     fi
-    mkdir -p /usr/local/lib/nodejs
+    mkdir -p 755 /usr/local/lib/nodejs
     wget -qN https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz && sudo tar -xJvf node-v14.15.4-linux-x64.tar.xz -C /usr/local/lib/nodejs && rm -f node-v14.15.4-linux-x64.tar.xz
     ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npm /usr/local/bin/
     ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npx /usr/local/bin/
@@ -163,7 +163,7 @@ wq
 EOF
       partprobe                                            #不重启重新读取分区信息
       mkfs -t ext4 "$disk"1                                #格式化ext4分区
-      mkdir -p /home                                       #确保/home目录存在
+      mkdir -p 755 /home                                   #确保/home目录存在
       mount "$disk"1 /home                                 #将256G硬盘挂载到系统/home文件夹
       echo "${disk}1 /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
     else
@@ -184,7 +184,7 @@ install_aria2() {
 1 
 EOF
   #修改默认本地下载路径为/home/download
-  [ ! -e /home/download ] && mkdir -p /home/download
+  [ ! -e /home/download ] && mkdir -p 755 /home/download
   [ -z "$(grep "/home/download" /root/.aria2c/aria2.conf)" ] && sed -i 's/dir=.*$/dir=\/home\/download/g' /root/.aria2c/aria2.conf
   #修改完成后执行的脚本为自动上传
   [ -z "$(grep "upload.sh" /root/.aria2c/aria2.conf)" ] && sed -i 's/clean.sh/upload.sh/g' /root/.aria2c/aria2.conf
