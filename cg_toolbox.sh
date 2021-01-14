@@ -193,11 +193,11 @@ EOF
   #选择fclone remote
   remote_choose
   #设置自动上传的fclone remote*****从此行开始未修改******
-  sed -i 's/drive-name=.*$/drive-name='$my_remote'/g' /root/.aria2c/script.conf
-  #设置自动上传网盘目录
-  sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
+  [ -z "$(grep "$my_remote" /root/.aria2c/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$my_remote'/g' /root/.aria2c/script.conf
+  #设置自动上传网盘目录为/Download
+  [ -z "$(grep "drive-dir=/Download" /root/.aria2c/script.conf)" ] && sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
   #通知remote选择结果及自动上传目录
-  echo -e "$curr_date ${red}[INFO]您选择的remote为：${my_remote}，自动上传目录为：${td_name}/Download"
+  echo -e "$curr_date ${red}[INFO]您选择的remote为：${my_remote}，自动上传目录为：${td_name}/Download，如有需要，请bash <(curl -sL git.io/aria2.sh)自行修改"
   service aria2 restart
   #检查是否安装成功
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
@@ -273,14 +273,14 @@ ${blue}${bold}——————————————————————
 ${green}${bold}C、${normal}安装配置aria2一键增强[转自P3TERX]
 ${green}${bold}D、${normal}安装配置rsshub/flexget自动添加种子
 ${blue}${bold}————————————————————————————————网 络 工 具—————————————————————————————————————${normal}
-${green}${bold}F、${normal}BBR一键加速[转自-忘记抄的谁的了]
-${green}${bold}G、${normal}一键搭建V2ray[转自233boy]
-${green}${bold}H、${normal}LNMP 一键脚本[转自-lnmp.org]
-${green}${bold}I、${normal}宝塔面板一键脚本[转自-laowangblog.com]
+${green}${bold}E、${normal}BBR一键加速[转自-忘记抄的谁的了]
+${green}${bold}F、${normal}一键搭建V2ray[转自233boy]
+${green}${bold}G、${normal}LNMP 一键脚本[转自-lnmp.org]
+${green}${bold}H、${normal}宝塔面板一键脚本[转自-laowangblog.com]
 ${blue}${bold}————————————————————————————————EMBY  相 关—————————————————————————————————————${normal}
-${green}${bold}G、${normal}自动网盘挂载脚本[支持命令参数模式]
-${green}${bold}K、${normal}安装配置AVDC刮削工具[转自yoshiko2]
-${green}${bold}L、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
+${green}${bold}I、${normal}自动网盘挂载脚本[支持命令参数模式]
+${green}${bold}J、${normal}安装配置AVDC刮削工具[转自yoshiko2]
+${green}${bold}K、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
 ${blue}${bold}————————————————————————————————便 捷 操 作—————————————————————————————————————${normal}
 ${green}${bold}M、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
 ${green}${bold}Q、${normal}退出脚本
@@ -301,7 +301,6 @@ EOF
       ;;
     C | c)
       echo
-      check_rclone
       install_aria2
       menu_go_on
       ;;
@@ -318,38 +317,28 @@ EOF
       ;;
     F | f)
       echo
-      
-      menu_go_on
-      ;;
-    G | g)
-      echo
-      
-      menu_go_on
-      ;;
-    H | h)
-      echo
       bash <(curl -sL git.io/cg_v2ray)
       echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
       menu_go_on
       ;;
-    I | i)
+    G | g)
       echo
       install_LNMP
       menu_go_on
       ;;
-    J | j)
+    H | h)
       echo
       bash <(curl -sL git.io/cg_baota)
       echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
       menu_go_on
       ;;
-    K | k)
+    I | i)
       echo
       bash <(curl -sL git.io/cg_auto_mount)
       echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
       menu_go_on
       ;;
-    L | l)
+    J | j)
       echo
       bash <(curl -sL git.io/cg_avdc)
       echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
@@ -358,13 +347,13 @@ EOF
       echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
       menu_go_on
       ;;
-    M | m)
+    K | k)
       echo
       bash <(curl -sL https://git.io/11plus.sh)
       echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
       menu_go_on
       ;;
-    N | n)
+    M | m)
       echo
       echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
       menu_go_on
