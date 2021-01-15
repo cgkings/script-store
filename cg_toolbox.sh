@@ -20,6 +20,8 @@ setcolor
 initialization() {
   check_root
   check_vz
+  clear
+  echo -e "${black}${on_white}${bold}                               开始脚本运行前检测                               ${normal}"
   apt-get update --fix-missing -y > /dev/null && apt upgrade -y > /dev/null
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale build-essential libncurses5-dev libpcap-dev libffi-dev
   ####设置颜色###
@@ -244,7 +246,7 @@ EOF
 ################## menu_go_on ##################
 menu_go_on() {
   echo -e "安装日志路径：/root/install_log.txt"
-  echo -e "${black}${on_white}${bold}                            我们的生活充满阳光                                 ${normal}"
+  echo -e "${black}${on_white}${bold}                               我们的生活充满阳  光                               ${normal}"
   echo -e "${red}是否还要继续?${normal}"
   read -r -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
   echo
@@ -264,7 +266,6 @@ menu_go_on() {
 
 ################## 主    菜    单 ##################
 main_menu() {
-  clear
   cat << EOF
 ${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
 ${blue}${bold}————————————————————————————————系 统 环 境—————————————————————————————————————${normal}
