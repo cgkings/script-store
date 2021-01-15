@@ -116,23 +116,15 @@ check_rclone() {
 check_release() {
   if [[ -f /etc/redhat-release ]]; then
     release='centos'
-  elif cat /etc/issue | grep -q -E -i "debian"; then
+  elif grep -q -E -i "debian" /etc/issue; then
     release='debian'
-  elif cat /etc/issue | grep -q -E -i "armbian"; then
+  elif grep -q -E -i "armbian" /etc/issue; then
     release='armdebian'
-  elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+  elif grep -q -E -i "ubuntu" /etc/issue; then
     release='ubuntu'
-  elif cat /etc/issue | grep -q -E -i "redhat|red hat|centos"; then
-    release='centos'
-  elif cat /proc/version | grep -q -E -i "debian"; then
-    release='debian'
-  elif cat /proc/version | grep -q -E -i "ubuntu"; then
-    release='ubuntu'
-  elif cat /proc/version | grep -q -E -i "redhat|red hat|centos"; then
+  elif cat  | grep -q -E -i "redhat|red hat|centos" /etc/issue; then
     release='centos'
   fi
-  # shellcheck disable=SC2034
-  sys=$(uname -m)
 }
 
 check_command() {
@@ -187,7 +179,7 @@ EOF
     remote_choose
   else
     #选择无误，识别选择的remote
-    my_remote=$(cat /root/.config/rclone/remote_list.txt | awk '{print $2}' | sed -n ${remote_choose_num}p)
+    my_remote=$(awk '{print $2}' /root/.config/rclone/remote_list.txt | sed -n ${remote_choose_num}p)
     #输出remote的团队盘列表备用
     fclone backend lsdrives $my_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$my_remote"_td_list.txt
     #识别conf文件中该remote的team drive id
@@ -197,7 +189,7 @@ EOF
       drive_change
     else
       #识别remote td盘id的盘名
-      td_name=$(cat ~/.config/rclone/"$my_remote"_td_list.txt | awk '/'$td_id'/{print $3}')
+      td_name=$(awk '/'$td_id'/{print $3}' ~/.config/rclone/"$my_remote"_td_list.txt)
       echo
       echo -e "$curr_date ${red}[Info]您选择的remote为：${my_remote}，td盘名为：${td_name},td盘id为${td_id}${normal}"
       read -n1 -p "是否要修改td盘id[Y/n],除输入Y|y，其他默认n ：" remote_confirm_result
