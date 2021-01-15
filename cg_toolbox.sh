@@ -22,39 +22,36 @@ initialization() {
   check_vz
   apt-get update --fix-missing -y && apt upgrade -y
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale build-essential libncurses5-dev libpcap-dev libffi-dev
-  #设置颜色
-  [ -z "$(grep "export TERM=xterm-256color" ~/.bashrc)" ] && cat << EOF >> /root/.bashrc
+  ####设置颜色###
+  if [ "$(tput colors)" != 256 ]; then
+    cat >> ~/.bashrc << EOF
 
-if [ $TERM == xterm ]; then
+if [ "$TERM" != "xterm-256color" ]; then
   export TERM=xterm-256color
 fi
 EOF
-  source ~/.bashrc  
-  if [[ $(tput colors) == 256 ]]; then
+    source /root/.bashrc
     echo -e "${curr_date} [INFO] 设置256色成功" >> /root/install_log.txt
-  else
-    echo -e "${curr_date} [ERROR] 设置256色失败" >> /root/install_log.txt
   fi
-  #设置时区
-  [ -z $(find /etc -name 'localtime') ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-  [ -z "$(grep "Asia/Shanghai" /etc/timezone)" ] && echo "Asia/Shanghai" > /etc/timezone
+  ###设置时区###
+  if [ "$(cat /etc/timezone)" != "Asia/Shanghai" ]; then
+  [ -z "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+  echo "Asia/Shanghai" > /etc/timezone
   echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
-  #设置语言
-  if [ $(echo $LANG) ! = "en_US.UTF-8"]; then
-  [ -z "$(grep "LANG=en_US.UTF-8" /etc/default/locale)" ] && echo "LANG=en_US.UTF-8" > /etc/default/locale
-  [ -z "$(grep "en_US.UTF-8 UTF-8" /etc/locale.gen)" ] && cat > /etc/locale.gen << EOF
+  fi
+  ###设置语言###
+  if [ "$LANG" != "en_US.UTF-8" ]; then
+    echo "LANG=en_US.UTF-8" > /etc/default/locale
+    cat > /etc/locale.gen << EOF
 
   en_US.UTF-8 UTF-8
   zh_CN.UTF-8 UTF-8
 EOF
-  locale-gen
-  echo -e "${curr_date} [INFO] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
+    locale-gen
+    echo -e "${curr_date} [INFO] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
   fi
-  #file-max设置，解决too many open files问题
-  if [[ $(ulimit -n) == 65535 ]]; then
-    echo -e "${curr_date} [INFO] file_max 修改成功"
-    echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
-  else
+  ###file-max设置，解决too many open files问题###
+  if [ "$(ulimit -n)" != 65535 ]; then
     echo -e "\nfs.file-max = 6553500" >> /etc/sysctl.conf
     sysctl -p
     cat >> /etc/security/limits.conf << EOF
@@ -74,19 +71,20 @@ root soft nproc 65535
 root hard nproc 65535
 EOF
     echo -e "\nsession required pam_limits.so" >> /etc/pam.d/common-session
+    echo -e "${curr_date} [INFO] file_max 修改成功"
+    echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
   fi
-  #设置虚拟内存
+  ###设置虚拟内存###
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
-  #安装python环境
+  ###安装python环境###
   check_command python python3 python3-pip python3-distutils
-  if [ -z "$(grep "pythonh环境已安装" /root/install_log.txt)" ]; then
+  if [ -z "$(command -v virtualenv)" ]; then
     pip3 install -U pip
-    #python-telegram-bot依赖与flexget依赖版本冲突，后续考虑安装flexget的docker版
     pip3 install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py setuptools virtualenv
     echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
   fi
-  #安装go环境
-  if [ -z $(command -v go) ]; then
+  ###安装go环境###
+  if [ -z "$(command -v go)" ]; then
     echo -e "$(curr_date) ${red}go命令${normal} 不存在.正在为您安装，请稍后..."
     if [ -e /home/go ]; then
       rm -rf /home/go
@@ -103,7 +101,7 @@ EOF
     echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
   fi
   #安装nodejs环境
-  if [ -z $(command -v node) ]; then
+  if [ -z "$(command -v node)" ]; then
     if [ -e /usr/local/lib/nodejs ]; then
       rm -rf /usr/local/lib/nodejs
     fi
@@ -114,7 +112,7 @@ EOF
     ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/node /usr/local/bin/
     echo -e "${curr_date} [INFO] nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
   fi
-  if [ -z $(command -v yarn) ]; then
+  if [ -z "$(command -v yarn)" ]; then
     npm install -g yarn n --force
     yarn set version latest
     echo -e "${curr_date} [INFO] yarn&n已安装" >> /root/install_log.txt
@@ -139,7 +137,7 @@ install_beautify() {
   echo -e "${curr_date} [INFO] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
   cd /root && git clone https://github.com/gpakosz/.tmux.git
-  ln -sf .tmux/.tmux.conf
+  ln -sf .tmux/.tmux.conf .
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s $(which zsh)
@@ -150,13 +148,13 @@ install_beautify() {
 buyvm_disk() {
   disk=$(fdisk -l | grep 256 | awk '{print $2}' | tr -d : | sed -n '1p') #获取256G磁盘名
   mount_status=$(df -h | grep "$disk")                                     #挂载状态
-  if [ -z $disk ]; then
+  if [ -z "$disk" ]; then
     echo -e "未找到256G磁盘，请到控制台先加卷后再运行本脚本"
     exit
   else
-    if [ -z $mount_status ]; then
+    if [ -z "$mount_status" ]; then
       #使用fdisk创建分区
-      fdisk $disk << EOF
+      fdisk "$disk" << EOF
 n
 p
 1
@@ -174,7 +172,7 @@ EOF
     fi
   fi
   mount_status_update=$(df -h | grep "$disk")
-  if [ -z $mount_status_update ]; then
+  if [ -z "$mount_status_update" ]; then
     echo -e "${curr_date} [ERROR] buyvm 256G硬盘尚未挂载到/home" >> /root/install_log.txt
   else
     echo -e "${curr_date} [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
