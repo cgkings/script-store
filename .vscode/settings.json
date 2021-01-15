@@ -1,5 +1,4 @@
 {
     "shellformat.path": "D:/shfmt_v3.2.1_windows_amd64.exe",
-    "shellformat.flag": "-i=2 -sr -kp -ci",
-    "shellcheck.executablePath": "D:\\shellcheck-stable"
+    "shellformat.flag": "-i=2 -sr -kp -ci"
 }

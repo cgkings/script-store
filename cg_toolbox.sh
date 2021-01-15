@@ -23,12 +23,13 @@ initialization() {
   apt-get update --fix-missing -y && apt upgrade -y
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale build-essential libncurses5-dev libpcap-dev libffi-dev
   #设置颜色
-  [ -z "$(grep "export TERM=xterm-256color" ~/.bashrc)" ] && cat >> /root/.bashrc << EOF
+  [ -z "$(grep "export TERM=xterm-256color" ~/.bashrc)" ] && cat << EOF >> /root/.bashrc
 
-if [[ "$TERM" == "xterm" ]]; then
+if [ $TERM == xterm ]; then
   export TERM=xterm-256color
 fi
-EOF && source ~/.bashrc  
+EOF
+  source ~/.bashrc  
   if [[ $(tput colors) == 256 ]]; then
     echo -e "${curr_date} [INFO] 设置256色成功" >> /root/install_log.txt
   else
@@ -39,6 +40,7 @@ EOF && source ~/.bashrc
   [ -z "$(grep "Asia/Shanghai" /etc/timezone)" ] && echo "Asia/Shanghai" > /etc/timezone
   echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   #设置语言
+  if [ $(echo $LANG) ! = "en_US.UTF-8"]; then
   [ -z "$(grep "LANG=en_US.UTF-8" /etc/default/locale)" ] && echo "LANG=en_US.UTF-8" > /etc/default/locale
   [ -z "$(grep "en_US.UTF-8 UTF-8" /etc/locale.gen)" ] && cat > /etc/locale.gen << EOF
 
@@ -47,6 +49,7 @@ EOF && source ~/.bashrc
 EOF
   locale-gen
   echo -e "${curr_date} [INFO] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
+  fi
   #file-max设置，解决too many open files问题
   if [[ $(ulimit -n) == 65535 ]]; then
     echo -e "${curr_date} [INFO] file_max 修改成功"
