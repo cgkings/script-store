@@ -130,8 +130,7 @@ check_release() {
 check_command() {
   check_release
   # shellcheck disable=SC2034
-  check_command_list=$*
-  for command_arges in $(check_command_list); do
+  for command_arges in $*; do
     command_status=$(dpkg --get-selections | grep "$command_arges")
     if [ -z "$command_status" ]; then
       echo -e "$(curr_date) ${red}$command_arges${normal} 不存在.正在为您安装，请稍后..."
