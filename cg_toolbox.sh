@@ -20,7 +20,7 @@ setcolor
 initialization() {
   check_root
   check_vz
-  apt-get update --fix-missing -y && apt upgrade -y
+  apt-get update --fix-missing -y > /dev/null && apt upgrade -y > /dev/null
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale build-essential libncurses5-dev libpcap-dev libffi-dev
   ####设置颜色###
   if [ "$(tput colors)" != 256 ]; then
@@ -35,9 +35,9 @@ EOF
   fi
   ###设置时区###
   if [ "$(cat /etc/timezone)" != "Asia/Shanghai" ]; then
-  [ -z "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-  echo "Asia/Shanghai" > /etc/timezone
-  echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
+    [ -z "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+    echo "Asia/Shanghai" > /etc/timezone
+    echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   fi
   ###设置语言###
   if [ "$LANG" != "en_US.UTF-8" ]; then
@@ -79,8 +79,8 @@ EOF
   ###安装python环境###
   check_command python python3 python3-pip python3-distutils
   if [ -z "$(command -v virtualenv)" ]; then
-    pip3 install -U pip
-    pip3 install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py setuptools virtualenv
+    pip3 install -U pip > /dev/null
+    pip3 install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py setuptools virtualenv > /dev/null
     echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
   fi
   ###安装go环境###
@@ -140,7 +140,7 @@ install_beautify() {
   ln -sf .tmux/.tmux.conf .
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
-  sudo chsh -s $(which zsh)
+  sudo chsh -s "$(which zsh)"
   echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效 ${normal}"
 }
 
@@ -202,7 +202,7 @@ EOF
   service aria2 restart
   #检查是否安装成功
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
-  if [ ${aria2_install_status} == success ]; then
+  if [ "$aria2_install_status" = success ]; then
     echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！
     本地下载目录为：/home/download
     remote为：${my_remote}，自动上传目录为：${td_name}/Download" >> /root/install_log.txt
@@ -246,7 +246,7 @@ menu_go_on() {
   echo -e "安装日志路径：/root/install_log.txt"
   echo -e "${black}${on_white}${bold}                            我们的生活充满阳光                                 ${normal}"
   echo -e "${red}是否还要继续?${normal}"
-  read -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
+  read -r -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
   echo
   case "$res" in
     Y | y)
@@ -288,7 +288,7 @@ ${green}${bold}Q、${normal}退出脚本
 注：本脚本所有操作日志路径：/root/install_log.txt
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
 EOF
-  read -n1 -p "${green}${bold}请输入选择 [A-Q]:${normal}" num
+  read -r -n1 -p "${green}${bold}请输入选择 [A-Q]:${normal}" num
   case "$num" in
     A | a)
       echo

@@ -14,6 +14,7 @@
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
 
 ################## 前置变量设置 ##################
+# shellcheck source=/dev/null
 source <(wget -qO- https://git.io/cg_script_option)
 setcolor
 
@@ -22,7 +23,7 @@ dir_check() {
   if [[ ${mount_path} =~ "/" ]]; then
     if [ ! -d "$mount_path" ]; then
       echo -e "$curr_date [警告] ${mount_path} 不存在，正在创建..."
-      mkdir -p 755 ${mount_path}
+      mkdir -p 755 "$mount_path"
       sleep 1s
       echo -e "$curr_date [Info] ${mount_path}创建完成！"
     fi
@@ -30,7 +31,7 @@ dir_check() {
     mount_path="/mnt/$mount_path"
     if [ ! -d "$mount_path" ]; then
       echo -e "$curr_date [警告] ${mount_path} 不存在，正在创建..."
-      mkdir -p 755 ${mount_path}
+      mkdir -p 755 "$mount_path"
       sleep 1s
       echo -e "$curr_date [Info] /mnt/$mount_path创建完成！"
     fi
@@ -48,10 +49,10 @@ dir_choose() {
 ################## 删除服务 ##################
 mount_del() {
   check_command fuse
-  if [ -z ${mount_path} ]; then
-    read -p "请输入需要删除的挂载目录路径:" mount_path
+  if [ -z "$mount_path" ]; then
+    read -r -p "请输入需要删除的挂载目录路径:" mount_path
   fi
-  if [ -z ${mount_path_name} ]; then
+  if [ -z "$mount_path_name" ]; then
     mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
   fi
   echo -e "$curr_date [Info] 正在执行fusermount -qzu "${mount_path}"..."
@@ -79,26 +80,26 @@ tag_choose() {
 3、小硬盘，512M-1G内存
 注：如参数不合适，可自行修改脚本内挂载参数行，已备注
 EOF
-  read -n1 -p "请选择挂载参数:(回车默认1)" tag_choose_result
+  read -r -n1 -p "请选择挂载参数:(回车默认1)" tag_choose_result
   tag_choose_result=${tag_choose_result:-1}
   case $tag_choose_result in
-  1)
-    echo
-    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
-    ;;
-  2)
-    echo
-    mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
-    ;;
-  3)
-    echo
-    mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
-    ;;
-  *)
-    echo
-    echo "输入错误，请重新输入"
-    mount_menu
-    ;;
+    1)
+      echo
+      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+      ;;
+    2)
+      echo
+      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
+      ;;
+    3)
+      echo
+      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
+      ;;
+    *)
+      echo
+      echo "输入错误，请重新输入"
+      mount_menu
+      ;;
   esac
 }
 
@@ -119,7 +120,7 @@ mount_creat() {
 mount_server_creat() {
   mount_del
   echo -e "$curr_date [Info] 正在创建服务 ${red}rclone-${mount_path_name}.service${normal} 请稍等..."
-  cat >/lib/systemd/system/rclone-${mount_path_name}.service <<EOF
+  cat > /lib/systemd/system/rclone-${mount_path_name}.service << EOF
 [Unit]
 Description = rclone-${mount_path_name}
 AssertPathIsDirectory = ${mount_path}
@@ -142,16 +143,16 @@ EOF
   echo -e "$curr_date [Info] 服务创建成功。"
   sleep 2s
   echo -e "$curr_date [Info] 启动服务..."
-  systemctl start rclone-${mount_path_name}.service
+  systemctl start rclone-"$mount_path_name".service
   sleep 1s
   echo -e "$curr_date [Info] 添加开机启动..."
-  systemctl enable rclone-${mount_path_name}.service
+  systemctl enable rclone-"$mount_path_name".service
   if [[ $? ]]; then
     echo -e "$curr_date [Info] 创建服务 ${red}reclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
     sleep 2s
   else
     echo
-    echo -e "$curr_date[警告] 未知错误."
+    echo -e "$curr_date [警告] 未知错误."
   fi
   df -h
 }
@@ -194,35 +195,35 @@ ${green}4、退出${normal}"
 EOF
   read -n1 -p "请输入数字 [1-4]:" num
   case "$num" in
-  1)
-    echo
-    remote_choose
-    dir_choose
-    tag_choose
-    mount_creat
-    exit
-    ;;
-  2)
-    echo
-    remote_choose
-    dir_choose
-    tag_choose
-    mount_server_creat
-    exit
-    ;;
-  3)
-    echo
-    mount_del
-    exit
-    ;;
-  4)
-    exit
-    ;;
-  *)
-    echo
-    echo "输入错误，请重新输入"
-    mount_menu
-    ;;
+    1)
+      echo
+      remote_choose
+      dir_choose
+      tag_choose
+      mount_creat
+      exit
+      ;;
+    2)
+      echo
+      remote_choose
+      dir_choose
+      tag_choose
+      mount_server_creat
+      exit
+      ;;
+    3)
+      echo
+      mount_del
+      exit
+      ;;
+    4)
+      exit
+      ;;
+    *)
+      echo
+      echo "输入错误，请重新输入"
+      mount_menu
+      ;;
   esac
 }
 
@@ -237,59 +238,59 @@ else
   mount_path=$3
   td_change_id=$4
   case "$1" in
-  L1 | l1)
-    echo
-    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
-    dir_check
-    drive_change
-    mount_creat
-    ;;
-  L2 | l2)
-    echo
-    mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
-    dir_check
-    drive_change
-    mount_creat
-    ;;
-  L3 | l3)
-    echo
-    mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
-    dir_check
-    drive_change
-    mount_creat
-    ;;
-  S1 | s1)
-    echo
-    mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
-    dir_check
-    drive_change
-    mount_server_creat
-    ;;
-  S2 | s2)
-    echo
-    mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
-    dir_check
-    drive_change
-    mount_server_creat
-    ;;
-  S3 | s3)
-    echo
-    mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
-    dir_check
-    drive_change
-    mount_server_creat
-    ;;
-  D | d)
-    echo
-    mount_del
-    ;;
-  H | h)
-    echo
-    mount_help
-    ;;
-  *)
-    echo
-    mount_help
-    ;;
+    L1 | l1)
+      echo
+      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+      dir_check
+      drive_change
+      mount_creat
+      ;;
+    L2 | l2)
+      echo
+      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
+      dir_check
+      drive_change
+      mount_creat
+      ;;
+    L3 | l3)
+      echo
+      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
+      dir_check
+      drive_change
+      mount_creat
+      ;;
+    S1 | s1)
+      echo
+      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+      dir_check
+      drive_change
+      mount_server_creat
+      ;;
+    S2 | s2)
+      echo
+      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
+      dir_check
+      drive_change
+      mount_server_creat
+      ;;
+    S3 | s3)
+      echo
+      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
+      dir_check
+      drive_change
+      mount_server_creat
+      ;;
+    D | d)
+      echo
+      mount_del
+      ;;
+    H | h)
+      echo
+      mount_help
+      ;;
+    *)
+      echo
+      mount_help
+      ;;
   esac
 fi

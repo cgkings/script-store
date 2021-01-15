@@ -15,15 +15,22 @@ curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 setcolor() {
   black=$(tput setaf 0)
   red=$(tput setaf 1)
+  # shellcheck disable=SC2034
   green=$(tput setaf 2)
+  # shellcheck disable=SC2034
   yellow=$(tput setaf 3)
   bold=$(tput bold)
+  # shellcheck disable=SC2034
   jiacu=${normal}${bold}
+  # shellcheck disable=SC2034
   blue=$(tput setaf 4)
+  # shellcheck disable=SC2034
   magenta=$(tput setaf 5)
+  # shellcheck disable=SC2034
   cyan=$(tput setaf 6)
   white=$(tput setaf 7)
   normal=$(tput sgr0)
+  # shellcheck disable=SC2034
   on_black=$(tput setab 0)
   on_red=$(tput setab 1)
   on_green=$(tput setab 2)
@@ -32,22 +39,38 @@ setcolor() {
   on_magenta=$(tput setab 5)
   on_cyan=$(tput setab 6)
   on_white=$(tput setab 7)
+  # shellcheck disable=SC2034
   shanshuo=$(tput blink)
+  # shellcheck disable=SC2034
   wuguangbiao=$(tput civis)
+  # shellcheck disable=SC2034
   guangbiao=$(tput cnorm)
+  # shellcheck disable=SC2034
   underline=$(tput smul)
+  # shellcheck disable=SC2034
   reset_underline=$(tput rmul)
+  # shellcheck disable=SC2034
   dim=$(tput dim)
   standout=$(tput smso)
+  # shellcheck disable=SC2034
   reset_standout=$(tput rmso)
+  # shellcheck disable=SC2034
   title=${standout}
+  # shellcheck disable=SC2034
   baihuangse=${white}${on_yellow}
+  # shellcheck disable=SC2034
   bailanse=${white}${on_blue}
+  # shellcheck disable=SC2034
   bailvse=${white}${on_green}
+  # shellcheck disable=SC2034
   baiqingse=${white}${on_cyan}
+  # shellcheck disable=SC2034
   baihongse=${white}${on_red}
+  # shellcheck disable=SC2034
   baizise=${white}${on_magenta}
+  # shellcheck disable=SC2034
   heibaise=${black}${on_white}
+  # shellcheck disable=SC2034
   heihuangse=${on_yellow}${black}
 }
 
@@ -70,21 +93,21 @@ check_vz() {
 ################## 检查rclone&fclone安装情况 ##################
 check_rclone() {
   #检查fclone安装状态，没装就安装
-  if [ -z $(command -v fclone) ]; then
-    echo -e "`curr_date` ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
+  if [ -z "$(command -v fclone)" ]; then
+    echo -e "$(curr_date) ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
     wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
   fi
   #检查rclone安装状态，没装就安装
-  if [ -z $(command -v rclone) ]; then
-    echo -e "`curr_date` ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
-    bash <(curl -L -s https://rclone.org/install.sh)
+  if [ -z "$(command -v rclone)" ]; then
+    echo -e "$(curr_date) ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
+    bash <(curl -L -s https://rclone.org/install.sh) > /dev/null
   fi
   #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
   if [ ! -f /root/.config/rclone/rclone.conf ]; then
-    echo -e "`curr_date` ${red}未检测到rclone配置文件.请使用“fclone config”命令配置后重新运行脚本.\n注意：配置时请不要设置root_folder_id，而是设置team_drive${normal}" && exit 1
+    echo -e "$(curr_date) ${red}未检测到rclone配置文件.请使用<fclone config>命令配置后重新运行脚本.\n注意：配置时请不要设置root_folder_id，而是设置team_drive${normal}" && exit 1
   else
     #检查conf文件内root_folder_id是否为空，如不为空就全部清空
-    [[ -n $(cat ~/.config/rclone/rclone.conf | awk '/root_folder_id/{print $3}') ]] && sed -i "s/root_folder_id = .*$/root_folder_id = /g" ~/.config/rclone/rclone.conf  
+    [ -n "$(awk '/root_folder_id/{print $3}' ~/.config/rclone/rclone.conf)" ] && sed -i "s/root_folder_id = .*$/root_folder_id = /g" ~/.config/rclone/rclone.conf
   fi
   echo -e "${curr_date} [INFO] rclone&fclone已安装" >> /root/install_log.txt
 }
@@ -108,35 +131,37 @@ check_release() {
   elif cat /proc/version | grep -q -E -i "redhat|red hat|centos"; then
     release='centos'
   fi
+  # shellcheck disable=SC2034
   sys=$(uname -m)
 }
 
 check_command() {
   check_release
-  for command_arges in $*
-  do
-  command_status=$(dpkg --get-selections | grep $command_arges)
-  if [ -z $command_status ]; then
-    echo -e "$(curr_date) ${red}$command_arges${normal} 不存在.正在为您安装，请稍后..."
-    if [[ "${release}" = "centos" ]]; then
-      yum install $command_arges -y
-      echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
-    elif [[ "${release}" = "debian" || "${release}" = "ubuntu" || "${release}" = "armdebian"  ]]; then
-      apt-get install $command_arges -y --upgrade
-      echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
-    else
-      echo -e "$(curr_date) ${red}对不起！您的系统暂不支持该脚本，请联系作者做定制优化，谢谢！${normal}"
-      exit 1
+  # shellcheck disable=SC2034
+  check_command_list=$*
+  for command_arges in $(check_command_list); do
+    command_status=$(dpkg --get-selections | grep "$command_arges")
+    if [ -z "$command_status" ]; then
+      echo -e "$(curr_date) ${red}$command_arges${normal} 不存在.正在为您安装，请稍后..."
+      if [[ "${release}" = "centos" ]]; then
+        yum install "$command_arges" -y > /dev/null
+        echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
+      elif [[ "${release}" = "debian" || "${release}" = "ubuntu" || "${release}" = "armdebian" ]]; then
+        apt-get install "$command_arges" -y --upgrade > /dev/null
+        echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
+      else
+        echo -e "$(curr_date) ${red}对不起！您的系统暂不支持该脚本，请联系作者做定制优化，谢谢！${normal}"
+        exit 1
+      fi
     fi
-  fi
   done
 }
 
 ################## 检查目录情况 ##################
-check_dir_file(){
-  if [ "${1:0-1:1}" = "/" ] && [ -d "$1" ];then
+check_dir_file() {
+  if [ "${1:0-1:1}" = "/" ] && [ -d "$1" ]; then
     return 0
-  elif [ -f "$1" ];then
+  elif [ -f "$1" ]; then
     return 0
   fi
   return 1
@@ -146,27 +171,27 @@ check_dir_file(){
 remote_choose() {
   #选择remote
   rclone listremotes | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}' > ~/.config/rclone/remote_list.txt
-  cat <<EOF
+  cat << EOF
 ${red}本地已配置remote列表:${normal}
 ${red} +-------------------------+${normal}
 ${red}$(cat /root/.config/rclone/remote_list.txt)${normal}
 ${red} +-------------------------+${normal}
 EOF
-  read -n1 -p "请选择用于后续操作rclone remote（输入数字即可）：" remote_choose_num
+  read -r -n1 -p "请选择用于后续操作rclone remote（输入数字即可）：" remote_choose_num
   echo
   #判断是否选择错误
-  if [[ -z $(cat /root/.config/rclone/remote_list.txt|awk '{print $1}'|grep ${remote_choose_num}) ]]; then
+  if [ -z "$(awk '{print $1}' /root/.config/rclone/remote_list.txt | grep "$remote_choose_num")" ]; then
     echo
     echo "输入不正确，请重新输入。"
     echo
     remote_choose
   else
     #选择无误，识别选择的remote
-    my_remote=$(cat /root/.config/rclone/remote_list.txt|awk '{print $2}'|sed -n ${remote_choose_num}p)
+    my_remote=$(cat /root/.config/rclone/remote_list.txt | awk '{print $2}' | sed -n ${remote_choose_num}p)
     #输出remote的团队盘列表备用
-    fclone backend lsdrives $my_remote:|awk '{ print FNR " " $0}' >~/.config/rclone/"$my_remote"_td_list.txt
+    fclone backend lsdrives $my_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$my_remote"_td_list.txt
     #识别conf文件中该remote的team drive id
-    td_id=$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf|awk '/team_drive/{print $3}'|sed -n '1p')
+    td_id=$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
     #如果你remote的team drive id为空，就帮你设置该remote的team drive id
     if [ -z $td_id ]; then
       drive_change
@@ -178,17 +203,17 @@ EOF
       read -n1 -p "是否要修改td盘id[Y/n],除输入Y|y，其他默认n ：" remote_confirm_result
       remote_confirm_result=${remote_confirm_result:-n}
       case ${remote_confirm_result} in
-      Y | y)
-        drive_change
-        ;;
-      n | N)
-        echo
-        return
-        ;;
-      *)
-        echo
-        return
-        ;;
+        Y | y)
+          drive_change
+          ;;
+        n | N)
+          echo
+          return
+          ;;
+        *)
+          echo
+          return
+          ;;
       esac
     fi
   fi
@@ -219,16 +244,16 @@ drive_change() {
   #检查td_change_id函数是否已被赋值
   if [ -n "$td_change_id" ]; then
     #如已赋值，输出remote的团队盘列表备用
-    fclone backend lsdrives $my_remote:|awk '{ print FNR " " $0}' >~/.config/rclone/"$my_remote"_td_list.txt
+    fclone backend lsdrives $my_remote: | awk '{ print FNR " " $0}' > ~/.config/rclone/"$my_remote"_td_list.txt
     #执行team drive id修改,目前的修改命令*******待优化*******
-    sed -i "s/$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf|grep "team_drive"|sed -n '1p')/team_drive = ${td_change_id}/g" ~/.config/rclone/rclone.conf
+    sed -i "s/$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep "team_drive" | sed -n '1p')/team_drive = ${td_change_id}/g" ~/.config/rclone/rclone.conf
   else
     #如未赋值，则帮你选择td盘，根据你的选择，给该函数赋值，赋值后执行修改
     echo -e "$curr_date ${red}[ERROR]您选择的remote：$my_remote 下的team_drive id为空,选一个吧${normal}"
     #team drive id选择
     drive_choose_list
     #执行team drive id修改,目前的修改命令*******待优化*******
-    sed -i "s/$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf|grep "team_drive"|sed -n '1p')/team_drive = ${td_change_id}/g" ~/.config/rclone/rclone.conf
+    sed -i "s/$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf | grep "team_drive" | sed -n '1p')/team_drive = ${td_change_id}/g" ~/.config/rclone/rclone.conf
   fi
   #刷新获取conf文件中remote下的td盘id和盘名
   td_id=$(sed -n '/'$my_remote'/,/\[/p' ~/.config/rclone/rclone.conf | awk '/team_drive/{print $3}' | sed -n '1p')
