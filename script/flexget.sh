@@ -68,7 +68,7 @@ config_flexget(){
 config_flexget_do(){
   cron_list=$(echo `crontab -l`)
   flexget_dir=$(echo `which flexget`)
-  cron_config="*/${fresh_time} * * * * /usr/local/bin/flexget --cron execute"
+  cron_config="*/${fresh_time} * * * * /usr/local/bin/flexget -c /home/software/flexget/config.yml --cron execute"
   if [[ ${cron_list} =~ ${cron_config} ]]; then
   echo "该配置计划任务已添加，无须重复添加"
   else
