@@ -82,6 +82,7 @@ EOF
   check_command python python3 python3-pip python3-distutils
   if [ -z "$(command -v virtualenv)" ]; then
     pip3 install -U pip > /dev/null
+    hash -d pip3
     pip3 install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py setuptools virtualenv > /dev/null
     echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
   fi
