@@ -24,7 +24,7 @@ initialization() {
   clear
   echo -e "${black}${on_white}${bold}                               开始脚本运行前检测                               ${normal}"
   apt-get update --fix-missing -y > /dev/null && apt upgrade -y > /dev/null
-  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale build-essential libncurses5-dev libpcap-dev libffi-dev
+  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale build-essential libncurses5-dev libpcap-dev libffi-dev ffmpeg
   ####设置颜色###
   if [ "$(tput colors)" != 256 ]; then
     cat >> ~/.bashrc << EOF
@@ -271,7 +271,8 @@ alias swap='bash <(curl -sL git.io/cg_swap)'
 alias a2='bash <(curl -sL git.io/aria2.sh)'
 alias am='bash <(curl -sL git.io/cg_auto_mount)'
 alias av='AV_Data_Capture'
-alias yd='youtube-dl -f bestvideo'
+alias yd='youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i'
+alias ydl='youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --yes-playlist -f -k ListURL'
 EOF
 source /root/.bashrc
 }
