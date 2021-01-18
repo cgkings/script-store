@@ -11,6 +11,7 @@
 
 #set -e #异常则退出整个脚本，避免错误累加
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
+#expand_aliases on #shell中开启alias扩展
 
 ################## 前置变量 ##################
 source <(wget -qO- https://git.io/cg_script_option)
@@ -244,6 +245,34 @@ ${curr_date} [INFO] 您使用了lnmp一键包！
 EOF
 }
 
+################## 批量别名 ##################
+my_alias(){
+  cat >> /root/.bashrc << EOF
+
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+alias ls='ls --color=auto'
+alias la='ls -lAh'
+alias lsa='ls -lah'
+alias md='mkdir -p'
+alias rd='rmdir'
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
+alias untar='tar -zxvf'
+alias wget='wget -c'
+alias c='clear'
+alias toolbox='bash <(curl -sL git.io/cg_toolbox)'
+alias swap='bash <(curl -sL git.io/cg_swap)'
+alias a2='bash <(curl -sL git.io/aria2.sh)'
+alias am='bash <(curl -sL git.io/cg_auto_mount)'
+alias av='AV_Data_Capture'
+alias yd='youtube-dl -f bestvideo'
+EOF
+source /root/.bashrc
+}
+
 ################## menu_go_on ##################
 menu_go_on() {
   echo -e "安装日志路径：/root/install_log.txt"
@@ -286,6 +315,7 @@ ${green}${bold}J、${normal}安装配置AVDC刮削工具[转自yoshiko2]
 ${green}${bold}K、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
 ${blue}${bold}————————————————————————————————便 捷 操 作—————————————————————————————————————${normal}
 ${green}${bold}M、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
+${green}${bold}N、${normal}批量别名
 ${green}${bold}Q、${normal}退出脚本
 注：本脚本所有操作日志路径：/root/install_log.txt
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
@@ -359,6 +389,11 @@ EOF
     M | m)
       echo
       echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
+      menu_go_on
+      ;;
+    N | n)
+      echo
+      my_alias
       menu_go_on
       ;;
     Q | q)
