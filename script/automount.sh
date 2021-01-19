@@ -85,7 +85,7 @@ EOF
   case $tag_choose_result in
     1)
       echo
-      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
       ;;
     2)
       echo
@@ -240,7 +240,7 @@ else
   case "$1" in
     L1 | l1)
       echo
-      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
       dir_check
       drive_change
       mount_creat
@@ -261,7 +261,7 @@ else
       ;;
     S1 | s1)
       echo
-      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/mnt/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
       dir_check
       drive_change
       mount_server_creat
