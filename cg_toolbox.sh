@@ -8,15 +8,12 @@
 # System Required: Debian/Ubuntu
 # Version: 1.0
 #=============================================================
-#chmod -R 755 /root/test_form
-#echo "$(date "+%d.%m.%Y %T") RCLONE UPLOAD STARTED" | tee -a $LOGFILE
-#set -e #异常则退出整个脚本，避免错误累加
-#set -x #脚本调试，逐行执行并输出执行的脚本命令行
+
+# chmod -R 755 /root/test_form
+# echo "$(date "+%d.%m.%Y %T") RCLONE UPLOAD STARTED" | tee -a $LOGFILE
+# set -e #异常则退出整个脚本，避免错误累加
+# set -x #脚本调试，逐行执行并输出执行的脚本命令行
 #expand_aliases on #shell中开启alias扩展
-#该脚本不允许并行调用，如发现进程中，有本脚本，再运行将自动退出
-if pidof -o %PPID -x "$0"; then
-  exit 1
-fi
 
 ################## 前置变量 ##################
 source <(wget -qO- https://git.io/cg_script_option)
