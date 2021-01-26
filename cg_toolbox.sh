@@ -9,6 +9,7 @@
 # Version: 1.0
 #=============================================================
 
+#echo "$(date "+%d.%m.%Y %T") RCLONE UPLOAD STARTED" | tee -a $LOGFILE
 #set -e #异常则退出整个脚本，避免错误累加
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
 #expand_aliases on #shell中开启alias扩展
