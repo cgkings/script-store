@@ -195,10 +195,10 @@ mount_menu() {
   cat << EOF
 ———————————————————————————————————————
 {green}mount一键脚本 by cgkings${normal}
-${green}1、临时挂载${normal}"
+${green}1、临时挂载${normal}
 ${green}2、服务挂载${normal}
 ${green}3、删除挂载${normal}
-${green}4、退出${normal}"
+${green}4、退出${normal}
 ———————————————————————————————————————
 EOF
   read -n1 -p "请输入数字 [1-4]:" num
