@@ -18,6 +18,11 @@
 source <(wget -qO- https://git.io/cg_script_option)
 setcolor
 
+################## 选择挂载目录ID ##################[done]
+td_id_choose() {
+  read -r -p "请输入需要挂载网盘或文件夹ID:" td_id
+}
+
 ################## 选择挂载路径 ##################[done]
 dir_check() {
   if [[ ${mount_path} =~ "/" ]]; then
@@ -108,8 +113,8 @@ EOF
 mount_creat() {
   mount_del
   echo -e "$curr_date [Info] 开始临时挂载..."
-  echo -e "$curr_date [Info] 挂载命令：fclone mount ${my_remote}: ${mount_path} ${mount_tag} &"
-  fclone mount $my_remote: $mount_path $mount_tag &
+  echo -e "$curr_date [Info] 挂载命令：fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag} &"
+  fclone mount $my_remote: $mount_path --drive-root-folder-id ${td_id} $mount_tag &
   sleep 5s
   echo -e "$curr_date [Info] 临时挂载[done]"
   echo -e "$curr_date [Info] 如挂载性能不好，请反馈作者"
@@ -133,7 +138,7 @@ KillMode = none
 Restart = on-failure
 RestartSec = 5
 User = root
-ExecStart = fclone mount ${my_remote}: ${mount_path} ${mount_tag}
+ExecStart = fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag}
 ExecStop = fusermount -qzu ${mount_path}
 
 [Install]
@@ -174,9 +179,12 @@ mount_help() {
   flags2 为需要创建挂载的remote名称，可查阅~/.config/rclone/rclone.conf
 
 [flags3]可用参数(Available flags)：
-  flags3 为挂载路径
+  flags3 为挂载盘或文件夹ID
+
 [flags4]可用参数(Available flags)：
-  flags4 为要修改为的挂载盘ID"
+  flags4 为挂载路径
+  
+例如：bash <(curl -sL https://git.io/cg_auto_mount) l1 remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd
 EOF
 }
 
@@ -198,6 +206,7 @@ EOF
     1)
       echo
       remote_choose
+      td_id_choose
       dir_choose
       tag_choose
       mount_creat
@@ -206,6 +215,7 @@ EOF
     2)
       echo
       remote_choose
+      td_id_choose
       dir_choose
       tag_choose
       mount_server_creat
@@ -235,49 +245,43 @@ if [ -z $1 ]; then
   mount_menu
 else
   my_remote=$2
-  mount_path=$3
-  td_change_id=$4
+  td_id=$3
+  mount_path=$4 
   case "$1" in
     L1 | l1)
       echo
       mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
       dir_check
-      drive_change
       mount_creat
       ;;
     L2 | l2)
       echo
       mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
       dir_check
-      drive_change
       mount_creat
       ;;
     L3 | l3)
       echo
       mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
       dir_check
-      drive_change
       mount_creat
       ;;
     S1 | s1)
       echo
       mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
       dir_check
-      drive_change
       mount_server_creat
       ;;
     S2 | s2)
       echo
       mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
       dir_check
-      drive_change
       mount_server_creat
       ;;
     S3 | s3)
       echo
       mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
       dir_check
-      drive_change
       mount_server_creat
       ;;
     D | d)

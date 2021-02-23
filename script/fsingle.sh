@@ -1,25 +1,30 @@
 #!/bin/bash
-source /root/fclone_shell_bot/myfc_config.ini
-clear
-read -p "请输入from 链接==>" link1
-link1=${link1#*id=};link1=${link1#*folders/};link1=${link1#*d/};link1=${link1%?usp*}
-read -p "请输入copy to链接==>" link2
-link2=${link2#*id=};link2=${link2#*folders/};link2=${link2#*d/};link2=${link2%?usp*}
-fclone lsf "$fclone_name1":{$link1} --format "pi" --files-only -R > /root/fclone_shell_bot/log/fsingle_task.txt
-IFS=$'\n'
-suma=0
-sumh=$(grep -n '' /root/fclone_shell_bot/log/fsingle_task.txt | awk -F : 'END{print $1}')
-for input_id in $(cat /root/fclone_shell_bot/log/fsingle_task.txt | cut -d ';' -f 2)
-do
-suma=$((suma+1))
-input_name=$(cat /root/fclone_shell_bot/log/fsingle_task.txt | grep $input_id | cut -d ';' -f 1)
-input_per=$(printf "%d%%" $((suma*100/sumh)))
-echo -e "▣▣▣▣▣▣▣任务信息▣▣▣▣▣▣▣\n"
-echo -e "┋资源名称┋:"$input_name"\n"
-echo -e "┋资源地址┋:"$input_id"\n"
-echo -e "┋任务信息┋:第"$suma"项/共"$sumh"项\n"
-echo -e "┋任务进度┋:"$input_per""
-fclone copy "$fclone_name1":{$input_id} "$fclone_name1":{$link2} --drive-server-side-across-configs --fast-list --no-traverse --size-only --stats=1s --stats-one-line -P --drive-pacer-min-sleep=1ms --ignore-checksum --ignore-existing --buffer-size=50M --use-mmap --log-level=ERROR --log-file=/root/fclone_shell_bot/log/fsingle.log
-done
-: > /root/fclone_shell_bot/log/fsingle_task.txt
+#=============================================================
+# https://github.com/cgkings/script-store
+# File Name: 一键提取单文件
+# Author: cgkings
+# Created Time : 2021.2.23
+# Description:flexget
+# System Required: Debian/Ubuntu
+# 感谢wuhuai2020、moerats、github众多作者，我只是整合代码
+# Version: 1.0
+#=============================================================
+
+#set -e #异常则退出整个脚本，避免错误累加
+#set -x #脚本调试，逐行执行并输出执行的脚本命令行
+
+################## 前置变量设置 ##################
+source <(wget -qO- https://git.io/cg_script_option)
+setcolor
+check_root
+check_vz
+check_rclone
+#提取当前ID单文件
+read -r -p "请输入要提取单文件的文件夹id==>>" from_id
+#选择要操作的remote
+remote_choose
+#提取单文件到当前目录
+rclone lsf $my_remote: --files-only --format "p" -R --drive-root-folder-id $from_id | xargs -t -n1 -I {} rclone move $my_remote:/{} $my_remote: --drive-server-side-across-configs --check-first --stats=1s --stats-one-line -vP --delete-empty-src-dirs --drive-root-folder-id $from_id
+#按hash查重
+rclone dedupe $my_remote: --dedupe-mode largest --by-hash -vv --drive-use-trash=false --drive-root-folder-id $from_id
 exit
