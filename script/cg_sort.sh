@@ -92,24 +92,6 @@ fi
 check_rclone
 
 
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 cat << EOF
 ${on_black}${white}                ${bold}JAV自动整理脚本    by cgkings 王大锤              ${normal}
 ${blue}${bold}————————————————————————————————使 用 说 明—————————————————————————————————————${normal}
