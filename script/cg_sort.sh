@@ -97,6 +97,19 @@ check_rclone
   
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 cat << EOF
 ${on_black}${white}                ${bold}JAV自动整理脚本    by cgkings 王大锤              ${normal}
 ${blue}${bold}————————————————————————————————使 用 说 明—————————————————————————————————————${normal}
@@ -110,6 +123,17 @@ ${green}${bold}[STEP5] ${normal}筛选移动有码番号视频，并按A-Z文件
 注：本脚本所有操作日志路径：/root/install_log.txt
 ${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
 EOF
+
+
+
+
+bash <(curl -sL git.io/cg_single.sh)
+
+
+
+
+
+
 
 
 
