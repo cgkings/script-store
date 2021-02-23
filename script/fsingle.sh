@@ -29,4 +29,6 @@ fclone delete $my_remote:{"$from_id"} --drive-use-trash=false --ignore-checksum 
 rclone lsf $my_remote: --files-only --format "p" -R --drive-root-folder-id $from_id | xargs -t -n1 -I {} rclone move $my_remote:/{} $my_remote: --drive-server-side-across-configs --check-first --stats=1s --stats-one-line -vP --delete-empty-src-dirs --ignore-errors --drive-root-folder-id $from_id
 #按hash查重
 rclone dedupe $my_remote: --dedupe-mode largest --by-hash -vv --drive-use-trash=false --delete-empty-src-dirs --ignore-errors --drive-root-folder-id $from_id
+#删除空文件夹
+fclone rmdirs $my_remote:{"$from_id"} --fast-list --drive-use-trash=false -vv --checkers=16 --transfers=8 --drive-pacer-min-sleep=5ms --drive-pacer-burst=1000 --ignore-errors
 exit
