@@ -178,5 +178,6 @@ EOF
     remote_choose
   else
     #选择无误，识别选择的remote
-    my_remote=$(awk '{print $2}' /root/.config/rclone/remote_list.txt | sed -n ${remote_choose_num}p)
+    my_remote=$(awk '{print $2}' /root/.config/rclone/remote_list.txt | sed -n "$remote_choose_num"p)
+  fi
 }
