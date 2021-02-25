@@ -14,11 +14,14 @@
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
 
 ################## 前置变量设置 ##################
+# shellcheck source=/dev/null
 source <(wget -qO- https://git.io/cg_script_option)
 setcolor
 check_root
 check_vz
 check_rclone
+
+######################命令执行##########################
 #提取当前ID单文件
 read -r -p "请输入要提取单文件的文件夹id==>>" from_id
 #选择要操作的remote
