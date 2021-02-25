@@ -14,7 +14,8 @@
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
 
 ################## 前置变量设置 ##################
-source <(wget -qO- https://git.io/cg_script_option)
+# shellcheck source=/dev/null
+source <(curl -sL git.io/cg_script_option)
 setcolor
 
 ################## 搭建RSSHUB ##################

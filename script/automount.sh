@@ -15,7 +15,7 @@
 
 ################## 前置变量设置 ##################
 # shellcheck source=/dev/null
-source <(wget -qO- https://git.io/cg_script_option)
+source <(curl -sL git.io/cg_script_option)
 setcolor
 
 ################## 选择挂载目录ID ##################[done]

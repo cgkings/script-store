@@ -14,7 +14,8 @@
 #set -x #脚本调试，逐行执行并输出执行的脚本命令行
 
 ################## 前置变量 ##################
-source <(wget -qO- https://git.io/cg_script_option)
+# shellcheck source=/dev/null
+source <(curl -sL git.io/cg_script_option)
 setcolor
 totalmem=$(free -m | awk '/Mem:/{print $2}')
 totalswap=$(free -m | awk '/Swap:/{print $2}')

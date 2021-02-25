@@ -10,7 +10,9 @@
 #=============================================================
 
 ################## 前置变量 ##################
-source <(wget -qO- https://git.io/cg_script_option)
+# shellcheck source=/dev/null
+source <(curl -sL git.io/cg_script_option)
+setcolor
 check_root
 check_vz
 check_command tar zip unzip gzip bzip2 unar p7zip-full

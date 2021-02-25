@@ -13,7 +13,7 @@
 
 ################## 前置变量设置 ##################
 # shellcheck source=/dev/null
-source <(wget -qO- https://git.io/cg_script_option)
+source <(curl -sL git.io/cg_script_option)
 setcolor
 check_root
 check_vz

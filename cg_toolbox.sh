@@ -16,7 +16,8 @@
 #expand_aliases on #shell中开启alias扩展
 
 ################## 前置变量 ##################
-source <(wget -qO- https://git.io/cg_script_option)
+# shellcheck source=/dev/null
+source <(curl -sL git.io/cg_script_option)
 setcolor
 
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
