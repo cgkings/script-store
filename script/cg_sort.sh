@@ -80,7 +80,7 @@ censored_move() {
 
 ######################脚本命令帮助##########################
 sort_help() {
-  cat <<EOF
+  cat << EOF
 用法(Usage):
   bash <(curl -sL git.io/cg_sort.sh) [flags 1]
   注：无参数则进入帮助信息，
@@ -95,40 +95,47 @@ sort_help() {
 EOF
 }
 
+######################脚本命令帮助##########################
+get_id() {
+  #输入整理文件夹ID
+  read -r -p "请输入要整理的文件夹id==>>" from_id
+  #选择要操作的remote
+  remote_choose
+}
+
 ######################命令执行##########################
-#输入整理文件夹ID
-read -r -p "请输入要整理的文件夹id==>>" from_id
-#选择要操作的remote
-remote_choose
 if [ -z $1 ]; then
   sort_help
 else
   case "$1" in
-  #提取单文件
-  S | s)
-    echo
-    singlefile
-    ;;
-  #中字离线下载整理
-  Z | z)
-    echo
-    singlefile
-    c_move
-    fc2_move
-    suren_move
-    uncensored_move
-    censored_move
-    ;;
-  C | c)
-    echo
-    fc2_move
-    suren_move
-    uncensored_move
-    censored_move
-    ;;
-  *)
-    echo
-    sort_help
-    ;;
+    #提取单文件
+    S | s)
+      echo
+      get_id
+      singlefile
+      ;;
+    #中字离线下载整理
+    Z | z)
+      echo
+      get_id
+      singlefile
+      c_move
+      fc2_move
+      suren_move
+      uncensored_move
+      censored_move
+      ;;
+    C | c)
+      echo
+      get_id
+      fc2_move
+      suren_move
+      uncensored_move
+      censored_move
+      ;;
+    *)
+      echo
+      sort_help
+      ;;
   esac
 fi
