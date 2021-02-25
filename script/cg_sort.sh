@@ -39,13 +39,13 @@ singlefile() {
 ######################移动中字文件##########################
 c_move() {
   #移动-C视频文件
-  fclone move "$my_remote":{$from_id} "$my_remote":{$c_id} --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include '*-c.{mp4,mkv,avi,rmvb,rm,mpg,wmv,mpeg,flv,ts}' --ignore-case --check-first --delete-empty-src-dirs
+  fclone move "$my_remote":{$from_id} "$my_remote":{$c_id} --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include '*-c.{mp4,mkv,avi,rmvb,rm,mpg,wmv,mpeg,flv,ts}' --ignore-case --delete-empty-src-dirs --ignore-errors --check-first
 }
 
 ######################移动FC2文件##########################
 fc2_move() {
   #移动FC2[done]
-  fclone move "$my_remote":{$from_id} "$my_remote":{$fc2_id} --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include '{FC2}*.*' --ignore-case --check-first --delete-empty-src-dir
+  fclone move "$my_remote":{$from_id} "$my_remote":{$fc2_id} --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include '{FC2}*.*' --ignore-case --delete-empty-src-dirs --ignore-errors --check-first
   #FC2查重
   rclone dedupe "$my_remote": --dedupe-mode largest --by-hash -vv --drive-use-trash=false --drive-root-folder-id $fc2_id
 }
@@ -53,7 +53,7 @@ fc2_move() {
 ######################移动素人文件##########################
 suren_move() {
   #移动素人
-  fclone move "$my_remote":{$from_id} "$my_remote":{$suren_id} --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include '{ARA,CUTE,DCV,EZD,EVA,G-area,GANA,getchu,HMDN,himemix,HOI,ION,JAC,JKZ,KNB,LUXU,MAAN,MIUM,Mywife,NAMA,NTK,ORETD,ORE,PER,S-cute,SCP,SWEET,SIRO,SCUTE,SQB,SIMM,URF,326EVA,200GANA,328HMDN,390JAC,336KNB,259LUXU,300MAAN,300MIUM,332NAMA,300NTK,230OREX,326SCP}*.*' --ignore-case --check-first --delete-empty-src-dirs
+  fclone move "$my_remote":{$from_id} "$my_remote":{$suren_id} --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include '{ARA,CUTE,DCV,EZD,EVA,G-area,GANA,getchu,HMDN,himemix,HOI,ION,JAC,JKZ,KNB,LUXU,MAAN,MIUM,Mywife,NAMA,NTK,ORETD,ORE,PER,S-cute,SCP,SWEET,SIRO,SCUTE,SQB,SIMM,URF,326EVA,200GANA,328HMDN,390JAC,336KNB,259LUXU,300MAAN,300MIUM,332NAMA,300NTK,230OREX,326SCP}*.*' --ignore-case --delete-empty-src-dirs --ignore-errors --check-first
   #素人查重
   rclone dedupe "$my_remote": --dedupe-mode largest --by-hash -vv --drive-use-trash=false --drive-root-folder-id $suren_id
 }
@@ -61,7 +61,7 @@ suren_move() {
 ######################移动无码文件##########################
 uncensored_move() {
   #移动uncensored[done]
-  fclone move "$my_remote":{$from_id} "$my_remote":{$uncensored_id} --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include '{[0-9][0-9][0-9][0-9]*-[0-9],[0-9][0-9][0-9][0-9]*_[0-9],n[0-9][0-9][0-9][0-9]*,BT,CT,EMP,CCDV,CWP,CWPBD,DSAM,DRC,DRG,GACHI,heydouga,JAV,LAF,LAFBD,HEYZO,KTG,KP,KG,LLDV,MCDV,MKD,MKBD,MMDV,NIP,PB,PT,QE,RED,RHJ,S2M,SKY,SKYHD,SMD,SSDV,SSKP,TRG,TS,xxx-av,YKB}*.*' --ignore-case --check-first --delete-empty-src-dirs
+  fclone move "$my_remote":{$from_id} "$my_remote":{$uncensored_id} --drive-server-side-across-configs --stats=1s --stats-one-line -vP --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include '{[0-9][0-9][0-9][0-9]*-[0-9],[0-9][0-9][0-9][0-9]*_[0-9],n[0-9][0-9][0-9][0-9]*,BT,CT,EMP,CCDV,CWP,CWPBD,DSAM,DRC,DRG,GACHI,heydouga,JAV,LAF,LAFBD,HEYZO,KTG,KP,KG,LLDV,MCDV,MKD,MKBD,MMDV,NIP,PB,PT,QE,RED,RHJ,S2M,SKY,SKYHD,SMD,SSDV,SSKP,TRG,TS,xxx-av,YKB}*.*' --ignore-case --delete-empty-src-dirs --ignore-errors --check-first
   #uncensored查重
   rclone dedupe "$my_remote": --dedupe-mode largest --by-hash -vv --drive-use-trash=false --drive-root-folder-id $uncensored_id
 }
@@ -73,7 +73,7 @@ censored_move() {
   for forder_num in {A..Z}; do
     suma=$((suma + 1))
     echo -e "即将开始整理从A到Z的视频文件，当前进度 $suma / 26"
-    fclone move "$my_remote":{$from_id} "$my_remote":{$censored_id}/"$forder_num" --drive-server-side-across-configs -vv --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include "[$forder_num]*.*" --ignore-case --check-first --delete-empty-src-dirs --ignore-errors
+    fclone move "$my_remote":{$from_id} "$my_remote":{$censored_id}/"$forder_num" --drive-server-side-across-configs -vv --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include "[$forder_num]*.*" --ignore-case --delete-empty-src-dirs --ignore-errors --check-first
     rclone dedupe "$my_remote":/"$forder_num" --dedupe-mode largest --by-hash -vv --drive-use-trash=false --drive-root-folder-id $censored_id
   done
 }
