@@ -19,7 +19,7 @@ source <(curl -sL git.io/cg_script_option)
 setcolor
 
 ################## 搭建RSSHUB ##################
-install_rsshub(){
+install_rsshub() {
   [ -e /home/RSSHub ] && rm -rf /home/RSSHub
   mkdir -p 755 /home/RSSHub && git clone https://github.com/cgkings/RSSHub /home/RSSHub
   sleep 5s
@@ -31,13 +31,13 @@ install_rsshub(){
 
 ################## 运行rsshub ##################
 
-run_rsshub(){
+run_rsshub() {
   tmux new -s rsshub -d
   tmux send -t "rsshub" "cd /home/RSSHub && git pull && npm install & npm start" Enter
 }
 
 ################## 安装flexget ##################
-install_flexget(){
+install_flexget() {
   if [ -z $(command -v flexget) ]; then
     #建立flexget独立的 python3 虚拟环境
     mkdir -p 755 /home/software/flexget/
@@ -60,24 +60,30 @@ install_flexget(){
 }
 
 ################## 配置flexget刷新时间 ##################
-config_flexget(){
+config_flexget() {
   read -t 5 -p "flexget刷新时间设置为(单位：分钟,5秒超时或回车默认20分钟)：" fresh_time
   fresh_time=${fresh_time:-15}
   config_flexget_do
 }
 
-config_flexget_do(){
-  cron_list=$(echo `crontab -l`)
-  flexget_dir=$(echo `which flexget`)
+config_flexget_do() {
+  cron_list=$(echo $(crontab -l))
+  flexget_dir=$(echo $(which flexget))
   cron_config="*/${fresh_time} * * * * /usr/local/bin/flexget -c /home/software/flexget/config.yml --cron execute"
   if [[ ${cron_list} =~ ${cron_config} ]]; then
-  echo "该配置计划任务已添加，无须重复添加"
+    echo "该配置计划任务已添加，无须重复添加"
   else
     if [[ ${cron_list} =~ ${flexget_dir} ]]; then
-    sed -i '/\/usr\/local\/bin\/flexget/d' /var/spool/cron/crontabs/root
-    crontab -l | { cat; echo "${cron_config}"; } | crontab -
+      sed -i '/\/usr\/local\/bin\/flexget/d' /var/spool/cron/crontabs/root
+      crontab -l | {
+                   cat
+                        echo "${cron_config}"
+      }                                          | crontab -
     else
-    crontab -l | { cat; echo "${cron_config}"; } | crontab -
+      crontab -l | {
+                   cat
+                        echo "${cron_config}"
+      }                                          | crontab -
     fi
   fi
   flexget --test execute
