@@ -33,11 +33,22 @@ bash <(curl -sL git.io/cg_v2ray)
 bash <(curl -sL git.io/cg_toolbox)
 ```
 [说明]()
-### 网盘整理一键脚本【 rclone & fclone 】【未完成】
+### 影片整理一键脚本【 rclone & fclone 】
 ```
 bash <(curl -sL git.io/cg_sort.sh)
 ```
-[说明]()
+**[用法]**<br>
+  `bash <(curl -sL git.io/cg_sort.sh) [flags 1]`
+  *注1：无参数则进入帮助信息*<br>
+   注2：条件整理，需要根目录下为单文件，否则需要修改脚本内，条件移动--include "\*/" <br>
+
+*可用参数(Available flags)：*<br>
+  *S  提取单文件到当前要整理的文件夹根目录下；*<br>
+  *Z  step1:提取单文件到当前要整理的文件夹根目录下；*<br>
+     *step2:移动中文字幕到c_forder参数文件夹下；*<br>
+     *step3:按照FC2,素人，有码，无码分别移至相应参数设置下；*<br>
+  *C  自定义模式：可自行修改脚本，添加自己需要的功能模块；*<br>
+
 ### 转存备份一键脚本【 google drive & 6pan 】【未完成】
 ```
 bash <(curl -sL git.io/cg_fqcopy)
