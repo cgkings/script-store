@@ -11,6 +11,10 @@
 
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 
+# Predefined env
+#export DEBIAN_FRONTEND=noninteractive
+#export COMPOSER_ALLOW_SUPERUSER=1
+
 ################## 字体格式设置 ##################
 setcolor() {
   black=$(tput setaf 0)
@@ -74,19 +78,107 @@ setcolor() {
   heihuangse=${on_yellow}${black}
 }
 
-################## 检查root权限 ##################
-check_root() {
-  if [[ $EUID -ne 0 ]]; then
-    echo -e "${red}Error:本脚本必须root账号运行，请切换root用户后再执行本脚本!${normal}"
+################## 检查系统要求 ##################
+check_sys() {
+  if [[ $(id -u) != 0 ]]; then
+    whiptail --title "user not supported(用户权限不支持)" --msgbox "请使用root或者sudo用户运行,Please run this script as root or sudoer." 8 68
+    echo -e "${red}Error:请使用root或者sudo用户运行,Please run this script as root or sudoer!${normal}"
     exit 1
   fi
-}
-
-################## 检查VPS架构 ##################
-check_vz() {
-  if [[ -d "/proc/vz" ]]; then
-    echo -e "${red}Error:您的VPS是openVZ架构，臣妾办不到啊!${normal}"
+  if [[ $(uname -m 2> /dev/null) != x86_64 ]]; then
+    whiptail --title "hardware not supported(硬件不支持)" --msgbox "本脚本仅适用于x86_64机器,Please run this script on x86_64 machine." 8 68
+    echo -e "${red}Error:本脚本仅适用于x86_64机器,Please run this script on x86_64 machine!${normal}"
     exit 1
+  fi
+  if [[ -d "/proc/vz" ]]; then
+    whiptail --title "Virtualization technology not supported(虚拟化架构不支持)" --msgbox "本脚本暂时不支持openVZ架构,Please run this script on KVM." 8 68
+    echo -e "${red}Error:本脚本暂时不支持openVZ架构!${normal}"
+    exit 1
+  fi
+  if [[ $(free -m | grep Mem | awk '{print $2}' 2> /dev/null) -le "100" ]]; then
+    whiptail --title "RAM not enough(内存不足)" --msgbox "本脚本需要至少100MB内存才能正常运作,Please run this script on machine with more than 100MB total ram." 8 68
+    echo -e "${red}Error:本脚本需要至少100MB内存才能正常运作,Please run this script on machine with more than 100MB total ram!${normal}"
+    exit 1
+  fi
+  if [[ $(df $PWD | awk '/[0-9]%/{print $(NF-2)}' 2> /dev/null) -le "3000000" ]]; then
+    whiptail --title "free disk space not enough(硬盘可用空间不足)" --msgbox "本脚本需要至少3GB硬盘可用空间才能正常运作,Please run this script on machine with more than 3G free disk space." 8 68
+    echo -e "${red}Error:本脚本需要至少3GB硬盘可用空间才能正常运作,Please run this script on machine with more than 3G free disk space!${normal}"
+    exit 1
+  fi
+  #Disable cloud-init
+  rm -rf /lib/systemd/system/cloud*
+  ## 卸载腾讯云云盾
+  if [[ -d /usr/local/qcloud ]]; then
+    #disable tencent cloud process
+    rm -rf /usr/local/sa
+    rm -rf /usr/local/agenttools
+    rm -rf /usr/local/qcloud
+    #disable huawei cloud process
+    rm -rf /usr/local/telescope
+  fi
+  ## 卸载阿里云云盾
+  if [[ -d /usr/local/aegis ]]; then
+    TERM=ansi whiptail --title "阿里云监控卸载" --infobox "检测到阿里云恶意监控服务，开始卸载..." 7 68
+    colorEcho ${INFO} "Uninstall Aliyun aegis ing"
+    iptables -I INPUT -s 140.205.201.0/28 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.201.16/29 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.201.32/28 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.225.192/29 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.225.200/30 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.225.184/29 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.225.183/32 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.225.206/32 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.225.205/32 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.225.195/32 -j DROP &> /dev/null
+    iptables -I INPUT -s 140.205.225.204/32 -j DROP &> /dev/null
+    systemctl stop aegis
+    systemctl stop CmsGoAgent.service
+    systemctl stop aliyun
+    systemctl stop cloud-config
+    systemctl stop cloud-final
+    systemctl stop cloud-init-local.service
+    systemctl stop cloud-init
+    systemctl stop ecs_mq
+    systemctl stop exim4
+    systemctl stop apparmor
+    systemctl stop sysstat
+    systemctl disable aegis
+    systemctl disable CmsGoAgent.service
+    systemctl disable aliyun
+    systemctl disable cloud-config
+    systemctl disable cloud-final
+    systemctl disable cloud-init-local.service
+    systemctl disable cloud-init
+    systemctl disable ecs_mq
+    systemctl disable exim4
+    systemctl disable apparmor
+    systemctl disable sysstat
+    killall -9 aegis_cli > /dev/null 2>&1
+    killall -9 aegis_update > /dev/null 2>&1
+    killall -9 aegis_cli > /dev/null 2>&1
+    killall -9 AliYunDun > /dev/null 2>&1
+    killall -9 AliHids > /dev/null 2>&1
+    killall -9 AliHips > /dev/null 2>&1
+    killall -9 AliYunDunUpdate > /dev/null 2>&1
+    rm -rf /etc/init.d/aegis
+    rm -rf /etc/systemd/system/CmsGoAgent*
+    rm -rf /etc/systemd/system/aliyun*
+    rm -rf /lib/systemd/system/cloud*
+    rm -rf /lib/systemd/system/ecs_mq*
+    rm -rf /usr/local/aegis
+    rm -rf /usr/local/cloudmonitor
+    rm -rf /usr/sbin/aliyun*
+    rm -rf /sbin/ecs_mq_rps_rfs
+    for ((var = 2; var <= 5; var++)); do
+      if [ -d "/etc/rc${var}.d/" ]; then
+        rm -rf "/etc/rc${var}.d/S80aegis"
+      elif [ -d "/etc/rc.d/rc${var}.d" ]; then
+        rm -rf "/etc/rc.d/rc${var}.d/S80aegis"
+      fi
+    done
+    apt-get purge sysstat exim4 chrony aliyun-assist -y
+    systemctl daemon-reload
+    echo "nameserver 1.1.1.1" > '/etc/resolv.conf'
   fi
 }
 

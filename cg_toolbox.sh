@@ -22,10 +22,10 @@ setcolor
 
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
 initialization() {
-  check_root
-  check_vz
+  check_sys
   clear
-  echo -e "${black}${on_white}${bold}                               开始脚本运行前检测                               ${normal}"
+  TERM=ansi whiptail --title "初始化中(initializing)" --infobox "初始化中...(initializing)
+请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)" 8 100
   apt-get update --fix-missing -y > /dev/null && apt upgrade -y > /dev/null
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale build-essential libncurses5-dev libpcap-dev libffi-dev ffmpeg
   ####设置颜色###

@@ -15,8 +15,7 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
-check_root
-check_vz
+check_sys
 check_rclone
 # shellcheck disable=SC2034
 c_id="1Xmtx8ueVSZNxGQxAZiE0bl2QnNof4eXo"

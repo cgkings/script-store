@@ -13,8 +13,7 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
-check_root
-check_vz
+check_sys
 check_command tar zip unzip gzip bzip2 unar p7zip-full
 file_dir="$1"
 taget_dir="$2"

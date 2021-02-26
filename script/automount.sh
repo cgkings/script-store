@@ -238,8 +238,7 @@ EOF
 }
 
 ################## 执  行  命  令 ##################
-check_root
-check_vz
+check_sys
 check_rclone
 if [ -z $1 ]; then
   mount_menu

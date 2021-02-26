@@ -92,8 +92,7 @@ config_flexget_do() {
 }
 
 ################## 执  行  命  令 ##################
-check_root
-check_vz
+check_sys
 check_command wget
 if [ -z $1 ]; then
   install_rsshub
