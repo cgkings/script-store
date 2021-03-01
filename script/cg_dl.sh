@@ -18,6 +18,38 @@
 source <(curl -sL git.io/cg_script_option)
 setcolor
 
+################## 安装配置aria2自动下载上传 ##################
+install_aria2() {
+  cd /root && bash <(curl -sL git.io/aria2.sh) << EOF
+1 
+EOF
+  #修改默认本地下载路径为/home/download
+  [ ! -e /home/download ] && mkdir -p 755 /home/download
+  [ -z "$(grep "/home/download" /root/.aria2c/aria2.conf)" ] && sed -i 's/dir=.*$/dir=\/home\/download/g' /root/.aria2c/aria2.conf
+  #修改完成后执行的脚本为自动上传
+  [ -z "$(grep "upload.sh" /root/.aria2c/aria2.conf)" ] && sed -i 's/clean.sh/upload.sh/g' /root/.aria2c/aria2.conf
+  #修改自动上传的工具，由rclone改为fclone
+  [ -z "$(grep "fclone move" /root/.aria2c/upload.sh)" ] && sed -i 's/rclone move/fclone move/g' /root/.aria2c/upload.sh
+  #选择fclone remote
+  remote_choose
+  #设置自动上传的fclone remote*****从此行开始未修改******
+  [ -z "$(grep "$my_remote" /root/.aria2c/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$my_remote'/g' /root/.aria2c/script.conf
+  #设置自动上传网盘目录为/Download
+  [ -z "$(grep "drive-dir=/Download" /root/.aria2c/script.conf)" ] && sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
+  #通知remote选择结果及自动上传目录
+  echo -e "$curr_date ${red}[INFO]您选择的remote为：${my_remote}，自动上传目录为：${td_name}/Download，如有需要，请bash <(curl -sL git.io/aria2.sh)自行修改"
+  service aria2 restart
+  #检查是否安装成功
+  aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
+  if [ "$aria2_install_status" = success ]; then
+    echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！
+    本地下载目录为：/home/download
+    remote为：${my_remote}，自动上传目录为：${td_name}/Download" >> /root/install_log.txt
+  else
+    echo -e "${curr_date} [ERROR] aria2自动上传安装配置失败！" >> /root/install_log.txt
+  fi
+}
+
 ################## 搭建RSSHUB ##################
 install_rsshub() {
   [ -e /home/RSSHub ] && rm -rf /home/RSSHub

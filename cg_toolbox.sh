@@ -24,11 +24,34 @@ setcolor
 initialization() {
   check_sys
   clear
-  TERM=ansi whiptail --title "初始化中(initializing)" --infobox "初始化中...(initializing)
-请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)" 8 100
-  apt-get update --fix-missing -y > /dev/null && apt upgrade -y > /dev/null
-  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch fonts-powerline file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale build-essential libncurses5-dev libpcap-dev libffi-dev ffmpeg
+  TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "初始化中...(initializing)
+请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)
+初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
+  echo -e "${curr_date} [INFO] 静默升级系统软件源"
+  apt-get update --fix-missing -y > /dev/null
+  echo -e "${curr_date} [INFO] 已完成"
+  echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
+  apt upgrade -y > /dev/null
+  echo -e "${curr_date} [INFO] 已完成"
+  echo -e "${curr_date} [INFO] 静默检查并安装缺少的常用软件：sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale ffmpeg"
+  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale ffmpeg
+  echo -e "${curr_date} [INFO] 已完成"
+  ###设置时区###
+  echo -e "${curr_date} [INFO] 检查时区是否为中国上海"
+  if [ "$(cat /etc/timezone)" != "Asia/Shanghai" ]; then
+    [ -z "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+    echo "Asia/Shanghai" > /etc/timezone
+    echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
+  fi
+  echo -e "${curr_date} [INFO] 已完成"
+  ###自动设置虚拟内存###
+  [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
+}
+
+################## 安装装逼神器 oh my zsh & on my tmux ##################待完善
+install_beautify() {
   ####设置颜色###
+  echo -e "${curr_date} [INFO] 设置系统256色"
   if [ "$(tput colors)" != 256 ]; then
     cat >> ~/.bashrc << EOF
 
@@ -39,97 +62,9 @@ EOF
     source /root/.bashrc
     echo -e "${curr_date} [INFO] 设置256色成功" >> /root/install_log.txt
   fi
-  ###设置时区###
-  if [ "$(cat /etc/timezone)" != "Asia/Shanghai" ]; then
-    [ -z "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-    echo "Asia/Shanghai" > /etc/timezone
-    echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
-  fi
-  ###设置语言###
-  if [ "$LANG" != "en_US.UTF-8" ]; then
-    echo "LANG=en_US.UTF-8" > /etc/default/locale
-    cat > /etc/locale.gen << EOF
-
-  en_US.UTF-8 UTF-8
-  zh_CN.UTF-8 UTF-8
-EOF
-    locale-gen
-    echo -e "${curr_date} [INFO] 设置语言为en_US.UTF-8成功" >> /root/install_log.txt
-  fi
-  ###file-max设置，解决too many open files问题###
-  if [ "$(ulimit -n)" != 65535 ]; then
-    echo -e "\nfs.file-max = 6553500" >> /etc/sysctl.conf
-    sysctl -p
-    cat >> /etc/security/limits.conf << EOF
-
-* soft memlock unlimited
-* hard memlock unlimited
-* soft nofile 65535
-* hard nofile 65535
-* soft nproc 65535
-* hard nproc 65535
-
-root soft memlock unlimited
-root hard memlock unlimited
-root soft nofile 65535
-root hard nofile 65535
-root soft nproc 65535
-root hard nproc 65535
-EOF
-    echo -e "\nsession required pam_limits.so" >> /etc/pam.d/common-session
-    echo -e "${curr_date} [INFO] file_max 修改成功"
-    echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
-  fi
-  ###设置虚拟内存###
-  [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
-  ###安装python环境###
-  check_command python python3 python3-pip python3-distutils
-  if [ -z "$(command -v virtualenv)" ]; then
-    pip3 install -U pip > /dev/null
-    hash -d pip3
-    pip3 install -U wheel requests scrapy Pillow baidu-api pysocks cloudscraper fire pipenv delegator.py setuptools virtualenv > /dev/null
-    echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
-  fi
-  ###安装go环境###
-  if [ -z "$(command -v go)" ]; then
-    echo -e "$(curr_date) ${red}go命令${normal} 不存在.正在为您安装，请稍后..."
-    if [ -e /home/go ]; then
-      rm -rf /home/go
-    fi
-    wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
-    tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
-    [ -z "$(grep "export GOROOT=/home/go" /root/.bashrc)" ] && cat >> /root/.bashrc << EOF
-
-export PATH=$PATH:/home/go/bin
-export GOROOT=/home/go
-export GOPATH=/home/go/gopath
-EOF
-    source /root/.bashrc
-    echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
-  fi
-  #安装nodejs环境
-  if [ -z "$(command -v node)" ]; then
-    if [ -e /usr/local/lib/nodejs ]; then
-      rm -rf /usr/local/lib/nodejs
-    fi
-    mkdir -p 755 /usr/local/lib/nodejs
-    wget -qN https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz && sudo tar -xJvf node-v14.15.4-linux-x64.tar.xz -C /usr/local/lib/nodejs && rm -f node-v14.15.4-linux-x64.tar.xz
-    ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npm /usr/local/bin/
-    ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/npx /usr/local/bin/
-    ln -sf /usr/local/lib/nodejs/node-v14.15.4-linux-x64/bin/node /usr/local/bin/
-    echo -e "${curr_date} [INFO] nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
-  fi
-  if [ -z "$(command -v yarn)" ]; then
-    npm install -g yarn n --force
-    yarn set version latest
-    echo -e "${curr_date} [INFO] yarn&n已安装" >> /root/install_log.txt
-  fi
-}
-
-################## 安装装逼神器 oh my zsh & on my tmux ##################待完善
-install_beautify() {
+  echo -e "${curr_date} [INFO] 已完成"
   #安装oh my zsh
-  check_command zsh
+  check_command zsh fonts-powerline
   #调用oh my zsh安装脚本
   cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
   sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc #设置主题
@@ -183,38 +118,6 @@ EOF
     echo -e "${curr_date} [ERROR] buyvm 256G硬盘尚未挂载到/home" >> /root/install_log.txt
   else
     echo -e "${curr_date} [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
-  fi
-}
-
-################## 安装配置aria2自动下载上传 ##################
-install_aria2() {
-  cd /root && bash <(curl -sL git.io/aria2.sh) << EOF
-1 
-EOF
-  #修改默认本地下载路径为/home/download
-  [ ! -e /home/download ] && mkdir -p 755 /home/download
-  [ -z "$(grep "/home/download" /root/.aria2c/aria2.conf)" ] && sed -i 's/dir=.*$/dir=\/home\/download/g' /root/.aria2c/aria2.conf
-  #修改完成后执行的脚本为自动上传
-  [ -z "$(grep "upload.sh" /root/.aria2c/aria2.conf)" ] && sed -i 's/clean.sh/upload.sh/g' /root/.aria2c/aria2.conf
-  #修改自动上传的工具，由rclone改为fclone
-  [ -z "$(grep "fclone move" /root/.aria2c/upload.sh)" ] && sed -i 's/rclone move/fclone move/g' /root/.aria2c/upload.sh
-  #选择fclone remote
-  remote_choose
-  #设置自动上传的fclone remote*****从此行开始未修改******
-  [ -z "$(grep "$my_remote" /root/.aria2c/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$my_remote'/g' /root/.aria2c/script.conf
-  #设置自动上传网盘目录为/Download
-  [ -z "$(grep "drive-dir=/Download" /root/.aria2c/script.conf)" ] && sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
-  #通知remote选择结果及自动上传目录
-  echo -e "$curr_date ${red}[INFO]您选择的remote为：${my_remote}，自动上传目录为：${td_name}/Download，如有需要，请bash <(curl -sL git.io/aria2.sh)自行修改"
-  service aria2 restart
-  #检查是否安装成功
-  aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
-  if [ "$aria2_install_status" = success ]; then
-    echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！
-    本地下载目录为：/home/download
-    remote为：${my_remote}，自动上传目录为：${td_name}/Download" >> /root/install_log.txt
-  else
-    echo -e "${curr_date} [ERROR] aria2自动上传安装配置失败！" >> /root/install_log.txt
   fi
 }
 
@@ -303,6 +206,97 @@ menu_go_on() {
 
 ################## 主    菜    单 ##################
 main_menu() {
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "VPS ToolBox Menu" --menu --nocancel "Welcome to VPS Toolbox main menu,Please Choose an option 欢迎使用VPSTOOLBOX,请选择一个选项" 14 68 10 \
+  "Install_standard" "系统设置(buyvm挂载、虚拟内存、语言设置、开发环境)" \
+  "Install_extend" "扩展安装(完整软件列表)" \
+  "Benchmark" "效能测试"\
+  "Exit" "退出" 3>&1 1>&2 2>&3)
+  case $Mainmenu in
+    ## 基础标准安装
+    Install_standard)
+    Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "VPS ToolBox Menu" --menu --nocancel "Welcome to VPS Toolbox main menu,Please Choose an option 欢迎使用VPSTOOLBOX,请选择一个选项" 14 68 10 \
+  "Install_standard" "系统设置(buyvm挂载、虚拟内存、语言设置、开发环境)" \
+  "Install_extend" "扩展安装(完整软件列表)" \
+  "Benchmark" "效能测试"\
+  "Exit" "退出" 3>&1 1>&2 2>&3)
+  
+  whiptail --clear --ok-button "下一步" --backtitle "Hi,请按空格以及方向键来选择需要安装/更新的软件,请自行下拉以查看更多(Please press space and Arrow keys to choose)" --title "Install checklist" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装/更新的软件。" 18 65 10 \
+"Back" "返回上级菜单(Back to main menu)" off \
+"trojan" "Trojan-GFW+TCP-BBR+Hexo Blog" on \
+"net" "Netdata(监测伺服器运行状态)" on \
+"fast" "TCP Fastopen" ${fastopen} \
+"tjp" "Trojan-panel" ${check_tjp} \
+"ss" "shadowsocks-rust" ${check_ss} \
+"speed" "Speedtest(测试本地网络到VPS的延迟及带宽)" ${check_speed} \
+"fail2ban" "Fail2ban(防SSH爆破用)" ${check_fail2ban} \
+"dns" "Dnscrypt-proxy(Doh)" ${check_dns} \
+"port" "自定义Trojan端口(除nat机器外请勿选中)" off \
+"test-only" "test-only" off 2>results
+
+while read choice
+do
+  case $choice in
+    Back) 
+    MasterMenu
+    break
+    ;;
+    trojan)
+    install_trojan=1
+    install_bbr=1
+    ;;
+    ss)
+    check_ss="on"
+    install_ss_rust=1
+    ;;
+    dns)
+    check_dns="on"
+    install_dnscrypt=1
+    ;;
+    fast)
+    tcp_fastopen="true"
+    ;;
+    tjp)
+    check_tjp="on"
+    install_trojan_panel=1
+    install_php=1
+    install_mariadb=1
+    install_redis=1
+    ;;
+    net)
+    install_netdata=1
+    ;;
+    speed)
+    check_speed="on"
+    install_speedtest=1
+    install_php=1
+    ;;
+    fail2ban)
+    check_fail2ban="on"
+    install_fail2ban=1
+    ;;
+    11) 
+    install_trojan_panel=1
+    install_php=1
+    install_nodejs=1
+    install_mariadb=1
+    ;;
+    port)
+    trojan_other_port=1
+    ;;
+    *)
+    ;;
+  esac
+done < results
+
+rm results
+  
+  
+  
+  
+  
+  
+  
+  
   cat << EOF
 ${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
 ${blue}${bold}————————————————————————————————系 统 环 境—————————————————————————————————————${normal}
