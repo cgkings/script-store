@@ -216,7 +216,7 @@ main_menu() {
         "swap" "设置虚拟内存" \
         "zsh" "安装oh my zsh &tmux" \
         "buyvm_disk" "buyvm挂载256G硬盘" \
-        "develop" "安装python/nodejs/go开发环境" 3>&1 1>&2 2>&3
+        "develop" "安装python/nodejs/go开发环境" 2> results
       case $choice in
         Back)
           main_menu
@@ -245,8 +245,8 @@ main_menu() {
           exit
           ;;
         *) ;;
-
-      esac
+      esac < results
+      rm results
       exit 0
       ;;
     Install_extend)
@@ -262,7 +262,7 @@ main_menu() {
         "cg_sort" "网盘文件整理" \
         "gd_bot" "搭建gd转存bot[未完成]" \
         "lnmp" "LNMP 一键脚本" \
-        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 3>&1 1>&2 2>&3
+        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 2> results
       case $choice in
         Back)
           main_menu
@@ -327,7 +327,9 @@ main_menu() {
           ;;
         *) ;;
 
-      esac
+      esac < results
+      rm results
+      exit 0
       ;;
     Install_Unattended)
       whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
@@ -423,7 +425,6 @@ main_menu() {
             exit
             ;;
           *) ;;
-
         esac
       done < results
       rm results
