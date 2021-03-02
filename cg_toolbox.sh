@@ -201,16 +201,16 @@ menu_go_on() {
 
 ################## 主    菜    单 ##################
 main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "VPS ToolBox Menu 注：本脚本所有操作日志路径：/root/install_log.txt" --menu --nocancel "Welcome to VPS Toolbox main menu,Please Choose an option 欢迎使用VPSTOOLBOX,请选择一个选项" 18 80 8 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
   "Install_standard" "系统设置(buyvm挂载/虚拟内存/语言设置/开发环境)" \
   "Install_extend" "扩展安装(fq/离线下载三件套/网络工具/emby/挂载)" \
-  "Unattended" "新机无人值守(选择安装项，自动静默安装)" \
+  "Install_Unattended" "新机无人值守(选择安装项，自动静默安装)" \
   "Benchmark" "效能测试" \
   "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     ## 基础标准安装
     Install_standard)
-      whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Install_standard 注：本脚本所有操作日志路径：/root/install_log.txt" --menu --nocancel "系统设置模式,请选择一个选项" 18 80 8 \
+      whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "系统设置模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
       "Back" "返回上级菜单(Back to main menu)" \
       "languge" "设置系统语言" \
       "swap" "设置虚拟内存" \
@@ -250,7 +250,7 @@ main_menu() {
       exit 0
     ;;
     Install_extend)
-      whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Install_extend 注：本脚本所有操作日志路径：/root/install_log.txt" --menu --nocancel "扩展安装模式,请选择一个选项" 20 80 12 \
+      whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 14 \
       "Back" "返回上级菜单(Back to main menu)" \
       "alias" "自定义别名[可通过alias命令查看]" \
       "bbr" "BBR一键加速[转自HJM]" \
@@ -329,8 +329,8 @@ main_menu() {
         ;;
       esac
     ;;
-    Unattended)
-      whiptail --clear --ok-button "下一步" --backtitle "Hi,请按空格以及方向键来选择,请自行下拉以查看更多(Please press space and Arrow keys to choose)" --title "Install_extend" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 20 80 12 \
+    Install_Unattended)
+      whiptail --clear --ok-button "下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
       "Back" "返回上级菜单(Back to main menu)" off \
       "swap" "设置虚拟内存" on \
       "zsh" "安装oh my zsh &tmux" on \
