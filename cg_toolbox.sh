@@ -210,14 +210,14 @@ main_menu() {
   case $Mainmenu in
     ## 基础标准安装
     Install_standard)
-      whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "系统设置模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
+      standard_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "系统设置模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
         "Back" "返回上级菜单(Back to main menu)" \
         "languge" "设置系统语言" \
         "swap" "设置虚拟内存" \
         "zsh" "安装oh my zsh &tmux" \
         "buyvm_disk" "buyvm挂载256G硬盘" \
-        "develop" "安装python/nodejs/go开发环境" 2> results
-      case $choice in
+        "develop" "安装python/nodejs/go开发环境" 3>&1 1>&2 2>&3)
+      case $standard_menu in
         Back)
           main_menu
           break
@@ -245,12 +245,10 @@ main_menu() {
           exit
           ;;
         *) ;;
-      esac < results
-      rm results
-      exit 0
+      esac
       ;;
     Install_extend)
-      whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 14 \
+      extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 14 \
         "Back" "返回上级菜单(Back to main menu)" \
         "my_alias" "自定义别名[可通过alias命令查看]" \
         "bbr" "BBR一键加速[转自HJM]" \
@@ -262,8 +260,8 @@ main_menu() {
         "cg_sort" "网盘文件整理" \
         "gd_bot" "搭建gd转存bot[未完成]" \
         "lnmp" "LNMP 一键脚本" \
-        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 2> results
-      case $choice in
+        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 3>&1 1>&2 2>&3)
+      case $extend_menu in
         Back)
           main_menu
           break
@@ -326,10 +324,7 @@ main_menu() {
           echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
           ;;
         *) ;;
-
-      esac < results
-      rm results
-      exit 0
+      esac
       ;;
     Install_Unattended)
       whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
