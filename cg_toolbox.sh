@@ -204,7 +204,7 @@ main_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
   "Install_standard" "系统设置(buyvm挂载/虚拟内存/语言设置/开发环境)" \
   "Install_extend" "扩展安装(fq/离线下载三件套/网络工具/emby/挂载)" \
-  "Install_Unattended" "新机无人值守(选择安装项，自动静默安装)" \
+  "Install_Unattended" "新机无人值守(选择安装项，自动静默安装)[未完成]" \
   "Benchmark" "效能测试" \
   "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
@@ -234,11 +234,11 @@ main_menu() {
         install_beautify
         exit
         ;;
-        buyvm)
+        buyvm_disk)
         buyvm_disk
         exit
         ;;
-        kfhj)
+        develop)
         check_python
         check_nodejs
         check_go
@@ -330,26 +330,102 @@ main_menu() {
       esac
     ;;
     Install_Unattended)
-      whiptail --clear --ok-button "下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
+      whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
       "Back" "返回上级菜单(Back to main menu)" off \
       "swap" "设置虚拟内存" on \
       "zsh" "安装oh my zsh &tmux" on \
       "buyvm_disk" "buyvm挂载256G硬盘" on \
       "develop" "安装python/nodejs/go开发环境" on \
       "alias" "自定义别名[可通过alias命令查看]" on \
-      "bbr" "BBR一键加速[转自HJM]" on \
-      "v2ray" "一键搭建V2ray[转自233boy]" on \
       "offline" "离线下载3件套[aria2/rsshub/flexget]" on \
       "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" on \
       "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" on \
       "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" on \
       "cg_sort" "网盘文件整理" on \
       "gd_bot" "搭建gd转存bot[未完成]" on \
-      "lnmp" "LNMP 一键脚本" on \
-      "baota" "宝塔面板一键脚本[转自-laowangblog.com]" on 2>results
+      "bbr" "BBR一键加速[转自HJM]" on 2>results
       while read choice
         do
         case $choice in
+          Back) 
+          main_menu
+          break
+          ;;
+          swap)
+          bash <(curl -sL git.io/cg_swap) m 2GB
+          ;;
+          zsh)
+          install_beautify
+          ;;
+          buyvm_disk)
+          buyvm_disk
+          ;;
+          develop)
+          check_python
+          check_nodejs
+          check_go
+          ;;
+          alias)
+          my_alias
+          echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
+          ;;
+          bbr)
+          clear
+          bash <(curl -sL git.io/cg_bbr)
+          echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
+          ;;
+          v2ray)
+          clear
+          bash <(curl -sL git.io/cg_v2ray)
+          echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
+          ;;
+          offline)
+          clear
+          bash <(curl -sL git.io/cg_dl)
+          install_aria2
+          install_rsshub
+          run_rsshub
+          install_flexget
+          config_flexget
+          ;;
+          auto_mount)
+          clear
+          bash <(curl -sL git.io/cg_auto_mount)
+          echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
+          ;;
+          emby)
+          clear
+          bash <(curl -sL git.io/11plus.sh)
+          echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
+          ;;
+          avdc)
+          clear
+          bash <(curl -sL git.io/cg_avdc)
+          echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
+              这个小脚本不带参数则帮您安装AVDC
+              带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
+          echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
+          ;;
+          cg_sort)
+          clear
+          bash <(curl -sL git.io/cg_sort.sh)
+          ;;
+          gd_bot)
+          bash <(curl -sL git.io/cg_gdbot)
+          ;;
+          lnmp)
+          clear
+          install_LNMP
+          ;;
+          baota)
+          clear
+          bash <(curl -sL git.io/cg_baota)
+          echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
+          exit
+          ;;
+          *)
+          ;;
+        esac
       done < results
       rm results
       exit 0

@@ -59,8 +59,6 @@ auto_swap() {
 
 ################## 自定义添加swap ##################
 add_swap() {
-  echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
-  read -p "请输入swap数值:" swapsize
   echo
   swapsize=$(echo ${swapsize} | tr '[a-z]' '[A-Z]')
   swapsize_unit=${swapsize:0-2:2}
@@ -114,6 +112,7 @@ swap_help() {
   bash <(curl -sL https://git.io/cg_swap) d  删除现有swap
   bash <(curl -sL https://git.io/cg_swap) h  命令帮助
 注：无参数则进入主菜单
+例如：bash <(curl -sL https://git.io/cg_swap) m 2GB
 EOF
 }
 
@@ -168,7 +167,14 @@ else
       ;;
     M | m)
       echo
-      add_swap
+      if [ -z $2 ]; then
+        echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
+        read -r -p "请输入swap数值:" swapsize
+        add_swap
+      else
+        swapsize="$2"
+        add_swap
+      fi
       ;;
     D | d)
       echo
