@@ -83,7 +83,7 @@ EOF
 
 ################## buyvm挂载256G硬盘 ##################
 buyvm_disk() {
-  disk=$(fdisk -l|grep 256|awk '{print $2}'|sed -n '1p'|awk -F ":" '{print $1}') #获取256G磁盘名
+  disk=$(fdisk -l | grep 256 | awk '{print $2}' | sed -n '1p' | awk -F ":" '{print $1}') #获取256G磁盘名
   mount_status=$(df -h | grep "$disk")                                     #挂载状态
   if [ -z "$disk" ]; then
     echo -e "未找到256G磁盘，请到控制台先加卷后再运行本脚本"
@@ -147,7 +147,7 @@ EOF
 }
 
 ################## 批量别名 ##################
-my_alias(){
+my_alias() {
   cat >> /root/.bashrc << EOF
 
 alias l.='ls -d .* --color=auto'
@@ -175,7 +175,7 @@ alias av='AV_Data_Capture'
 alias yd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1aPplg-6egJie2tIJHakDdee39g3pJEUm} -vP'"
 alias ydl="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1aPplg-6egJie2tIJHakDdee39g3pJEUm} -vP' --yes-playlist -f -k ListURL"
 EOF
-source /root/.bashrc
+  source /root/.bashrc
 }
 
 ################## menu_go_on ##################
@@ -202,184 +202,87 @@ menu_go_on() {
 ################## 主    菜    单 ##################
 main_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
-  "Install_standard" "系统设置(buyvm挂载/虚拟内存/语言设置/开发环境)" \
-  "Install_extend" "扩展安装(fq/离线下载三件套/网络工具/emby/挂载)" \
-  "Install_Unattended" "新机无人值守(选择安装项，自动静默安装)[未完成]" \
-  "Benchmark" "效能测试" \
-  "Exit" "退出" 3>&1 1>&2 2>&3)
+    "Install_standard" "系统设置(buyvm挂载/虚拟内存/语言设置/开发环境)" \
+    "Install_extend" "扩展安装(fq/离线下载三件套/网络工具/emby/挂载)" \
+    "Install_Unattended" "新机无人值守(选择安装项，自动静默安装)[未完成]" \
+    "Benchmark" "效能测试" \
+    "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     ## 基础标准安装
     Install_standard)
       whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "系统设置模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
-      "Back" "返回上级菜单(Back to main menu)" \
-      "languge" "设置系统语言" \
-      "swap" "设置虚拟内存" \
-      "zsh" "安装oh my zsh &tmux" \
-      "buyvm_disk" "buyvm挂载256G硬盘" \
-      "develop" "安装python/nodejs/go开发环境" 3>&1 1>&2 2>&3
+        "Back" "返回上级菜单(Back to main menu)" \
+        "languge" "设置系统语言" \
+        "swap" "设置虚拟内存" \
+        "zsh" "安装oh my zsh &tmux" \
+        "buyvm_disk" "buyvm挂载256G硬盘" \
+        "develop" "安装python/nodejs/go开发环境" 3>&1 1>&2 2>&3
       case $choice in
-        Back) 
-        main_menu
-        break
-        ;;
-        languge)
-        setlanguage
-        exit
-        ;;
-        swap)
-        bash <(curl -sL git.io/cg_swap)
-        exit
-        ;;
-        zsh)
-        install_beautify
-        exit
-        ;;
-        buyvm_disk)
-        buyvm_disk
-        exit
-        ;;
-        develop)
-        check_python
-        check_nodejs
-        check_go
-        exit
-        ;;
-        *)
-        ;;
-      esac
-      exit 0
-    ;;
-    Install_extend)
-      whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 14 \
-      "Back" "返回上级菜单(Back to main menu)" \
-      "alias" "自定义别名[可通过alias命令查看]" \
-      "bbr" "BBR一键加速[转自HJM]" \
-      "v2ray" "一键搭建V2ray[转自233boy]" \
-      "offline" "离线下载3件套[aria2/rsshub/flexget]" \
-      "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" \
-      "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" \
-      "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" \
-      "cg_sort" "网盘文件整理" \
-      "gd_bot" "搭建gd转存bot[未完成]" \
-      "lnmp" "LNMP 一键脚本" \
-      "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 3>&1 1>&2 2>&3
-      case $choice in
-        Back) 
-        main_menu
-        break
-        ;;
-        alias)
-        my_alias
-        echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
-        ;;
-        bbr)
-        clear
-        bash <(curl -sL git.io/cg_bbr)
-        echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
-        ;;
-        v2ray)
-        clear
-        bash <(curl -sL git.io/cg_v2ray)
-        echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
-        ;;
-        offline)
-        clear
-        bash <(curl -sL git.io/cg_dl)
-        install_aria2
-        install_rsshub
-        run_rsshub
-        install_flexget
-        config_flexget
-        ;;
-        auto_mount)
-        clear
-        bash <(curl -sL git.io/cg_auto_mount)
-        echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
-        ;;
-        emby)
-        clear
-        bash <(curl -sL git.io/11plus.sh)
-        echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
-        ;;
-        avdc)
-        clear
-        bash <(curl -sL git.io/cg_avdc)
-        echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
-            这个小脚本不带参数则帮您安装AVDC
-            带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-        echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
-        ;;
-        cg_sort)
-        clear
-        bash <(curl -sL git.io/cg_sort.sh)
-        ;;
-        gd_bot)
-        bash <(curl -sL git.io/cg_gdbot)
-        ;;
-        lnmp)
-        clear
-        install_LNMP
-        ;;
-        baota)
-        clear
-        bash <(curl -sL git.io/cg_baota)
-        echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
-        ;;
-        *)
-        ;;
-      esac
-    ;;
-    Install_Unattended)
-      whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
-      "Back" "返回上级菜单(Back to main menu)" off \
-      "swap" "设置虚拟内存" on \
-      "zsh" "安装oh my zsh &tmux" on \
-      "buyvm_disk" "buyvm挂载256G硬盘" on \
-      "develop" "安装python/nodejs/go开发环境" on \
-      "alias" "自定义别名[可通过alias命令查看]" on \
-      "offline" "离线下载3件套[aria2/rsshub/flexget]" on \
-      "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" on \
-      "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" on \
-      "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" on \
-      "cg_sort" "网盘文件整理" on \
-      "gd_bot" "搭建gd转存bot[未完成]" on \
-      "bbr" "BBR一键加速[转自HJM]" on 2>results
-      while read choice
-        do
-        case $choice in
-          Back) 
+        Back)
           main_menu
           break
           ;;
-          swap)
-          bash <(curl -sL git.io/cg_swap) m 2GB
+        languge)
+          setlanguage
+          exit
           ;;
-          zsh)
+        swap)
+          bash <(curl -sL git.io/cg_swap)
+          exit
+          ;;
+        zsh)
           install_beautify
+          exit
           ;;
-          buyvm_disk)
+        buyvm_disk)
           buyvm_disk
+          exit
           ;;
-          develop)
+        develop)
           check_python
           check_nodejs
           check_go
+          exit
           ;;
-          alias)
+        *) ;;
+
+      esac
+      exit 0
+      ;;
+    Install_extend)
+      whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 14 \
+        "Back" "返回上级菜单(Back to main menu)" \
+        "my_alias" "自定义别名[可通过alias命令查看]" \
+        "bbr" "BBR一键加速[转自HJM]" \
+        "v2ray" "一键搭建V2ray[转自233boy]" \
+        "offline" "离线下载3件套[aria2/rsshub/flexget]" \
+        "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" \
+        "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" \
+        "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" \
+        "cg_sort" "网盘文件整理" \
+        "gd_bot" "搭建gd转存bot[未完成]" \
+        "lnmp" "LNMP 一键脚本" \
+        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 3>&1 1>&2 2>&3
+      case $choice in
+        Back)
+          main_menu
+          break
+          ;;
+        my_alias)
           my_alias
           echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
           ;;
-          bbr)
+        bbr)
           clear
           bash <(curl -sL git.io/cg_bbr)
           echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
           ;;
-          v2ray)
+        v2ray)
           clear
           bash <(curl -sL git.io/cg_v2ray)
           echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
           ;;
-          offline)
+        offline)
           clear
           bash <(curl -sL git.io/cg_dl)
           install_aria2
@@ -388,61 +291,157 @@ main_menu() {
           install_flexget
           config_flexget
           ;;
-          auto_mount)
+        auto_mount)
           clear
           bash <(curl -sL git.io/cg_auto_mount)
           echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
           ;;
-          emby)
+        emby)
           clear
           bash <(curl -sL git.io/11plus.sh)
           echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
           ;;
-          avdc)
+        avdc)
           clear
           bash <(curl -sL git.io/cg_avdc)
           echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
-              这个小脚本不带参数则帮您安装AVDC
-              带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
+            这个小脚本不带参数则帮您安装AVDC
+            带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
           echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
           ;;
-          cg_sort)
+        cg_sort)
           clear
           bash <(curl -sL git.io/cg_sort.sh)
           ;;
-          gd_bot)
+        gd_bot)
           bash <(curl -sL git.io/cg_gdbot)
           ;;
-          lnmp)
+        lnmp)
           clear
           install_LNMP
           ;;
-          baota)
+        baota)
           clear
           bash <(curl -sL git.io/cg_baota)
           echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
-          exit
           ;;
-          *)
-          ;;
+        *) ;;
+
+      esac
+      ;;
+    Install_Unattended)
+      whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
+        "Back" "返回上级菜单(Back to main menu)" off \
+        "swap" "设置虚拟内存" on \
+        "zsh" "安装oh my zsh &tmux" on \
+        "buyvm_disk" "buyvm挂载256G硬盘" on \
+        "develop" "安装python/nodejs/go开发环境" on \
+        "my_alias" "自定义别名[可通过alias命令查看]" on \
+        "offline" "离线下载3件套[aria2/rsshub/flexget]" on \
+        "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" on \
+        "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" on \
+        "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" on \
+        "cg_sort" "网盘文件整理" on \
+        "gd_bot" "搭建gd转存bot[未完成]" on \
+        "bbr" "BBR一键加速[转自HJM]" on 2> results
+      while read choice; do
+        case $choice in
+          Back)
+            main_menu
+            break
+            ;;
+          swap)
+            bash <(curl -sL git.io/cg_swap) m 2GB
+            ;;
+          zsh)
+            install_beautify
+            ;;
+          buyvm_disk)
+            buyvm_disk
+            ;;
+          develop)
+            check_python
+            check_nodejs
+            check_go
+            ;;
+          my_alias)
+            my_alias
+            echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
+            ;;
+          bbr)
+            clear
+            bash <(curl -sL git.io/cg_bbr)
+            echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
+            ;;
+          v2ray)
+            clear
+            bash <(curl -sL git.io/cg_v2ray)
+            echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
+            ;;
+          offline)
+            clear
+            bash <(curl -sL git.io/cg_dl)
+            install_aria2
+            install_rsshub
+            run_rsshub
+            install_flexget
+            config_flexget
+            ;;
+          auto_mount)
+            clear
+            bash <(curl -sL git.io/cg_auto_mount)
+            echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
+            ;;
+          emby)
+            clear
+            bash <(curl -sL git.io/11plus.sh)
+            echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
+            ;;
+          avdc)
+            clear
+            bash <(curl -sL git.io/cg_avdc)
+            echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
+              这个小脚本不带参数则帮您安装AVDC
+              带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
+            echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
+            ;;
+          cg_sort)
+            clear
+            bash <(curl -sL git.io/cg_sort.sh)
+            ;;
+          gd_bot)
+            bash <(curl -sL git.io/cg_gdbot)
+            ;;
+          lnmp)
+            clear
+            install_LNMP
+            ;;
+          baota)
+            clear
+            bash <(curl -sL git.io/cg_baota)
+            echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
+            exit
+            ;;
+          *) ;;
+
         esac
       done < results
       rm results
       exit 0
-    ;;
+      ;;
     Benchmark)
       clear
       if (whiptail --title "测试模式" --yes-button "快速测试" --no-button "完整测试" --yesno "效能测试方式(fast or full)?" 8 68); then
         curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s fast
-        else
+      else
         curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s full
       fi
       exit 0
-    ;;
+      ;;
     Exit)
       whiptail --title "Bash Exited" --msgbox "Goodbye" 8 68
       exit 0
-    ;;
+      ;;
   esac
 }
 
