@@ -1,4 +1,5 @@
 #!/bin/bash
+# bash <(curl -sL git.io/cg_v2ray)
 
 red='\e[91m'
 green='\e[92m'

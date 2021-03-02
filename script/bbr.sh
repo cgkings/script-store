@@ -3,6 +3,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 #=================================================
 #	System Required: CentOS 7/8,Debian/ubuntu,oraclelinux
+#   bash <(curl -sL git.io/cg_bbr)
 #	Description: BBR+BBRplus+Lotserver
 #	Version: 1.3.2.71
 #	Author: 千影,cx9208,YLX

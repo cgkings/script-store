@@ -1,6 +1,7 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
+# bash <(curl -sL git.io/cg_avdc)
 # File Name: avdc一键脚本
 # Author: cgkings
 # Created Time : 2020.12.25

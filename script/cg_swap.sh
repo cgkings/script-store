@@ -1,6 +1,7 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
+# bash <(curl -sL git.io/cg_swap)
 # File Name: cg_swap.sh
 # Author: cgkings
 # Created Time : 2020.12.16

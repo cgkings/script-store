@@ -1,6 +1,7 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
+# bash <(curl -sL git.io/cg_sort.sh)
 # File Name: cg_sort.sh
 # Author: cgking
 # Created Time : 2021.2.25
