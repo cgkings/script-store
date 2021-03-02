@@ -1,6 +1,7 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/cg_shellbot
+# bash <(curl -sL git.io/cg_toolbox)
 # File Name: cg_toolbox.sh
 # Author: cgkings
 # Created Time : 2020.1.7
