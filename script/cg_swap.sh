@@ -32,7 +32,7 @@ make-swapfile() {
   mkswap /swapfile
   #启用swap区
   swapon /swapfile
-  echo '/swapfile none swap defaults 0 0' >>/etc/fstab
+  echo '/swapfile none swap defaults 0 0' >> /etc/fstab
   echo -e "${green}swap创建成功，信息如下：${normal}"
   cat /proc/swaps
   cat /proc/meminfo | grep Swap
@@ -92,7 +92,7 @@ del_swap() {
   if [ $? -eq 0 ]; then
     echo -e "${green}swapfile已发现，正在删除SWAP空间...${normal}"
     sed -i '/swapfile/d' /etc/fstab
-    echo "3" >/proc/sys/vm/drop_caches
+    echo "3" > /proc/sys/vm/drop_caches
     swapoff -a
     rm -f /swapfile
     echo -e "${green}swap 删除成功！${normal}"
@@ -104,7 +104,7 @@ del_swap() {
 
 ################## 脚本参数帮助 ##################
 swap_help() {
-  cat <<EOF
+  cat << EOF
 用法(Usage):
   bash <(curl -sL https://git.io/cg_swap) [flags]
 
@@ -120,7 +120,7 @@ EOF
 ################## 开  始  菜  单 ##################
 swap_menu() {
   clear
-  cat <<EOF
+  cat << EOF
 —————————————————————————————————————————————————————————
   ${green}当前SWAP：$totalswap MB"
   swap一键脚本 by cgkings
@@ -134,25 +134,25 @@ swap_menu() {
 EOF
   read -n1 -p "请输入数字 [1-4]:" num
   case "$num" in
-  1)
-    echo
-    auto_swap
-    ;;
-  2)
-    echo
-    add_swap
-    ;;
-  3)
-    echo
-    del_swap
-    ;;
-  4)
-    exit
-    ;;
-  *)
-    echo
-    auto_swap
-    ;;
+    1)
+      echo
+      auto_swap
+      ;;
+    2)
+      echo
+      add_swap
+      ;;
+    3)
+      echo
+      del_swap
+      ;;
+    4)
+      exit
+      ;;
+    *)
+      echo
+      auto_swap
+      ;;
   esac
 }
 
@@ -162,26 +162,26 @@ if [ -z $1 ]; then
   swap_menu
 else
   case "$1" in
-  A | a)
-    echo
-    auto_swap
-    ;;
-  M | m)
-    echo
-    add_swap
-    ;;
-  D | d)
-    echo
-    del_swap
-    ;;
-  H | h)
-    echo
-    swap_help
-    ;;
-  *)
-    echo
-    swap_help
-    ;;
+    A | a)
+      echo
+      auto_swap
+      ;;
+    M | m)
+      echo
+      add_swap
+      ;;
+    D | d)
+      echo
+      del_swap
+      ;;
+    H | h)
+      echo
+      swap_help
+      ;;
+    *)
+      echo
+      swap_help
+      ;;
   esac
 fi
 #swap调用参数调整

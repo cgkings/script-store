@@ -120,7 +120,7 @@ check_sys() {
   ## 卸载阿里云云盾
   if [[ -d /usr/local/aegis ]]; then
     TERM=ansi whiptail --title "阿里云监控卸载" --infobox "检测到阿里云恶意监控服务，开始卸载..." 7 68
-    colorEcho ${INFO} "Uninstall Aliyun aegis ing"
+    echo -e "$curr_date ${red}[INFO]${normal} Uninstall Aliyun aegis ing"
     iptables -I INPUT -s 140.205.201.0/28 -j DROP &> /dev/null
     iptables -I INPUT -s 140.205.201.16/29 -j DROP &> /dev/null
     iptables -I INPUT -s 140.205.201.32/28 -j DROP &> /dev/null
@@ -206,27 +206,26 @@ root soft nproc 65535
 root hard nproc 65535
 EOF
     echo -e "\nsession required pam_limits.so" >> /etc/pam.d/common-session
-    echo -e "$(curr_date) [INFO] file_max 修改成功"
-    echo -e "$(curr_date) [INFO] file_max 修改成功" >> /root/install_log.txt
+    echo -e "$curr_date [INFO] file_max 修改成功" >> /root/install_log.txt
   fi
   #检查fclone安装状态，没装就安装
   if [ -z "$(command -v fclone)" ]; then
-    echo -e "$(curr_date) ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
+    echo -e "$curr_date ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
     wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
   fi
   #检查rclone安装状态，没装就安装
   if [ -z "$(command -v rclone)" ]; then
-    echo -e "$(curr_date) ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
+    echo -e "$curr_date ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
     bash <(curl -L -s https://rclone.org/install.sh) > /dev/null && rclone version
   fi
   #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
   if [ ! -f /root/.config/rclone/rclone.conf ]; then
-    echo -e "$(curr_date) ${red}未检测到rclone配置文件.请使用<fclone config>命令配置后重新运行脚本.\n注意：配置时请不要设置root_folder_id，而是设置team_drive${normal}" && exit 1
-  else
+    echo -e "$curr_date ${red}未检测到rclone配置文件.请先建立remote后重新运行脚本.${normal}" && exit 1
+  #else
   #检查conf文件内root_folder_id是否为空，如不为空就全部清空
-    [ -n "$(awk '/root_folder_id/{print $3}' ~/.config/rclone/rclone.conf)" ] && sed -i "s/root_folder_id = .*$/root_folder_id = /g" ~/.config/rclone/rclone.conf
+  #  [ -n "$(awk '/root_folder_id/{print $3}' ~/.config/rclone/rclone.conf)" ] && sed -i "s/root_folder_id = .*$/root_folder_id = /g" ~/.config/rclone/rclone.conf
   fi
-  echo -e "$(curr_date) [INFO] rclone&fclone已安装" >> /root/install_log.txt
+  echo -e "$curr_date [INFO] rclone&fclone已安装" >> /root/install_log.txt
 }
 
 ################## 检查安装情况 ##################
@@ -250,15 +249,15 @@ check_command() {
   for command_arges in $*; do
     command_status=$(dpkg --get-selections | grep "$command_arges")
     if [ -z "$command_status" ]; then
-      echo -e "$(curr_date) ${red}$command_arges${normal} 不存在.正在为您安装，请稍后..."
+      echo -e "$curr_date ${red}$command_arges${normal} 不存在.正在为您安装，请稍后..."
       if [[ "${release}" = "centos" ]]; then
         yum install "$command_arges" -y > /dev/null
-        echo -e "$(curr_date) [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
+        echo -e "$curr_date [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
       elif [[ "${release}" = "debian" || "${release}" = "ubuntu" || "${release}" = "armdebian" ]]; then
         apt-get install "$command_arges" -y --upgrade > /dev/null
-        echo -e "$(curr_date) [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
+        echo -e "$curr_date [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
       else
-        echo -e "$(curr_date) ${red}对不起！您的系统暂不支持该脚本，请联系作者做定制优化，谢谢！${normal}"
+        echo -e "$curr_date ${red}对不起！您的系统暂不支持该脚本，请联系作者做定制优化，谢谢！${normal}"
         exit 1
       fi
     fi
@@ -374,14 +373,14 @@ check_command python python3 python3-pip python3-distutils #build-essential libn
     pip3 install -U pip > /dev/null
     hash -d pip3
     pip3 install -U wheel requests scrapy Pillow baidu-api cloudscraper fire setuptools virtualenv > /dev/null
-    echo -e "$(curr_date) [INFO] pythonh环境已安装" >> /root/install_log.txt
+    echo -e "$curr_date [INFO] pythonh环境已安装" >> /root/install_log.txt
   fi
 }
   
   ###安装go环境###
 check_go(){
   if [ -z "$(command -v go)" ]; then
-    echo -e "$(curr_date) ${red}go命令${normal} 不存在.正在为您安装，请稍后..."
+    echo -e "$curr_date ${red}go命令${normal} 不存在.正在为您安装，请稍后..."
     if [ -e /home/go ]; then
       rm -rf /home/go
     fi
@@ -394,7 +393,7 @@ export GOROOT=/home/go
 export GOPATH=/home/go/gopath
 EOF
     source /root/.bashrc
-    echo -e "$(curr_date) [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
+    echo -e "$curr_date [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
   fi
 }
   
@@ -406,12 +405,12 @@ check_nodejs(){
     fi
     bash <(curl -sL deb.nodesource.com/setup_15.x)
     check_command nodejs
-    echo -e "$(curr_date) [INFO] nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
+    echo -e "$curr_date [INFO] nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
   fi
   npm install npm -g
   if [ -z "$(command -v yarn)" ]; then
     npm install -g yarn n --force
     yarn set version latest
-    echo -e "$(curr_date) [INFO] yarn&n已安装" >> /root/install_log.txt
+    echo -e "$curr_date [INFO] yarn&n已安装" >> /root/install_log.txt
   fi
 }
