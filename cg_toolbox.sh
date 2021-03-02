@@ -274,6 +274,7 @@ main_menu() {
         ;;
         bbr)
         bash <(curl -sL git.io/cg_bbr)
+        echo
         echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
         ;;
         v2ray)
