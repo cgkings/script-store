@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
-
 #=================================================
-#	System Required: CentOS 6/7/8,Debian 8/9/10,ubuntu 16/18/19
+#	System Required: CentOS 7/8,Debian/ubuntu,oraclelinux
 #	Description: BBR+BBRplus+Lotserver
-#	Version: 1.3.2.61
+#	Version: 1.3.2.71
 #	Author: 千影,cx9208,YLX
 #	更新内容及反馈:  https://blog.ylx.me/archives/783.html
 #=================================================
 
-sh_ver="1.3.2.61"
+# RED='\033[0;31m'
+# GREEN='\033[0;32m'
+# YELLOW='\033[0;33m'
+# SKYBLUE='\033[0;36m'
+# PLAIN='\033[0m'
+
+sh_ver="1.3.2.71"
 github="github.000060000.xyz"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -36,20 +41,20 @@ installbbr(){
 			
 				# kernel_version="5.5.5"
 			# else
-				# echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
+				# echo -e "${Error} 还在用32位，别再见了 !" && exit 1
 			# fi
 		
 		if [[ ${version} = "7" ]]; then
 			if [[ ${bit} = "x86_64" ]]; then
-				kernel_version="5.10.2"
+				kernel_version="5.10.11"
 				detele_kernel_head
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EZ_a_I1mzcdGl-xz-7jWci8BoE_BjgPjclYc844G81ZFiA?download=1
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EePhYI2CjAVIjcpPJ3vDLIQBPWe_7k8SBGdZUBb3B_YbqA?download=1
+				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EUAfSjMW2eNNg9cyHF29dOEBG1dM552CKxeQ513laHHDdA?download=1
+				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EeNKgWwDjqhIqGUmpgsLnXcBuUps_eKOsmtnysfYBlRDCg?download=1
 				
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm
 			else
-				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
+				echo -e "${Error} 还在用32位，别再见了 !" && exit 1
 			fi	
 			
 		elif [[ ${version} = "8" ]]; then
@@ -64,15 +69,15 @@ installbbr(){
 	
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
 		if [[ ${bit} = "x86_64" ]]; then
-			kernel_version="5.10.2"
+			kernel_version="5.10.11"
 			detele_kernel_head
-			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EUFAnbAni8tFok4BRGQUo6gBdlFfEZvuRnLLRmHSgq6Smw?download=1
-			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EZI4LXrCLsREka-Jtfv733UBhp71FFpfT2DOjQ7BW0S7SA?download=1
+			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EThfkvMWaOhMu7fSrZeaHlABYBvl8u4sz5_RhJEeCTTZ2A?download=1
+			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EUzlBUMpYUpBqnNoQFSnfnYB9R_bisbIqEoG7RGpybnPsQ?download=1
 				
 			dpkg -i linux-image-d10.deb
 			dpkg -i linux-headers-d10.deb
 		else
-			echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1	
+			echo -e "${Error} 还在用32位，别再见了 !" && exit 1	
 		fi	
 	fi
 	
@@ -109,7 +114,7 @@ installbbrplus(){
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm
 			else
-					echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
+					echo -e "${Error} 还在用32位，别再见了 !" && exit 1
 			fi
 		fi	
 		
@@ -177,15 +182,15 @@ installxanmod(){
 	if [[ "${release}" == "centos" ]]; then
 		if [[ ${version} = "7" ]]; then
 			if [[ ${bit} = "x86_64" ]]; then
-				kernel_version="5.9.6_xanmod"
+				kernel_version="5.10.11_xanmod"
 				detele_kernel_head
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ETLw9F6MgjBBlkkNGmFZu70B9p0kMOdqrF6ntv2QNI5I4g?download=1
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EcFnSZfa6JBKqZOkE5xFd8oBPJCa6Lo7DzTPPM0INWsk-w?download=1
+				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Eb3HFR1uFnhEk0Y2Ro6PfGYBiyZPsYKwFuhTWQ8GoNwG7A?download=1
+				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Eb5ZEyXUnM5Nj-AePu1b9RABgg0umDMTpe6prwNH3d9DBw?download=1
 				
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm			
 			else
-				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
+				echo -e "${Error} 还在用32位，别再见了 !" && exit 1
 			fi
 		elif [[ ${version} = "8" ]]; then
 				kernel_version="5.5.1_xanmod1"
@@ -199,15 +204,15 @@ installxanmod(){
 		
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
 		if [[ ${bit} = "x86_64" ]]; then
-			kernel_version="5.10.2-xanmod"
+			kernel_version="5.10.11-xanmod"
 			detele_kernel_head
-			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EX2Ba-jo29ZMiqgPxtpE7XQB1WOluu7knD0RxZZqkfdb5w?download=1
-			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ES00Tt-nOlZEow3GbdxzS2IB3jt1YKi7Y67v_fWIr55eCQ?download=1
+			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EUjsZfjSes9Dgt5gVSC9cpUBvR21Coqp0iRYysxInNcUuA?download=1
+			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EfmnqRIsVy5OrAVa2i9mLlEBGCTkVF3BcACmXDHlPP8Xlg?download=1
 				
 			dpkg -i linux-image-d10.deb
 			dpkg -i linux-headers-d10.deb
 		else
-			echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1	
+			echo -e "${Error} 还在用32位，别再见了 !" && exit 1	
 		fi		
 	fi
 	
@@ -226,122 +231,7 @@ installxanmod(){
 	#echo -e "${Tip} 内核安装完毕，请参考上面的信息检查是否安装成功及手动调整内核启动顺序"
 }
 
-#安装bbr2内核
-installbbr2(){
-	kernel_version="5.4.0-rc6"
-	bit=`uname -m`
-	rm -rf bbr2
-	mkdir bbr2 && cd bbr2
-	if [[ "${release}" == "centos" ]]; then
-		if [[ ${version} = "7" ]]; then
-			if [[ ${bit} = "x86_64" ]]; then
-				kernel_version="5.4.0_rc6"
-				detele_kernel_head
-				wget -N -O kernel-c7.rpm https://github.com/ylx2016/kernel/releases/download/5.4.0r6bbr2/kernel-5.4.0_rc6-1-bbr2-c7.x86_64.rpm
-				wget -N -O kernel-headers-c7.rpm https://github.com/ylx2016/kernel/releases/download/5.4.0r6bbr2/kernel-headers-5.4.0_rc6-1-bbr2-c7.x86_64.rpm
-				
-				yum install -y kernel-c7.rpm
-				yum install -y kernel-headers-c7.rpm
-			else
-				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
-			fi
-		elif [[ ${version} = "8" ]]; then
-				kernel_version="5.4.0_rc6"
-				detele_kernel_head
-				wget -N -O kernel-c8.rpm https://github.com/ylx2016/kernel/releases/download/5.4.0r6bbr2/kernel-5.4.0_rc6-1-bbr2-c8.x86_64.rpm
-				wget -N -O kernel-headers-c8.rpm https://github.com/ylx2016/kernel/releases/download/5.4.0r6bbr2/kernel-headers-5.4.0_rc6-1-bbr2-c8.x86_64.rpm
-				
-				yum install -y kernel-c8.rpm
-				yum install -y kernel-headers-c8.rpm
-		fi
-		
-	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		if [[ ${bit} = "x86_64" ]]; then
-			kernel_version="5.4.0_rc6"
-			detele_kernel_head
-			wget -N -O linux-headers-d10.deb https://github.com/ylx2016/kernel/releases/download/5.4.0r6bbr2/linux-headers-5.4.0-rc6_5.4.0-rc6-1-bbr2-d10_amd64.deb
-			wget -N -O linux-image-d10.deb https://github.com/ylx2016/kernel/releases/download/5.4.0r6bbr2/linux-image-5.4.0-rc6_5.4.0-rc6-1-bbr2-d10_amd64.deb
-					
-			dpkg -i linux-image-d10.deb
-			dpkg -i linux-headers-d10.deb
-		else
-			echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1	
-		fi		
-	fi
-	
-	cd .. && rm -rf bbr2
-	detele_kernel
-	BBR_grub
-	echo -e "${Tip} ${Red_font_prefix}请检查上面是否有内核信息，无内核千万别重启${Font_color_suffix}"
-	echo -e "${Tip} ${Red_font_prefix}rescue不是正常内核，要排除这个${Font_color_suffix}"
-	echo -e "${Tip} 重启VPS后，请重新运行脚本开启${Red_font_prefix}BBR2${Font_color_suffix}"
-	stty erase '^H' && read -p "需要重启VPS后，才能开启BBR2，是否现在重启 ? [Y/n] :" yn
-	[ -z "${yn}" ] && yn="y"
-	if [[ $yn == [Yy] ]]; then
-		echo -e "${Info} VPS 重启中..."
-		reboot
-	fi
-	#echo -e "${Tip} 内核安装完毕，请参考上面的信息检查是否安装成功及手动调整内核启动顺序"
-}
-
-#安装Zen内核
-installzen(){
-	kernel_version="5.5.2-zen"
-	bit=`uname -m`
-	rm -rf zen
-	mkdir zen && cd zen
-	if [[ "${release}" == "centos" ]]; then
-		if [[ ${version} = "7" ]]; then
-			if [[ ${bit} = "x86_64" ]]; then
-				kernel_version="5.5.10_zen"
-				detele_kernel_head
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EfQb4N8c2bxDlF3mj3SBVHIBGFSg_d1uR4LFzzT0Ii5FWA?download=1
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EfKgMa8vsZBOt0zwXM_lHcUBOYlyH1CyRHrYSRJ5r6a0EQ?download=1
-				
-				yum install -y kernel-c7.rpm
-				yum install -y kernel-headers-c7.rpm
-			else
-				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
-			fi
-		elif [[ ${version} = "8" ]]; then
-				kernel_version="5.5.2_zen"
-				detele_kernel_head
-				wget -N -O kernel-c8.rpm https://github.com/ylx2016/kernel/releases/download/5.5.2zen/kernel-5.5.2_zen-1-c8.x86_64.rpm
-				wget -N -O kernel-headers-c8.rpm https://github.com/ylx2016/kernel/releases/download/5.5.2zen/kernel-headers-5.5.2_zen-1-c8.x86_64.rpm
-				
-				yum install -y kernel-c8.rpm
-				yum install -y kernel-headers-c8.rpm	
-		fi
-		
-	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		if [[ ${bit} = "x86_64" ]]; then
-			kernel_version="5.5.10-zen"
-			detele_kernel_head
-			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EShzFq8Jlv1PthbYlNNvLjIB2-hktrkPXxwd9mqcXgmcyg?download=1
-			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ERXzOc-2BzJInOxBgKo62OkBgcI9-O-fw0M8U2B4NazuLg?download=1
-					
-			dpkg -i linux-image-d10.deb
-			dpkg -i linux-headers-d10.deb	
-		else
-			echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1	
-		fi		
-	fi
-	
-	cd .. && rm -rf zen
-	detele_kernel
-	BBR_grub
-	echo -e "${Tip} ${Red_font_prefix}请检查上面是否有内核信息，无内核千万别重启${Font_color_suffix}"
-	echo -e "${Tip} ${Red_font_prefix}rescue不是正常内核，要排除这个${Font_color_suffix}"
-	echo -e "${Tip} 重启VPS后，请重新运行脚本开启${Red_font_prefix}BBR${Font_color_suffix}"
-	stty erase '^H' && read -p "需要重启VPS后，才能开启BBR，是否现在重启 ? [Y/n] :" yn
-	[ -z "${yn}" ] && yn="y"
-	if [[ $yn == [Yy] ]]; then
-		echo -e "${Info} VPS 重启中..."
-		reboot
-	fi
-	#echo -e "${Tip} 内核安装完毕，请参考上面的信息检查是否安装成功及手动调整内核启动顺序"
-}
-
+#安装bbr2内核 集成到xanmod内核了
 #安装bbrplus 新内核
 installbbrplusnew(){
 	kernel_version="4.14.182-bbrplus"
@@ -359,7 +249,7 @@ installbbrplusnew(){
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm
 			else
-				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
+				echo -e "${Error} 还在用32位，别再见了 !" && exit 1
 			fi
 		fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
@@ -372,7 +262,7 @@ installbbrplusnew(){
 			dpkg -i linux-image-d10.deb
 			dpkg -i linux-headers-d10.deb
 		else
-			echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
+			echo -e "${Error} 还在用32位，别再见了 !" && exit 1
 		fi
 	fi
 
@@ -390,6 +280,54 @@ installbbrplusnew(){
 	fi
 	#echo -e "${Tip} 内核安装完毕，请参考上面的信息检查是否安装成功及手动调整内核启动顺序"
 
+}
+
+#安装cloud内核
+installcloud(){
+	bit=`uname -m`
+	rm -rf kernel_cloud
+	mkdir kernel_cloud && cd kernel_cloud
+	if [[ "${release}" == "centos" ]]; then
+		if [[ ${version} = "7" ]]; then
+			if [[ ${bit} = "x86_64" ]]; then
+				kernel_version="5.10.11_cloud"
+				detele_kernel_head
+				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EQKgMxjTV5VIl1V3A-ORUEgBlWAh_dAz5Oe4MhDy1RMPvQ?download=1
+				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EU5bdlYU-QBFnjbGlKQXQmUBKDK7ZqIoNwD9buCQTzT_mA?download=1
+				
+				yum install -y kernel-c7.rpm
+				yum install -y kernel-headers-c7.rpm
+			else
+				echo -e "${Error} 还在用32位，别再见了 !" && exit 1
+			fi
+		fi
+	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		if [[ ${bit} = "x86_64" ]]; then
+			kernel_version="5.10.11-cloud"
+			detele_kernel_head
+			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EfcMPzT_sDBOswKwgLCAO3QB6F1x3IEIgA8n-BxO_niqgQ?download=1
+			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EUL37RkbmTxGlqyiDIXi9RYB2UV_fwu8DJ4WMp0it0nVJQ?download=1
+					
+			dpkg -i linux-image-d10.deb
+			dpkg -i linux-headers-d10.deb
+		else
+			echo -e "${Error} 还在用32位，别再见了 !" && exit 1
+		fi
+	fi
+
+	cd .. && rm -rf kernel_cloud
+	detele_kernel
+	BBR_grub
+	echo -e "${Tip} ${Red_font_prefix}请检查上面是否有内核信息，无内核千万别重启${Font_color_suffix}"
+	echo -e "${Tip} ${Red_font_prefix}rescue不是正常内核，要排除这个${Font_color_suffix}"
+	echo -e "${Tip} 重启VPS后，请重新运行脚本开启${Red_font_prefix}BBR${Font_color_suffix}"
+	stty erase '^H' && read -p "需要重启VPS后，才能开启BBR，是否现在重启 ? [Y/n] :" yn
+	[ -z "${yn}" ] && yn="y"
+	if [[ $yn == [Yy] ]]; then
+		echo -e "${Info} VPS 重启中..."
+		reboot
+	fi
+	# echo -e "${Tip} 内核安装完毕，请参考上面的信息检查是否安装成功及手动调整内核启动顺序"
 }
 
 #启用BBR+fq
@@ -450,8 +388,16 @@ maxmode=\"1\"">>/appex/etc/config
 #启用BBR2+FQ
 startbbr2fq(){
 	remove_bbr_lotserver
-	echo "net.ipv4.tcp_ecn=0" >> /etc/sysctl.d/99-sysctl.conf
 	echo "net.core.default_qdisc=fq" >> /etc/sysctl.d/99-sysctl.conf
+	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.d/99-sysctl.conf
+	sysctl --system
+	echo -e "${Info}BBR2修改成功，重启生效！"
+}
+
+#启用BBR2+FQ_PIE
+startbbr2fqpie(){
+	remove_bbr_lotserver
+	echo "net.core.default_qdisc=fq_pie" >> /etc/sysctl.d/99-sysctl.conf
 	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.d/99-sysctl.conf
 	sysctl --system
 	echo -e "${Info}BBR2修改成功，重启生效！"
@@ -460,31 +406,30 @@ startbbr2fq(){
 #启用BBR2+CAKE
 startbbr2cake(){
 	remove_bbr_lotserver
+	echo "net.core.default_qdisc=cake" >> /etc/sysctl.d/99-sysctl.conf
+	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.d/99-sysctl.conf
+	sysctl --system
+	echo -e "${Info}BBR2修改成功，重启生效！"
+}
+
+#开启ecn
+startecn(){
+	sed -i '/net.ipv4.tcp_ecn/d' /etc/sysctl.d/99-sysctl.conf
+	sed -i '/net.ipv4.tcp_ecn/d' /etc/sysctl.conf
+	
+	echo "net.ipv4.tcp_ecn=1" >> /etc/sysctl.d/99-sysctl.conf
+	sysctl --system
+	echo -e "${Info}开启ecn结束！"
+}
+
+#关闭ecn
+closeecn(){
+	sed -i '/net.ipv4.tcp_ecn/d' /etc/sysctl.d/99-sysctl.conf
+	sed -i '/net.ipv4.tcp_ecn/d' /etc/sysctl.conf
+	
 	echo "net.ipv4.tcp_ecn=0" >> /etc/sysctl.d/99-sysctl.conf
-	echo "net.core.default_qdisc=cake" >> /etc/sysctl.d/99-sysctl.conf
-	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.d/99-sysctl.conf
 	sysctl --system
-	echo -e "${Info}BBR2修改成功，重启生效！"
-}
-
-#启用BBR2+FQ+ecn
-startbbr2fqecn(){
-	remove_bbr_lotserver
-	echo "net.ipv4.tcp_ecn=1" >> /etc/sysctl.d/99-sysctl.conf
-	echo "net.core.default_qdisc=fq" >> /etc/sysctl.d/99-sysctl.conf
-	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.d/99-sysctl.conf
-	sysctl --system
-	echo -e "${Info}BBR2修改成功，重启生效！"
-}
-
-#启用BBR2+CAKE+ecn
-startbbr2cakeecn(){
-	remove_bbr_lotserver
-	echo "net.ipv4.tcp_ecn=1" >> /etc/sysctl.d/99-sysctl.conf
-	echo "net.core.default_qdisc=cake" >> /etc/sysctl.d/99-sysctl.conf
-	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.d/99-sysctl.conf
-	sysctl --system
-	echo -e "${Info}BBR2修改成功，重启生效！"
+	echo -e "${Info}关闭ecn结束！"
 }
 
 #卸载bbr+锐速
@@ -998,6 +943,7 @@ sed -i '/required pam_limits.so/d' /etc/pam.d/common-session
 echo "session required pam_limits.so" >> /etc/pam.d/common-session
 fi
 systemctl daemon-reload
+echo -e "${Info}johnrosen1优化方案应用结束，可能需要重启！"
 }
 
 #更新脚本
@@ -1039,40 +985,64 @@ gotodd(){
 	wget -qO ~/Network-Reinstall-System-Modify.sh 'https://github.com/ylx2016/reinstall/raw/master/Network-Reinstall-System-Modify.sh' && chmod a+x ~/Network-Reinstall-System-Modify.sh && bash ~/Network-Reinstall-System-Modify.sh -UI_Options
 }
 
+#禁用IPv6
+closeipv6(){
+	clear
+	sed -i '/net.ipv6.conf.all.disable_ipv6/d' /etc/sysctl.d/99-sysctl.conf
+	sed -i '/net.ipv6.conf.default.disable_ipv6/d' /etc/sysctl.d/99-sysctl.conf
+	sed -i '/net.ipv6.conf.lo.disable_ipv6/d' /etc/sysctl.d/99-sysctl.conf
+	sed -i '/net.ipv6.conf.all.disable_ipv6/d' /etc/sysctl.conf
+	sed -i '/net.ipv6.conf.default.disable_ipv6/d' /etc/sysctl.conf
+	sed -i '/net.ipv6.conf.lo.disable_ipv6/d' /etc/sysctl.conf
+	
+	echo "net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1" >> /etc/sysctl.d/99-sysctl.conf
+	sysctl --system
+	echo -e "${Info}禁用IPv6结束，可能需要重启！"
+}
+
+#开启IPv6
+openipv6(){
+	clear
+	sed -i '/net.ipv6.conf.all.disable_ipv6/d' /etc/sysctl.d/99-sysctl.conf
+	sed -i '/net.ipv6.conf.default.disable_ipv6/d' /etc/sysctl.d/99-sysctl.conf
+	sed -i '/net.ipv6.conf.lo.disable_ipv6/d' /etc/sysctl.d/99-sysctl.conf
+	sed -i '/net.ipv6.conf.all.disable_ipv6/d' /etc/sysctl.conf
+	sed -i '/net.ipv6.conf.default.disable_ipv6/d' /etc/sysctl.conf
+	sed -i '/net.ipv6.conf.lo.disable_ipv6/d' /etc/sysctl.conf
+	
+	echo "net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0" >> /etc/sysctl.d/99-sysctl.conf
+	sysctl --system
+	echo -e "${Info}开启IPv6结束，可能需要重启！"
+}
+
 #开始菜单
 start_menu(){
 clear
-echo && echo -e " TCP加速 一键安装管理脚本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix}
- 更新内容及反馈:  https://blog.ylx.me/archives/783.html 运行./tcp.sh再次调用本脚本 母鸡慎用
+echo && echo -e " TCP加速 一键安装管理脚本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix} 安装提示removal? 选No！
  ${Green_font_prefix}0.${Font_color_suffix} 升级脚本
- ${Green_font_prefix}9.${Font_color_suffix} 切换到不卸载内核版本
- ${Green_font_prefix}10.${Font_color_suffix} 切换到一键DD安装系统脚本 自负其责 新手勿入 
-————————————内核管理————————————
- ${Green_font_prefix}1.${Font_color_suffix} 安装 BBR原版内核 - 5.6.15/5.10.2
- ${Green_font_prefix}2.${Font_color_suffix} 安装 BBRplus版内核 - 4.14.129
- ${Green_font_prefix}3.${Font_color_suffix} 安装 Lotserver(锐速)内核 - 多种
- ${Green_font_prefix}4.${Font_color_suffix} 安装 xanmod版内核 - 5.5.1/5.10.2
- ${Green_font_prefix}5.${Font_color_suffix} 安装 BBR2测试版内核 - 5.4.0
- ${Green_font_prefix}7.${Font_color_suffix} 安装 BBRplus新版内核 - 4.14.182
-————————————加速管理————————————
- ${Green_font_prefix}11.${Font_color_suffix} 使用BBR+FQ加速
- ${Green_font_prefix}12.${Font_color_suffix} 使用BBR+CAKE加速 
- ${Green_font_prefix}13.${Font_color_suffix} 使用BBRplus+FQ版加速
- ${Green_font_prefix}14.${Font_color_suffix} 使用Lotserver(锐速)加速
- ${Green_font_prefix}15.${Font_color_suffix} 使用BBR2+FQ加速
+ ${Green_font_prefix}9.${Font_color_suffix} 切换到不卸载内核版本	${Green_font_prefix}10.${Font_color_suffix} 切换到一键DD系统脚本
+ ${Green_font_prefix}1.${Font_color_suffix} 安装 BBR原版内核		${Green_font_prefix}4.${Font_color_suffix} 安装 cloud内核 KVM
+ ${Green_font_prefix}2.${Font_color_suffix} 安装 BBRplus版内核		${Green_font_prefix}5.${Font_color_suffix} 安装 BBRplus新版内核
+ ${Green_font_prefix}3.${Font_color_suffix} 安装 Lotserver(锐速)内核	${Green_font_prefix}6.${Font_color_suffix} 安装 xanmod版内核
+ ${Green_font_prefix}11.${Font_color_suffix} 使用BBR+FQ加速		${Green_font_prefix}12.${Font_color_suffix} 使用BBR+FQ_PIE加速 
+ ${Green_font_prefix}13.${Font_color_suffix} 使用BBR+CAKE加速
+ ${Green_font_prefix}14.${Font_color_suffix} 使用BBR2+FQ加速	 	${Green_font_prefix}15.${Font_color_suffix} 使用BBR2+FQ_PIE加速 
  ${Green_font_prefix}16.${Font_color_suffix} 使用BBR2+CAKE加速
- ${Green_font_prefix}17.${Font_color_suffix} 使用BBR2+FQ+ECN加速
- ${Green_font_prefix}18.${Font_color_suffix} 使用BBR2+CAKE+ECN加速 
- ${Green_font_prefix}19.${Font_color_suffix} 使用BBR+FQ_PIE加速 
-————————————杂项管理————————————
- ${Green_font_prefix}21.${Font_color_suffix} 卸载全部加速
- ${Green_font_prefix}22.${Font_color_suffix} 系统配置优化
- ${Green_font_prefix}24.${Font_color_suffix} 应用johnrosen1的优化方案
- ${Green_font_prefix}23.${Font_color_suffix} 退出脚本 
-————————————————————————————————" && echo
+ ${Green_font_prefix}17.${Font_color_suffix} 开启ECN	 		${Green_font_prefix}18.${Font_color_suffix} 关闭ECN
+ ${Green_font_prefix}19.${Font_color_suffix} 使用BBRplus+FQ版加速 
+ ${Green_font_prefix}20.${Font_color_suffix} 使用Lotserver(锐速)加速 
+ ${Green_font_prefix}21.${Font_color_suffix} 系统配置优化	 	${Green_font_prefix}22.${Font_color_suffix} 应用johnrosen1的优化方案
+ ${Green_font_prefix}23.${Font_color_suffix} 禁用IPv6	 		${Green_font_prefix}24.${Font_color_suffix} 开启IPv6  
+ ${Green_font_prefix}25.${Font_color_suffix} 卸载全部加速	 	${Green_font_prefix}99.${Font_color_suffix} 退出脚本 
+————————————————————————————————————————————————————————————————" &&
 
 	check_status
-	echo -e " 当前内核为：${Font_color_suffix}${kernel_version_r}${Font_color_suffix}"
+	get_system_info
+	echo -e " 系统及内核: ${Font_color_suffix}$opsy ($lbit Bit) $virtual${PLAIN} $kern${PLAIN}${Font_color_suffix}"
 	if [[ ${kernel_status} == "noinstall" ]]; then
 		echo -e " 当前状态: ${Green_font_prefix}未安装${Font_color_suffix} 加速内核 ${Red_font_prefix}请先安装内核${Font_color_suffix}"
 	else
@@ -1081,7 +1051,6 @@ echo && echo -e " TCP加速 一键安装管理脚本 ${Red_font_prefix}[v${sh_ve
 	fi
 	echo -e " 当前拥塞控制算法为: ${Green_font_prefix}${net_congestion_control}${Font_color_suffix} 当前队列算法为: ${Green_font_prefix}${net_qdisc}${Font_color_suffix} "
 	
-echo
 read -p " 请输入数字 :" num
 case "$num" in
 	0)
@@ -1097,16 +1066,13 @@ case "$num" in
 	check_sys_Lotsever
 	;;
 	4)
-	check_sys_xanmod
+	check_sys_cloud
 	;;
 	5)
-	check_sys_bbr2
+	check_sys_bbrplusnew
 	;;
 	6)
-	check_sys_zen
-	;;
-	7)
-	check_sys_bbrplusnew
+	check_sys_xanmod
 	;;
 	9)
 	gototcpx
@@ -1117,45 +1083,54 @@ case "$num" in
 	11)
 	startbbrfq
 	;;
-	19)
+	12)
 	startbbrfqpie	
 	;;
-	12)
+	13)
 	startbbrcake
 	;;
-	13)
-	startbbrplus
-	;;
 	14)
-	startlotserver
+	startbbr2fq
 	;;
 	15)
-	startbbr2fq
+	startbbr2fqpie
 	;;
 	16)
 	startbbr2cake
 	;;
 	17)
-	startbbr2fqecn
+	startecn
 	;;
 	18)
-	startbbr2cakeecn
+	closeecn
+	;;	
+	19)
+	startbbrplus
+	;;
+	20)
+	startlotserver
 	;;
 	21)
-	remove_all
-	;;
-	22)
 	optimizing_system
 	;;
-	24)
+	22)
 	optimizing_system_johnrosen1
 	;;
 	23)
+	closeipv6
+	;;
+	24)
+	openipv6
+	;;
+	25)
+	remove_all
+	;;
+	99)
 	exit 1
 	;;
 	*)
 	clear
-	echo -e "${Error}:请输入正确数字 [0-23]"
+	echo -e "${Error}:请输入正确数字 [0-99]"
 	sleep 5s
 	start_menu
 	;;
@@ -1228,35 +1203,53 @@ detele_kernel_head(){
 	fi
 }
 
-
-
-
 #更新引导
 BBR_grub(){
 	if [[ "${release}" == "centos" ]]; then
         if [[ ${version} = "6" ]]; then
-            if [ ! -f "/boot/grub/grub.conf" ]; then
-                echo -e "${Error} /boot/grub/grub.conf 找不到，请检查."
-                #exit 1
+            if [ -f "/boot/grub/grub.conf" ]; then
+				sed -i 's/^default=.*/default=0/g' /boot/grub/grub.conf
+			elif [ -f "/boot/grub/grub.cfg" ]; then
+				grub-mkconfig -o /boot/grub/grub.cfg
+				grub-set-default 0
+			elif [ -f "/boot/efi/EFI/centos/grub.cfg" ]; then
+				grub-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+				grub-set-default 0
+			elif [ -f "/boot/efi/EFI/redhat/grub.cfg" ]; then
+				grub-mkconfig -o /boot/efi/EFI/redhat/grub.cfg
+				grub-set-default 0	
+			else
+				echo -e "${Error} grub.conf/grub.cfg 找不到，请检查."
+				exit
             fi
-            sed -i 's/^default=.*/default=0/g' /boot/grub/grub.conf
         elif [[ ${version} = "7" ]]; then
             if [ -f "/boot/grub2/grub.cfg" ]; then
 				grub2-mkconfig -o /boot/grub2/grub.cfg
 				grub2-set-default 0
-				#exit 1
 			elif [ -f "/boot/efi/EFI/centos/grub.cfg" ]; then
 				grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
 				grub2-set-default 0
-				#exit 1
+			elif [ -f "/boot/efi/EFI/redhat/grub.cfg" ]; then
+				grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg
+				grub2-set-default 0	
 			else
 				echo -e "${Error} grub.cfg 找不到，请检查."
-            fi
-			#grub2-mkconfig -o /boot/grub2/grub.cfg
-			#grub2-set-default 0
-		
+				exit
+            fi	
 		elif [[ ${version} = "8" ]]; then
-			grub2-mkconfig -o /boot/grub2/grub.cfg
+			if [ -f "/boot/grub2/grub.cfg" ]; then
+				grub2-mkconfig -o /boot/grub2/grub.cfg
+				grub2-set-default 0
+			elif [ -f "/boot/efi/EFI/centos/grub.cfg" ]; then
+				grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+				grub2-set-default 0
+			elif [ -f "/boot/efi/EFI/redhat/grub.cfg" ]; then
+				grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg
+				grub2-set-default 0	
+			else
+				echo -e "${Error} grub.cfg 找不到，请检查."
+				exit
+			fi
 			grubby --info=ALL|awk -F= '$1=="kernel" {print i++ " : " $2}'
         fi
     elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
@@ -1288,13 +1281,97 @@ check_sys(){
 	elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
 		release="centos"
     fi
+
+#from https://github.com/oooldking
+get_opsy() {
+    [ -f /etc/redhat-release ] && awk '{print ($1,$3~/^[0-9]/?$3:$4)}' /etc/redhat-release && return
+    [ -f /etc/os-release ] && awk -F'[= "]' '/PRETTY_NAME/{print $3,$4,$5}' /etc/os-release && return
+    [ -f /etc/lsb-release ] && awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release && return
+}
+get_system_info() {
+	cname=$( awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//' )
+	cores=$( awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo )
+	freq=$( awk -F: '/cpu MHz/ {freq=$2} END {print freq}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//' )
+	corescache=$( awk -F: '/cache size/ {cache=$2} END {print cache}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//' )
+	tram=$( free -m | awk '/Mem/ {print $2}' )
+	uram=$( free -m | awk '/Mem/ {print $3}' )
+	bram=$( free -m | awk '/Mem/ {print $6}' )
+	swap=$( free -m | awk '/Swap/ {print $2}' )
+	uswap=$( free -m | awk '/Swap/ {print $3}' )
+	up=$( awk '{a=$1/86400;b=($1%86400)/3600;c=($1%3600)/60} {printf("%d days %d hour %d min\n",a,b,c)}' /proc/uptime )
+	load=$( w | head -1 | awk -F'load average:' '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//' )
+	opsy=$( get_opsy )
+	arch=$( uname -m )
+	lbit=$( getconf LONG_BIT )
+	kern=$( uname -r )
+
+	# disk_size1=$( LANG=C df -hPl | grep -wvE '\-|none|tmpfs|overlay|shm|udev|devtmpfs|by-uuid|chroot|Filesystem' | awk '{print $2}' )
+	# disk_size2=$( LANG=C df -hPl | grep -wvE '\-|none|tmpfs|overlay|shm|udev|devtmpfs|by-uuid|chroot|Filesystem' | awk '{print $3}' )
+	# disk_total_size=$( calc_disk ${disk_size1[@]} )
+	# disk_used_size=$( calc_disk ${disk_size2[@]} )
+
+	tcpctrl=$( sysctl net.ipv4.tcp_congestion_control | awk -F ' ' '{print $3}' )
+
+	virt_check
+}
+virt_check(){
+	# if hash ifconfig 2>/dev/null; then
+		# eth=$(ifconfig)
+	# fi
+
+	virtualx=$(dmesg) 2>/dev/null
+
+    if  [ $(which dmidecode) ]; then
+		sys_manu=$(dmidecode -s system-manufacturer) 2>/dev/null
+		sys_product=$(dmidecode -s system-product-name) 2>/dev/null
+		sys_ver=$(dmidecode -s system-version) 2>/dev/null
+	else
+		sys_manu=""
+		sys_product=""
+		sys_ver=""
+	fi
 	
+	if grep docker /proc/1/cgroup -qa; then
+	    virtual="Docker"
+	elif grep lxc /proc/1/cgroup -qa; then
+		virtual="Lxc"
+	elif grep -qa container=lxc /proc/1/environ; then
+		virtual="Lxc"
+	elif [[ -f /proc/user_beancounters ]]; then
+		virtual="OpenVZ"
+	elif [[ "$virtualx" == *kvm-clock* ]]; then
+		virtual="KVM"
+	elif [[ "$cname" == *KVM* ]]; then
+		virtual="KVM"
+	elif [[ "$cname" == *QEMU* ]]; then
+		virtual="KVM"
+	elif [[ "$virtualx" == *"VMware Virtual Platform"* ]]; then
+		virtual="VMware"
+	elif [[ "$virtualx" == *"Parallels Software International"* ]]; then
+		virtual="Parallels"
+	elif [[ "$virtualx" == *VirtualBox* ]]; then
+		virtual="VirtualBox"
+	elif [[ -e /proc/xen ]]; then
+		virtual="Xen"
+	elif [[ "$sys_manu" == *"Microsoft Corporation"* ]]; then
+		if [[ "$sys_product" == *"Virtual Machine"* ]]; then
+			if [[ "$sys_ver" == *"7.0"* || "$sys_ver" == *"Hyper-V" ]]; then
+				virtual="Hyper-V"
+			else
+				virtual="Microsoft Virtual Machine"
+			fi
+		fi
+	else
+		virtual="Dedicated母鸡"
+	fi
+}
+
 #处理ca证书
 	if [[ "${release}" == "centos" ]]; then
-		yum install ca-certificates -y
+		yum install ca-certificates dmidecode -y
 		update-ca-trust force-enable
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		apt-get install ca-certificates -y
+		apt-get install ca-certificates dmidecode -y
 		update-ca-certificates
 	fi	
 }
@@ -1318,30 +1395,13 @@ check_version(){
 check_sys_bbr(){
 	check_version
 	if [[ "${release}" == "centos" ]]; then
-		# if [[ ${version} = "6" || ${version} = "7" || ${version} = "8" ]]; then
 		if [[ ${version} = "7" || ${version} = "8" ]]; then
 			installbbr
 		else
 			echo -e "${Error} BBR内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
-	# elif [[ "${release}" == "debian" ]]; then
-		# if [[ ${version} = "8" || ${version} = "9" || ${version} = "10" ]]; then
-		# if [[ ${version} = "9" || ${version} = "10" ]]; then
-			# installbbr
-		# else
-			# echo -e "${Error} BBR内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		# fi
-	# elif [[ "${release}" == "ubuntu" ]]; then
-		# if [[ ${version} = "16" || ${version} = "18" || ${version} = "19" || ${version} = "20" ]]; then
-		# if [[ ${version} = "16" || ${version} = "18" || ${version} = "20" ]]; then
-			# installbbr
-		# else
-			# echo -e "${Error} BBR内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		# fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		# if [[ ${version} = "8" || ${version} = "9" || ${version} = "10" || ${version} = "16" || ${version} = "18" || ${version} = "19" || ${version} = "20" ]]; then
-			installbbr
-		# fi
+		installbbr
 	else
 		echo -e "${Error} BBR内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 	fi
@@ -1355,24 +1415,8 @@ check_sys_bbrplus(){
 		else
 			echo -e "${Error} BBRplus内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
-	# elif [[ "${release}" == "debian" ]]; then
-		# if [[ ${version} = "8" || ${version} = "9" || ${version} = "10" ]]; then
-		# if [[ ${version} = "9" || ${version} = "10" ]]; then
-			# installbbrplus
-		# else
-			# echo -e "${Error} BBRplus内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		# fi
-	# elif [[ "${release}" == "ubuntu" ]]; then
-		# if [[ ${version} = "16" || ${version} = "18" || ${version} = "19" ]]; then
-		# if [[ ${version} = "16" || ${version} = "18" ]]; then
-			# installbbrplus
-		# else
-			# echo -e "${Error} BBRplus内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		# fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		# if [[ ${version} = "8" || ${version} = "9" || ${version} = "10" || ${version} = "16" || ${version} = "18" || ${version} = "19" || ${version} = "20" ]]; then
-			installbbrplus
-		# fi	
+		installbbrplus
 	else
 		echo -e "${Error} BBRplus内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 	fi
@@ -1386,15 +1430,8 @@ check_sys_bbrplusnew(){
 		else
 			echo -e "${Error} BBRplusNew内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
-	# elif [[ "${release}" == "debian" ]]; then
-		# if [[ ${version} = "10" ]]; then
-			# installbbrplusnew
-		# else
-			# echo -e "${Error} BBRplusNew内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		# fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		# if [[ ${version} = "8" || ${version} = "9" || ${version} = "10" || ${version} = "16" || ${version} = "18" || ${version} = "19" || ${version} = "20" ]]; then
-			installbbrplusnew
+		installbbrplusnew
 	else
 		echo -e "${Error} BBRplusNew内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 	fi
@@ -1409,62 +1446,9 @@ check_sys_xanmod(){
 			echo -e "${Error} xanmod内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		# if [[ ${version} = "8" || ${version} = "9" || ${version} = "10" || ${version} = "16" || ${version} = "18" || ${version} = "19" || ${version} = "20" ]]; then
-			installxanmod
-		# fi
-	# elif [[ "${release}" == "ubuntu" ]]; then
-			# echo -e "${Error} xanmod内核不支持当前系统 ${release} ${version} ${bit} ,去xanmod.org 官网安装吧!" && exit 1
+		installxanmod
 	else
 		echo -e "${Error} xanmod内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-	fi
-}
-
-check_sys_bbr2(){
-	check_version
-	if [[ "${release}" == "centos" ]]; then
-		if [[ ${version} = "7" || ${version} = "8" ]]; then
-			installbbr2
-		else
-			echo -e "${Error} bbr2内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		fi
-	# elif [[ "${release}" == "debian" ]]; then
-		# if [[ ${version} = "9" || ${version} = "10" ]]; then
-			# installbbr2
-		# else
-			# echo -e "${Error} bbr2内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		# fi
-	# elif [[ "${release}" == "ubuntu" ]]; then
-			# echo -e "${Error} bbr2内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		# if [[ ${version} = "8" || ${version} = "9" || ${version} = "10" || ${version} = "16" || ${version} = "18" || ${version} = "19" || ${version} = "20" ]]; then
-			installbbr2		
-	else
-		echo -e "${Error} bbr2内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-	fi
-}
-
-
-check_sys_zen(){
-	check_version
-	if [[ "${release}" == "centos" ]]; then
-		if [[ ${version} = "7" || ${version} = "8" ]]; then
-			installzen
-		else
-			echo -e "${Error} zen内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		fi
-	# elif [[ "${release}" == "debian" ]]; then
-		# if [[ ${version} = "9" || ${version} = "10" ]]; then
-			# installzen
-		# else
-			# echo -e "${Error} zen内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		# fi
-	# elif [[ "${release}" == "ubuntu" ]]; then
-			# echo -e "${Error} zen内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		# if [[ ${version} = "8" || ${version} = "9" || ${version} = "10" || ${version} = "16" || ${version} = "18" || ${version} = "19" || ${version} = "20" ]]; then
-			installzen				
-	else
-		echo -e "${Error} zen内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 	fi
 }
 
@@ -1516,6 +1500,23 @@ check_sys_Lotsever(){
 	fi
 }
 
+#检查cloud内核并安装
+check_sys_cloud(){
+	check_version
+	if [[ "${release}" == "centos" ]]; then
+		if [[ ${version} = "7" ]]; then
+			installcloud
+		else
+			echo -e "${Error} 不支持当前系统 ${release} ${version} ${bit} !" && exit 1
+		fi
+	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		installcloud
+	else
+		echo -e "${Error} 不支持当前系统 ${release} ${version} ${bit} !" && exit 1
+	fi
+}
+
+#检查系统当前状态
 check_status(){
 	kernel_version=`uname -r | awk -F "-" '{print $1}'`
 	kernel_version_full=`uname -r`
@@ -1598,74 +1599,3 @@ check_sys
 check_version
 [[ ${release} != "debian" ]] && [[ ${release} != "ubuntu" ]] && [[ ${release} != "centos" ]] && echo -e "${Error} 本脚本不支持当前系统 ${release} !" && exit 1
 start_menu
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -206,91 +206,112 @@ menu_go_on() {
 
 ################## 主    菜    单 ##################
 main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "VPS ToolBox Menu" --menu --nocancel "Welcome to VPS Toolbox main menu,Please Choose an option 欢迎使用VPSTOOLBOX,请选择一个选项" 14 68 10 \
-  "Install_standard" "系统设置(buyvm挂载、虚拟内存、语言设置、开发环境)" \
-  "Install_extend" "扩展安装(完整软件列表)" \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "VPS ToolBox Menu 注：本脚本所有操作日志路径：/root/install_log.txt" --menu --nocancel "Welcome to VPS Toolbox main menu,Please Choose an option 欢迎使用VPSTOOLBOX,请选择一个选项" 20 80 10 \
+  "Install_standard" "系统设置(buyvm挂载/虚拟内存/语言设置/开发环境)" \
+  "Install_extend" "扩展安装(fq/离线下载三件套/网络工具/emby/挂载)" \
   "Benchmark" "效能测试"\
   "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     ## 基础标准安装
     Install_standard)
-    Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "VPS ToolBox Menu" --menu --nocancel "Welcome to VPS Toolbox main menu,Please Choose an option 欢迎使用VPSTOOLBOX,请选择一个选项" 14 68 10 \
-  "Install_standard" "系统设置(buyvm挂载、虚拟内存、语言设置、开发环境)" \
-  "Install_extend" "扩展安装(完整软件列表)" \
-  "Benchmark" "效能测试"\
-  "Exit" "退出" 3>&1 1>&2 2>&3)
-  
-  whiptail --clear --ok-button "下一步" --backtitle "Hi,请按空格以及方向键来选择需要安装/更新的软件,请自行下拉以查看更多(Please press space and Arrow keys to choose)" --title "Install checklist" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装/更新的软件。" 18 65 10 \
+    whiptail --clear --ok-button "下一步" --backtitle "Hi,请按空格以及方向键来选择,请自行下拉以查看更多(Please press space and Arrow keys to choose)" --title "Install_standard" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装/更新的软件。" 18 65 10 \
 "Back" "返回上级菜单(Back to main menu)" off \
-"trojan" "Trojan-GFW+TCP-BBR+Hexo Blog" on \
-"net" "Netdata(监测伺服器运行状态)" on \
-"fast" "TCP Fastopen" ${fastopen} \
-"tjp" "Trojan-panel" ${check_tjp} \
-"ss" "shadowsocks-rust" ${check_ss} \
-"speed" "Speedtest(测试本地网络到VPS的延迟及带宽)" ${check_speed} \
-"fail2ban" "Fail2ban(防SSH爆破用)" ${check_fail2ban} \
-"dns" "Dnscrypt-proxy(Doh)" ${check_dns} \
-"port" "自定义Trojan端口(除nat机器外请勿选中)" off \
-"test-only" "test-only" off 2>results
+"languge" "设置系统语言" on \
+"swap" "设置虚拟内存" off \
+"zsh" "安装oh my zsh &tmux" off \
+"buyvm" "buyvm挂载256G硬盘" off \
+"kfhj" "安装python/nodejs/go开发环境" off 2>results
+    while read choice
+    do
+      case $choice in
+        Back) 
+        main_menu
+        break
+        ;;
+        languge)
+        setlanguage
+        ;;
+        swap)
+        bash <(curl -sL git.io/cg_swap)
+        ;;
+        zsh)
+        install_beautify
+        ;;
+        buyvm)
+        buyvm_disk
+        ;;
+        kfhj)
+        check_python
+        check_nodejs
+        check_go
+        ;;
+        *)
+        ;;
+      esac
+    done < results
+    rm results
+    ;;
+    Install_extend)
+    whiptail --clear --ok-button "下一步" --backtitle "Hi,请按空格以及方向键来选择,请自行下拉以查看更多(Please press space and Arrow keys to choose)" --title "Install_extend" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 18 65 10 \
+"Back" "返回上级菜单(Back to main menu)" off \
+"bbr" "BBR一键加速[转自HJM]" on \
+"v2ray" "一键搭建V2ray[转自233boy]" off \
+"offline" "离线下载3件套[aria2/rsshub/flexget]" off \
+"auto_mount" "自动网盘挂载脚本[支持命令参数模式]" off \
+"emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" off \
 
-while read choice
-do
-  case $choice in
-    Back) 
-    MasterMenu
-    break
-    ;;
-    trojan)
-    install_trojan=1
-    install_bbr=1
-    ;;
-    ss)
-    check_ss="on"
-    install_ss_rust=1
-    ;;
-    dns)
-    check_dns="on"
-    install_dnscrypt=1
-    ;;
-    fast)
-    tcp_fastopen="true"
-    ;;
-    tjp)
-    check_tjp="on"
-    install_trojan_panel=1
-    install_php=1
-    install_mariadb=1
-    install_redis=1
-    ;;
-    net)
-    install_netdata=1
-    ;;
-    speed)
-    check_speed="on"
-    install_speedtest=1
-    install_php=1
-    ;;
-    fail2ban)
-    check_fail2ban="on"
-    install_fail2ban=1
-    ;;
-    11) 
-    install_trojan_panel=1
-    install_php=1
-    install_nodejs=1
-    install_mariadb=1
-    ;;
-    port)
-    trojan_other_port=1
+
+
+
+
+"lnmp" "LNMP 一键脚本" off \
+"baota" "宝塔面板一键脚本[转自-laowangblog.com]" off 2>results
+    while read choice
+    do
+      case $choice in
+        Back) 
+        main_menu
+        break
+        ;;
+        bbr)
+        bash <(curl -sL git.io/cg_bbr)
+        echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
+        ;;
+        v2ray)
+        bash <(curl -sL git.io/cg_v2ray)
+        echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
+        ;;
+        offline)
+        bash <(curl -sL git.io/cg_dl)
+        install_aria2
+        install_rsshub
+        run_rsshub
+        install_flexget
+        config_flexget
+        ;;
+        auto_mount)
+        bash <(curl -sL git.io/cg_auto_mount)
+        echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
+        ;;
+
+
+
+        lnmp)
+        install_LNMP
+        ;;
+        baota)
+        bash <(curl -sL git.io/cg_baota)
+        echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
+        ;;
+        *)
+        ;;
+      esac
+    done < results
+    rm results
     ;;
     *)
     ;;
-  esac
-done < results
-
-rm results
-  
-  
+    esac
   
   
   
@@ -299,21 +320,7 @@ rm results
   
   cat << EOF
 ${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
-${blue}${bold}————————————————————————————————系 统 环 境—————————————————————————————————————${normal}
-${green}${bold}A、${normal}安装装逼神奇oh my zsh &oh my tmux
-${green}${bold}B、${normal}buyvm挂载256G硬盘
-${blue}${bold}————————————————————————————————离 线 转 存—————————————————————————————————————${normal}
-${green}${bold}C、${normal}安装配置aria2一键增强[转自P3TERX]
-${green}${bold}D、${normal}安装配置rsshub/flexget自动添加种子
-${blue}${bold}————————————————————————————————网 络 工 具—————————————————————————————————————${normal}
-${green}${bold}E、${normal}BBR一键加速[转自-忘记抄的谁的了]
-${green}${bold}F、${normal}一键搭建V2ray[转自233boy]
-${green}${bold}G、${normal}LNMP 一键脚本[转自-lnmp.org]
-${green}${bold}H、${normal}宝塔面板一键脚本[转自-laowangblog.com]
-${blue}${bold}————————————————————————————————EMBY  相 关—————————————————————————————————————${normal}
-${green}${bold}I、${normal}自动网盘挂载脚本[支持命令参数模式]
 ${green}${bold}J、${normal}安装配置AVDC刮削工具[转自yoshiko2]
-${green}${bold}K、${normal}EMBY一键安装搭建脚本[转自wuhuai2020 & why]
 ${blue}${bold}————————————————————————————————便 捷 操 作—————————————————————————————————————${normal}
 ${green}${bold}M、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
 ${green}${bold}N、${normal}批量别名
@@ -323,55 +330,6 @@ ${blue}${bold}——————————————————————
 EOF
   read -r -n1 -p "${green}${bold}请输入选择 [A-Q]:${normal}" num
   case "$num" in
-    A | a)
-      echo
-      install_beautify
-      menu_go_on
-      ;;
-    B | b)
-      echo
-      buyvm_disk
-      menu_go_on
-      ;;
-    C | c)
-      echo
-      install_aria2
-      menu_go_on
-      ;;
-    D | d)
-      echo
-      bash <(curl -sL git.io/cg_flexget)
-      menu_go_on
-      ;;
-    E | e)
-      echo
-      bash <(curl -sL git.io/cg_bbr)
-      echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
-      menu_go_on
-      ;;
-    F | f)
-      echo
-      bash <(curl -sL git.io/cg_v2ray)
-      echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
-      menu_go_on
-      ;;
-    G | g)
-      echo
-      install_LNMP
-      menu_go_on
-      ;;
-    H | h)
-      echo
-      bash <(curl -sL git.io/cg_baota)
-      echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
-      menu_go_on
-      ;;
-    I | i)
-      echo
-      bash <(curl -sL git.io/cg_auto_mount)
-      echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
-      menu_go_on
-      ;;
     J | j)
       echo
       bash <(curl -sL git.io/cg_avdc)

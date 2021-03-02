@@ -37,14 +37,14 @@ EOF
   #设置自动上传网盘目录为/Download
   [ -z "$(grep "drive-dir=/Download" /root/.aria2c/script.conf)" ] && sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
   #通知remote选择结果及自动上传目录
-  echo -e "$curr_date ${red}[INFO]您选择的remote为：${my_remote}，自动上传目录为：${td_name}/Download，如有需要，请bash <(curl -sL git.io/aria2.sh)自行修改"
+  echo -e "$curr_date ${red}[INFO]您选择的remote为：${my_remote}，自动上传目录为：/Download，如有需要，请bash <(curl -sL git.io/aria2.sh)自行修改"
   service aria2 restart
   #检查是否安装成功
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
   if [ "$aria2_install_status" = success ]; then
     echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！
     本地下载目录为：/home/download
-    remote为：${my_remote}，自动上传目录为：${td_name}/Download" >> /root/install_log.txt
+    remote为：${my_remote}，自动上传目录为：/Download" >> /root/install_log.txt
   else
     echo -e "${curr_date} [ERROR] aria2自动上传安装配置失败！" >> /root/install_log.txt
   fi
@@ -55,7 +55,7 @@ install_rsshub() {
   [ -e /home/RSSHub ] && rm -rf /home/RSSHub
   mkdir -p 755 /home/RSSHub && git clone https://github.com/cgkings/RSSHub /home/RSSHub
   sleep 5s
-  cd /home/RSSHub
+  cd /home/RSSHub || exit
   npm cache clean --force
   npm install
   echo -e "CACHE_TYPE=redis\nCACHE_EXPIRE=600" > /home/RSSHub/.env
@@ -70,7 +70,7 @@ run_rsshub() {
 
 ################## 安装flexget ##################
 install_flexget() {
-  if [ -z $(command -v flexget) ]; then
+  if [ -z "$(command -v flexget)" ]; then
     #建立flexget独立的 python3 虚拟环境
     mkdir -p 755 /home/software/flexget/
     virtualenv --system-site-packages --no-setuptools --no-wheel /home/software/flexget/
@@ -79,7 +79,7 @@ install_flexget() {
     #建立 flexget 日志存放
     mkdir -p 755 /var/log/flexget && chown root:adm /var/log/flexget
     #建立 flexget 的配置文件
-    read -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址，有需要自行修改，路径为：/home/software/flexget/config.yml)：" config_yml_ip
+    read -r -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址，有需要自行修改，路径为：/home/software/flexget/config.yml)：" config_yml_ip
     config_yml_ip=${config_yml_ip:-https://raw.githubusercontent.com/cgkings/script-store/master/config/config.yml}
     wget -qN ${config_yml_ip} -O /home/software/flexget/config.yml
     aria2_key=$(cat /root/.aria2c/aria2.conf | grep "rpc-secret" | awk -F= '{print $2}')
@@ -93,7 +93,7 @@ install_flexget() {
 
 ################## 配置flexget刷新时间 ##################
 config_flexget() {
-  read -t 5 -p "flexget刷新时间设置为(单位：分钟,5秒超时或回车默认20分钟)：" fresh_time
+  read -r -t 5 -p "flexget刷新时间设置为(单位：分钟,5秒超时或回车默认20分钟)：" fresh_time
   fresh_time=${fresh_time:-15}
   config_flexget_do
 }
@@ -125,14 +125,5 @@ config_flexget_do() {
 
 ################## 执  行  命  令 ##################
 check_sys
+check_rclone
 check_command wget
-if [ -z $1 ]; then
-  install_rsshub
-  run_rsshub
-  install_flexget
-  config_flexget
-else
-  fresh_time=$1
-  run_rsshub
-  config_flexget_do
-fi
