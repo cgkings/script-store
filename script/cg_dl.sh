@@ -128,6 +128,8 @@ config_flexget_do() {
 ################## 执  行  命  令 ##################
 check_sys
 check_rclone
+check_python
+check_nodejs
 check_command wget
 install_aria2
 install_rsshub
