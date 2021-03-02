@@ -273,15 +273,17 @@ main_menu() {
         echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
         ;;
         bbr)
+        clear
         bash <(curl -sL git.io/cg_bbr)
-        echo
         echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
         ;;
         v2ray)
+        clear
         bash <(curl -sL git.io/cg_v2ray)
         echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
         ;;
         offline)
+        clear
         bash <(curl -sL git.io/cg_dl)
         install_aria2
         install_rsshub
@@ -290,14 +292,17 @@ main_menu() {
         config_flexget
         ;;
         auto_mount)
+        clear
         bash <(curl -sL git.io/cg_auto_mount)
         echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
         ;;
         emby)
+        clear
         bash <(curl -sL git.io/11plus.sh)
         echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
         ;;
         avdc)
+        clear
         bash <(curl -sL git.io/cg_avdc)
         echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
             这个小脚本不带参数则帮您安装AVDC
@@ -305,15 +310,18 @@ main_menu() {
         echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
         ;;
         cg_sort)
+        clear
         bash <(curl -sL git.io/cg_sort.sh)
         ;;
         gd_bot)
         bash <(curl -sL git.io/cg_gdbot)
         ;;
         lnmp)
+        clear
         install_LNMP
         ;;
         baota)
+        clear
         bash <(curl -sL git.io/cg_baota)
         echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
         ;;
