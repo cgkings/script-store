@@ -211,7 +211,7 @@ main_menu() {
     Install_standard)
     whiptail --clear --ok-button "下一步" --backtitle "Hi,请按空格以及方向键来选择,请自行下拉以查看更多(Please press space and Arrow keys to choose)" --title "Install_standard" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装/更新的软件。" 18 65 10 \
 "Back" "返回上级菜单(Back to main menu)" off \
-"languge" "设置系统语言" on \
+"languge" "设置系统语言" off \
 "swap" "设置虚拟内存" off \
 "zsh" "安装oh my zsh &tmux" off \
 "buyvm" "buyvm挂载256G硬盘" off \
@@ -250,8 +250,8 @@ main_menu() {
     Install_extend)
     whiptail --clear --ok-button "下一步" --backtitle "Hi,请按空格以及方向键来选择,请自行下拉以查看更多(Please press space and Arrow keys to choose)" --title "Install_extend" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 18 65 10 \
 "Back" "返回上级菜单(Back to main menu)" off \
-"alias" "自定义别名[可通过alias命令查看]" on \
-"bbr" "BBR一键加速[转自HJM]" on \
+"alias" "自定义别名[可通过alias命令查看]" off \
+"bbr" "BBR一键加速[转自HJM]" off \
 "v2ray" "一键搭建V2ray[转自233boy]" off \
 "offline" "离线下载3件套[aria2/rsshub/flexget]" off \
 "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" off \
