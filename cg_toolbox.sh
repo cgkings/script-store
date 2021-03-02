@@ -26,23 +26,23 @@ initialization() {
   TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "初始化中...(initializing)
 请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)
 初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
-  echo -e "${curr_date} [INFO] 静默升级系统软件源"
+  echo -e "$(curr_date) [INFO] 静默升级系统软件源"
   apt-get update --fix-missing -y > /dev/null
-  echo -e "${curr_date} [INFO] 已完成"
-  echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
+  echo -e "$(curr_date) [INFO] 已完成"
+  echo -e "$(curr_date) [INFO] 静默升级已安装系统软件"
   apt upgrade -y > /dev/null
-  echo -e "${curr_date} [INFO] 已完成"
-  echo -e "${curr_date} [INFO] 静默检查并安装缺少的常用软件：sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale ffmpeg"
+  echo -e "$(curr_date) [INFO] 已完成"
+  echo -e "$(curr_date) [INFO] 静默检查并安装缺少的常用软件：sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale ffmpeg"
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale ffmpeg
-  echo -e "${curr_date} [INFO] 已完成"
+  echo -e "$(curr_date) [INFO] 已完成"
   ###设置时区###
-  echo -e "${curr_date} [INFO] 检查时区是否为中国上海"
+  echo -e "$(curr_date) [INFO] 检查时区是否为中国上海"
   if [ "$(cat /etc/timezone)" != "Asia/Shanghai" ]; then
     [ -z "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     echo "Asia/Shanghai" > /etc/timezone
-    echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
+    echo -e "$(curr_date) [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   fi
-  echo -e "${curr_date} [INFO] 已完成"
+  echo -e "$(curr_date) [INFO] 已完成"
   ###自动设置虚拟内存###
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
 }
@@ -50,7 +50,7 @@ initialization() {
 ################## 安装装逼神器 oh my zsh & on my tmux ##################待完善
 install_beautify() {
   ####设置颜色###
-  echo -e "${curr_date} [INFO] 设置系统256色"
+  echo -e "$(curr_date) [INFO] 设置系统256色"
   if [ "$(tput colors)" != 256 ]; then
     cat >> ~/.bashrc << EOF
 
@@ -59,9 +59,9 @@ if [ "$TERM" != "xterm-256color" ]; then
 fi
 EOF
     source /root/.bashrc
-    echo -e "${curr_date} [INFO] 设置256色成功" >> /root/install_log.txt
+    echo -e "$(curr_date) [INFO] 设置256色成功" >> /root/install_log.txt
   fi
-  echo -e "${curr_date} [INFO] 已完成"
+  echo -e "$(curr_date) [INFO] 已完成"
   #安装oh my zsh
   check_command zsh fonts-powerline
   #调用oh my zsh安装脚本
@@ -75,14 +75,14 @@ EOF
   sed -i 's/\# DISABLE_UPDATE_PROMPT="true"/DISABLE_UPDATE_PROMPT="true"/g' /root/.zshrc
   [ -z "$(grep "source /root/.bashrc" ~/.zshrc)" ] && echo -e "\nsource /root/.bashrc" >> /root/.zshrc
   touch ~/.hushlogin #不显示开机提示语
-  echo -e "${curr_date} [INFO] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
+  echo -e "$(curr_date) [INFO] 装逼神器之oh my zsh 已安装" >> /root/install_log.txt
   #安装oh my tmux
   cd /root && git clone https://github.com/gpakosz/.tmux.git
   ln -sf .tmux/.tmux.conf .
   cp .tmux/.tmux.conf.local .
-  echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
+  echo -e "$(curr_date) [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s "$(which zsh)"
-  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效 ${normal}"
+  echo "${red}${on_white}${bold}$(curr_date) [INFO]重新登录shell工具生效 ${normal}"
 }
 
 ################## buyvm挂载256G硬盘 ##################
@@ -114,9 +114,9 @@ EOF
   fi
   mount_status_update=$(df -h | grep "$disk")
   if [ -z "$mount_status_update" ]; then
-    echo -e "${curr_date} [ERROR] buyvm 256G硬盘尚未挂载到/home" >> /root/install_log.txt
+    echo -e "$(curr_date) [ERROR] buyvm 256G硬盘尚未挂载到/home" >> /root/install_log.txt
   else
-    echo -e "${curr_date} [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
+    echo -e "$(curr_date) [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
   fi
 }
 
@@ -126,7 +126,7 @@ install_LNMP() {
   tmux send -t "lnmp" "wget http://soft.vpser.net/lnmp/lnmp1.7.tar.gz -cO lnmp1.7.tar.gz && tar zxf lnmp1.7.tar.gz && cd lnmp1.7 && LNMP_Auto="y" DBSelect="2" DB_Root_Password="lnmp.org" InstallInnodb="y" PHPSelect="10" SelectMalloc="1" ./install.sh lnmp" Enter
   cat >> /root/install_log.txt << EOF
 
-${curr_date} [INFO] 您使用了lnmp一键包！
+$(curr_date) [INFO] 您使用了lnmp一键包！
 安装：mysql5.5(数据库root密码：lnmp.org) & php7.4 
 1、Nginx + MySQL + PHP 的默认安装目录如下：
    Nginx 目录: /usr/local/nginx/
@@ -274,15 +274,15 @@ main_menu() {
         ;;
         alias)
         my_alias
-        echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
+        echo -e "$(curr_date) [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
         ;;
         bbr)
         bash <(curl -sL git.io/cg_bbr)
-        echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
+        echo -e "$(curr_date) [INFO] 您设置了BBR加速！" >> /root/install_log.txt
         ;;
         v2ray)
         bash <(curl -sL git.io/cg_v2ray)
-        echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
+        echo -e "$(curr_date) [INFO] 您搭建了v2ray！" >> /root/install_log.txt
         ;;
         offline)
         bash <(curl -sL git.io/cg_dl)
@@ -294,18 +294,18 @@ main_menu() {
         ;;
         auto_mount)
         bash <(curl -sL git.io/cg_auto_mount)
-        echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
+        echo -e "$(curr_date) [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
         ;;
         emby)
         bash <(curl -sL git.io/11plus.sh)
-        echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
+        echo -e "$(curr_date) [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
         ;;
         avdc)
         bash <(curl -sL git.io/cg_avdc)
         echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
             这个小脚本不带参数则帮您安装AVDC
             带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-        echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
+        echo -e "$(curr_date) [INFO] 您已安装AVDC！" >> /root/install_log.txt
         ;;
         cg_sort)
         bash <(curl -sL git.io/cg_sort.sh)
@@ -318,7 +318,7 @@ main_menu() {
         ;;
         baota)
         bash <(curl -sL git.io/cg_baota)
-        echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
+        echo -e "$(curr_date) [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
         ;;
         *)
         ;;
