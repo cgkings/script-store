@@ -377,7 +377,7 @@ main_menu() {
             ;;
           offline)
             clear
-            source <(curl -sL git.io/cg_dl)
+            bash <(curl -sL git.io/cg_dl)
             ;;
           auto_mount)
             clear
