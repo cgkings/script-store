@@ -250,20 +250,20 @@ main_menu() {
       esac
     done < results
     rm results
+    exit 0
     ;;
     Install_extend)
     whiptail --clear --ok-button "下一步" --backtitle "Hi,请按空格以及方向键来选择,请自行下拉以查看更多(Please press space and Arrow keys to choose)" --title "Install_extend" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 18 65 10 \
 "Back" "返回上级菜单(Back to main menu)" off \
+"alias" "自定义别名[可通过alias命令查看]" on \
 "bbr" "BBR一键加速[转自HJM]" on \
 "v2ray" "一键搭建V2ray[转自233boy]" off \
 "offline" "离线下载3件套[aria2/rsshub/flexget]" off \
 "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" off \
 "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" off \
 "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" off \
-"cg" "LNMP 一键脚本" off \
-
-
-
+"cg_sort" "网盘文件整理" off \
+"gd_bot" "搭建gd转存bot[未完成]" off \
 "lnmp" "LNMP 一键脚本" off \
 "baota" "宝塔面板一键脚本[转自-laowangblog.com]" off 2>results
     while read choice
@@ -272,6 +272,10 @@ main_menu() {
         Back) 
         main_menu
         break
+        ;;
+        alias)
+        my_alias
+        echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
         ;;
         bbr)
         bash <(curl -sL git.io/cg_bbr)
@@ -304,11 +308,11 @@ main_menu() {
             带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
         echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
         ;;
-
-
-
-
-
+        cg_sort)
+        bash <(curl -sL git.io/cg_sort.sh)
+        ;;
+        gd_bot)
+        ;;
         lnmp)
         install_LNMP
         ;;
@@ -321,6 +325,7 @@ main_menu() {
       esac
     done < results
     rm results
+    exit 0
     ;;
     Benchmark)
     clear
@@ -335,44 +340,6 @@ main_menu() {
     whiptail --title "Bash Exited" --msgbox "Goodbye" 8 68
     exit 0
     ;;
-    esac
-  
-  
-  
-  
-  
-  
-  cat << EOF
-${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
-${blue}${bold}————————————————————————————————便 捷 操 作—————————————————————————————————————${normal}
-${green}${bold}M、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
-${green}${bold}N、${normal}批量别名
-${green}${bold}Q、${normal}退出脚本
-注：本脚本所有操作日志路径：/root/install_log.txt
-${blue}${bold}————————————————————————————————————————————————————————————————————————————————${normal}
-EOF
-  read -r -n1 -p "${green}${bold}请输入选择 [A-Q]:${normal}" num
-  case "$num" in
-    
-    M | m)
-      echo
-      echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
-      menu_go_on
-      ;;
-    N | n)
-      echo
-      my_alias
-      menu_go_on
-      ;;
-    Q | q)
-      echo
-      exit
-      ;;
-    *)
-      echo
-      echo "输入错误，请重新输入"
-      main_menu
-      ;;
   esac
 }
 
