@@ -378,11 +378,6 @@ main_menu() {
           offline)
             clear
             source <(curl -sL git.io/cg_dl)
-            install_aria2
-            install_rsshub
-            run_rsshub
-            install_flexget
-            config_flexget
             ;;
           auto_mount)
             clear

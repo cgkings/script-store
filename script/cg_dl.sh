@@ -21,7 +21,8 @@ setcolor
 
 ################## 安装配置aria2自动下载上传 ##################
 install_aria2() {
-  cd /root && bash <(curl -sL git.io/aria2.sh) << EOF
+  cd /root || exit
+  bash <(curl -sL git.io/aria2.sh) << EOF
 1 
 EOF
   #修改默认本地下载路径为/home/download
@@ -128,3 +129,8 @@ config_flexget_do() {
 check_sys
 check_rclone
 check_command wget
+install_aria2
+install_rsshub
+run_rsshub
+install_flexget
+config_flexget
