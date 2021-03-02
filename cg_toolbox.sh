@@ -377,7 +377,7 @@ main_menu() {
             ;;
           offline)
             clear
-            bash <(curl -sL git.io/cg_dl)
+            source <(curl -sL git.io/cg_dl)
             install_aria2
             install_rsshub
             run_rsshub
