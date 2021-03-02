@@ -83,7 +83,7 @@ EOF
 
 ################## buyvm挂载256G硬盘 ##################
 buyvm_disk() {
-  disk=$(fdisk -l | grep 256 | awk '{print $2}' | tr -d : | sed -n '1p') #获取256G磁盘名
+  disk=$(fdisk -l|grep 256|awk '{print $2}'|sed -n '1p'|awk -F： '{print $1}') #获取256G磁盘名
   mount_status=$(df -h | grep "$disk")                                     #挂载状态
   if [ -z "$disk" ]; then
     echo -e "未找到256G磁盘，请到控制台先加卷后再运行本脚本"
