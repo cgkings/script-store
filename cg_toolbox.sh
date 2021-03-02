@@ -259,8 +259,8 @@ main_menu() {
 "offline" "离线下载3件套[aria2/rsshub/flexget]" off \
 "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" off \
 "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" off \
-
-
+"avdc" "安装配置AVDC刮削工具[转自yoshiko2]" off \
+"cg" "LNMP 一键脚本" off \
 
 
 
@@ -293,6 +293,19 @@ main_menu() {
         bash <(curl -sL git.io/cg_auto_mount)
         echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
         ;;
+        emby)
+        bash <(curl -sL https://git.io/11plus.sh)
+        echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
+        ;;
+        avdc)
+        bash <(curl -sL git.io/cg_avdc)
+        echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
+            这个小脚本不带参数则帮您安装AVDC
+            带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
+        echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
+        ;;
+
+
 
 
 
@@ -309,7 +322,18 @@ main_menu() {
     done < results
     rm results
     ;;
-    *)
+    Benchmark)
+    clear
+    if (whiptail --title "测试模式" --yes-button "快速测试" --no-button "完整测试" --yesno "效能测试方式(fast or full)?" 8 68); then
+        curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s fast
+        else
+        curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s full
+    fi
+    exit 0
+    ;;
+    Exit)
+    whiptail --title "Bash Exited" --msgbox "Goodbye" 8 68
+    exit 0
     ;;
     esac
   
@@ -320,7 +344,6 @@ main_menu() {
   
   cat << EOF
 ${on_black}${white}                ${bold}VPS一键脚本 for Ubuntu/Debian系统    by cgkings 王大锤              ${normal}
-${green}${bold}J、${normal}安装配置AVDC刮削工具[转自yoshiko2]
 ${blue}${bold}————————————————————————————————便 捷 操 作—————————————————————————————————————${normal}
 ${green}${bold}M、${normal}搭建shellbot，TG控制vps下载、转存[包含一键gd转存，具备限时定量定向分盘序列功能]
 ${green}${bold}N、${normal}批量别名
@@ -330,21 +353,7 @@ ${blue}${bold}——————————————————————
 EOF
   read -r -n1 -p "${green}${bold}请输入选择 [A-Q]:${normal}" num
   case "$num" in
-    J | j)
-      echo
-      bash <(curl -sL git.io/cg_avdc)
-      echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
-            这个小脚本不带参数则帮您安装AVDC
-            带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-      echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
-      menu_go_on
-      ;;
-    K | k)
-      echo
-      bash <(curl -sL https://git.io/11plus.sh)
-      echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
-      menu_go_on
-      ;;
+    
     M | m)
       echo
       echo -e "alias c="clear"\nalias 6pan="/root/six-cli"" >> /root/.zshrc
