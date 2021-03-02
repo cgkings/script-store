@@ -297,7 +297,7 @@ main_menu() {
         echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
         ;;
         emby)
-        bash <(curl -sL https://git.io/11plus.sh)
+        bash <(curl -sL git.io/11plus.sh)
         echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
         ;;
         avdc)
@@ -311,7 +311,7 @@ main_menu() {
         bash <(curl -sL git.io/cg_sort.sh)
         ;;
         gd_bot)
-        bash <(curl -sL git.io/cg_gdbot.sh)
+        bash <(curl -sL git.io/cg_gdbot)
         ;;
         lnmp)
         install_LNMP

@@ -1,4 +1,5 @@
 #!/bin/bash
+# bash <(curl -sL git.io/11plus.sh)
 RED='\E[1;31m'
 RED_W='\E[41;37m'
 END='\E[0m'
