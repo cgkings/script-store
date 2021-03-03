@@ -100,7 +100,10 @@ p
 wq
 EOF
       partprobe                                            #不重启重新读取分区信息
-      mkfs -t ext4 "$disk"1                                #格式化ext4分区
+      #格式化ext4分区
+      mkfs -t ext4 "$disk"1 << EOF
+y
+EOF
       mkdir -p 755 /home                                   #确保/home目录存在
       mount "$disk"1 /home                                 #将256G硬盘挂载到系统/home文件夹
       echo "${disk}1 /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
@@ -113,6 +116,7 @@ EOF
     echo -e "${curr_date} [ERROR] buyvm 256G硬盘尚未挂载到/home" >> /root/install_log.txt
   else
     echo -e "${curr_date} [INFO] buyvm 256G硬盘成功挂载到/home" >> /root/install_log.txt
+    df -Th
   fi
 }
 
@@ -329,7 +333,7 @@ main_menu() {
     Install_Unattended)
       whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
         "Back" "返回上级菜单(Back to main menu)" off \
-        "swap" "设置虚拟内存" on \
+        "swap" "自动设置2倍物理内存的虚拟内存" on \
         "zsh" "安装oh my zsh &tmux" on \
         "buyvm_disk" "buyvm挂载256G硬盘" on \
         "develop" "安装python/nodejs/go开发环境" on \
@@ -348,7 +352,7 @@ main_menu() {
             break
             ;;
           swap)
-            bash <(curl -sL git.io/cg_swap) m 2GB
+            bash <(curl -sL git.io/cg_swap) a
             ;;
           zsh)
             install_beautify
