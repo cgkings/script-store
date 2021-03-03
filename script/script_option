@@ -412,3 +412,14 @@ check_nodejs() {
     echo -e "${curr_date} [INFO] yarn&n已安装" >> /root/install_log.txt
   fi
 }
+
+################## 检查youtube-dl ##################
+check_youtubedl() {
+  if [ -z "$(command -v youtube-dl)" ]; then
+    sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+    sudo chmod a+rx /usr/local/bin/youtube-dl
+    echo -e "${curr_date} [INFO] youtube-dl已安装" >> /root/install_log.txt
+  fi
+}
+
+################## 检查6pan-cli ##################
