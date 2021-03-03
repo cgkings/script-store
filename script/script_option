@@ -403,9 +403,9 @@ check_nodejs() {
     fi
     bash <(curl -sL deb.nodesource.com/setup_15.x)
     check_command nodejs
+    npm install npm -g
     echo -e "${curr_date} [INFO] nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
-  fi
-  npm install npm -g
+  fi  
   if [ -z "$(command -v yarn)" ]; then
     npm install -g yarn n --force
     yarn set version latest
