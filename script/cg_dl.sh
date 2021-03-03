@@ -125,14 +125,56 @@ config_flexget_do() {
   echo -e "如安装有异常，请联系作者"
 }
 
+################## 脚本参数帮助 ##################
+dl_help() {
+  cat << EOF
+用法(Usage):
+  bash <(curl -sL git.io/cg_dl) [flags]
+
+可用参数(Available flags)：
+  bash <(curl -sL git.io/cg_dl) a  安装配置aria2
+  bash <(curl -sL git.io/cg_dl) r  安装配置rsshub
+  bash <(curl -sL git.io/cg_dl) f  安装配置flexget
+  bash <(curl -sL git.io/cg_dl) h  命令帮助
+注：无参数则顺序安装配置aria2\rsshub\flexget
+EOF
+}
+
 ################## 执  行  命  令 ##################
 check_sys
 check_command wget
 check_rclone
 check_python
 check_nodejs
-install_aria2
-install_rsshub
-run_rsshub
-install_flexget
-config_flexget
+if [ -z "$1" ]; then
+  install_aria2
+  install_rsshub
+  run_rsshub
+  install_flexget
+  config_flexget
+else
+  case "$1" in
+    A | a)
+      echo
+      install_aria2
+      ;;
+    R | r)
+      echo
+      install_rsshub
+      run_rsshub
+      ;;
+    F | f)
+      echo
+      install_flexget
+      config_flexget
+      ;;
+    H | h)
+      echo
+      dl_help
+      ;;
+    *)
+      echo
+      dl_help
+      ;;
+  esac
+fi

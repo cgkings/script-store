@@ -40,14 +40,10 @@ make-swapfile() {
 
 ################## 自动添加swap ##################
 auto_swap() {
-  if [ -z "$1" ]; then
-    if [ $totalmem -le 1024 ]; then
-      swapsize="2048MB"
-    elif [ $totalmem -gt 1024 ]; then
-      swapsize="$(($totalmem * 2))MB"
-    fi
-  else
-    swapsize="$1MB"
+  if [ $totalmem -le 1024 ]; then
+    swapsize="2048MB"
+  elif [ $totalmem -gt 1024 ]; then
+    swapsize="$(($totalmem * 2))MB"
   fi
   if [ "$totalswap" == '0' ]; then
     make-swapfile
@@ -131,7 +127,7 @@ swap_menu() {
   感谢wuhuai2020、moerats、github众多作者，我只是整合代码${normal}
 —————————————————————————————————————————————————————————
 EOF
-  read -n1 -p "请输入数字 [1-4]:" num
+  read -r -n1 -p "请输入数字 [1-4]:" num
   case "$num" in
     1)
       echo
@@ -157,7 +153,7 @@ EOF
 
 ################## 执  行  命  令 ##################
 check_sys
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
   swap_menu
 else
   case "$1" in
