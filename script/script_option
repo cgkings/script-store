@@ -245,7 +245,7 @@ check_release() {
 
 check_command() {
   check_release
-  
+
   for command_arges in $*; do
     command_status=$(dpkg --get-selections | grep "$command_arges")
     if [ -z "$command_status" ]; then
@@ -299,74 +299,74 @@ EOF
 }
 
 ################## 语言设置 ##################[done]
-setlanguage(){
+setlanguage() {
   set +e
   if [[ ! -d /root/script-store/ ]]; then
     mkdir /root/script-store/
     mkdir /etc/certs/
   fi
   if [[ -f /root/script-store/language.json ]]; then
-    language="$( jq -r '.language' "/root/script-store/language.json" )"
+    language="$( jq -r '.language' "/root/script-store/language.json")"
   fi
   while [[ -z $language ]]; do
-  export LANGUAGE="C.UTF-8"
-  export LANG="C.UTF-8"
-  export LC_ALL="C.UTF-8"
-  if (whiptail --title "System Language Setting" --yes-button "中文" --no-button "English" --yesno "系统语言使用中文或英文(Use Chinese or English)?" 8 68); then
-  chattr -i /etc/locale.gen
-  cat > '/etc/locale.gen' << EOF
+    export LANGUAGE="C.UTF-8"
+    export LANG="C.UTF-8"
+    export LC_ALL="C.UTF-8"
+    if (whiptail --title "System Language Setting" --yes-button "中文" --no-button "English" --yesno "系统语言使用中文或英文(Use Chinese or English)?" 8 68); then
+      chattr -i /etc/locale.gen
+      cat > '/etc/locale.gen' << EOF
 zh_CN.UTF-8 UTF-8
 en_US.UTF-8 UTF-8
 EOF
-language="cn"
-locale-gen
-update-locale
-chattr -i /etc/default/locale
-  cat > '/etc/default/locale' << EOF
+      language="cn"
+      locale-gen
+      update-locale
+      chattr -i /etc/default/locale
+      cat > '/etc/default/locale' << EOF
 LANGUAGE="zh_CN.UTF-8"
 LANG="zh_CN.UTF-8"
 LC_ALL="zh_CN.UTF-8"
 EOF
-#apt-get install manpages-zh -y
-  cat > '/root/script-store/language.json' << EOF
+      #apt-get install manpages-zh -y
+      cat > '/root/script-store/language.json' << EOF
 {
   "language": "$language"
 }
 EOF
-  else
-  chattr -i /etc/locale.gen
-  cat > '/etc/locale.gen' << EOF
+    else
+      chattr -i /etc/locale.gen
+      cat > '/etc/locale.gen' << EOF
 zh_CN.UTF-8 UTF-8
 en_US.UTF-8 UTF-8
 EOF
-language="en"
-locale-gen
-update-locale
-chattr -i /etc/default/locale
-  cat > '/etc/default/locale' << EOF
+      language="en"
+      locale-gen
+      update-locale
+      chattr -i /etc/default/locale
+      cat > '/etc/default/locale' << EOF
 LANGUAGE="en_US.UTF-8"
 LANG="en_US.UTF-8"
 LC_ALL="en_US.UTF-8"
 EOF
-  cat > '/root/script-store/language.json' << EOF
+      cat > '/root/script-store/language.json' << EOF
 {
   "language": "$language"
 }
 EOF
-fi
-done
-if [[ $language == "cn" ]]; then
-export LANGUAGE="zh_CN.UTF-8"
-export LANG="zh_CN.UTF-8"
+    fi
+  done
+  if [[ $language == "cn" ]]; then
+    export LANGUAGE="zh_CN.UTF-8"
+    export LANG="zh_CN.UTF-8"
   else
-export LANGUAGE="en_US.UTF-8"
-export LANG="en_US.UTF-8"
-fi
+    export LANGUAGE="en_US.UTF-8"
+    export LANG="en_US.UTF-8"
+  fi
 }
 
 ###安装python环境###
-check_python(){
-check_command python python3 python3-pip python3-distutils #build-essential libncurses5-dev libpcap-dev libffi-dev
+check_python() {
+  check_command python python3 python3-pip python3-distutils #build-essential libncurses5-dev libpcap-dev libffi-dev
   if [ -z "$(command -v virtualenv)" ]; then
     pip3 install -U pip > /dev/null
     hash -d pip3
@@ -374,9 +374,9 @@ check_command python python3 python3-pip python3-distutils #build-essential libn
     echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
   fi
 }
-  
+
   ###安装go环境###
-check_go(){
+check_go() {
   if [ -z "$(command -v go)" ]; then
     echo -e "${curr_date} ${red}go命令${normal} 不存在.正在为您安装，请稍后..."
     if [ -e /home/go ]; then
@@ -394,9 +394,9 @@ EOF
     echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
   fi
 }
-  
+
   #安装nodejs环境，使用https://github.com/nodesource/distributions 的npmjs发布源进行安装
-check_nodejs(){
+check_nodejs() {
   if [ -z "$(command -v node)" ]; then
     if [ -e /usr/local/lib/nodejs ]; then
       rm -rf /usr/local/lib/nodejs
