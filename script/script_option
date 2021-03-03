@@ -212,11 +212,13 @@ EOF
   if [ -z "$(command -v fclone)" ]; then
     echo -e "${curr_date} ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
     wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
+    echo -e "${curr_date} [INFO] fclone已安装" >> /root/install_log.txt
   fi
   #检查rclone安装状态，没装就安装
   if [ -z "$(command -v rclone)" ]; then
     echo -e "${curr_date} ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
     bash <(curl -L -s https://rclone.org/install.sh) > /dev/null && rclone version
+    echo -e "${curr_date} [INFO] rclone已安装" >> /root/install_log.txt
   fi
   #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
   if [ ! -f /root/.config/rclone/rclone.conf ]; then
@@ -225,7 +227,6 @@ EOF
   #检查conf文件内root_folder_id是否为空，如不为空就全部清空
   #  [ -n "$(awk '/root_folder_id/{print $3}' ~/.config/rclone/rclone.conf)" ] && sed -i "s/root_folder_id = .*$/root_folder_id = /g" ~/.config/rclone/rclone.conf
   fi
-  echo -e "${curr_date} [INFO] rclone&fclone已安装" >> /root/install_log.txt
 }
 
 ################## 检查安装情况 ##################
@@ -245,7 +246,6 @@ check_release() {
 
 check_command() {
   check_release
-
   for command_arges in $*; do
     command_status=$(dpkg --get-selections | grep "$command_arges")
     if [ -z "$command_status" ]; then
@@ -364,7 +364,7 @@ EOF
   fi
 }
 
-###安装python环境###
+################## 安装python环境 ##################
 check_python() {
   check_command python python3 python3-pip python3-distutils #build-essential libncurses5-dev libpcap-dev libffi-dev
   if [ -z "$(command -v virtualenv)" ]; then
@@ -375,7 +375,7 @@ check_python() {
   fi
 }
 
-  ###安装go环境###
+################## 安装go环境 ##################
 check_go() {
   if [ -z "$(command -v go)" ]; then
     echo -e "${curr_date} ${red}go命令${normal} 不存在.正在为您安装，请稍后..."
@@ -395,7 +395,7 @@ EOF
   fi
 }
 
-  #安装nodejs环境，使用https://github.com/nodesource/distributions 的npmjs发布源进行安装
+################## 安装nodejs环境 ##################使用https://github.com/nodesource/distributions 的npmjs发布源进行安装
 check_nodejs() {
   if [ -z "$(command -v node)" ]; then
     if [ -e /usr/local/lib/nodejs ]; then
