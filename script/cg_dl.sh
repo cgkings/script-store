@@ -34,7 +34,7 @@ EOF
   [ -z "$(grep "fclone move" /root/.aria2c/upload.sh)" ] && sed -i 's/rclone move/fclone move/g' /root/.aria2c/upload.sh
   #选择fclone remote
   remote_choose
-  #设置自动上传的fclone remote*****从此行开始未修改******
+  #设置自动上传的fclone remote
   [ -z "$(grep "$my_remote" /root/.aria2c/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$my_remote'/g' /root/.aria2c/script.conf
   #设置自动上传网盘目录为/Download
   [ -z "$(grep "drive-dir=/Download" /root/.aria2c/script.conf)" ] && sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
