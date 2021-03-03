@@ -333,18 +333,16 @@ main_menu() {
     Install_Unattended)
       whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
         "Back" "返回上级菜单(Back to main menu)" off \
-        "swap" "自动设置2倍物理内存的虚拟内存" on \
+        "swap" "自动设置2倍物理内存的虚拟内存" off \
         "zsh" "安装oh my zsh &tmux" on \
         "buyvm_disk" "buyvm挂载256G硬盘" on \
         "develop" "安装python/nodejs/go开发环境" on \
         "my_alias" "自定义别名[可通过alias命令查看]" on \
-        "offline" "离线下载3件套[aria2/rsshub/flexget]" on \
-        "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" on \
-        "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" on \
-        "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" on \
-        "cg_sort" "网盘文件整理" on \
-        "gd_bot" "搭建gd转存bot[未完成]" on \
-        "bbr" "BBR一键加速[转自HJM]" on 2> results
+        "offline" "离线下载3件套[aria2/rsshub/flexget]" off \
+        "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" off \
+        "gd_bot" "搭建gd转存bot[未完成]" off \
+        "lnmp" "LNMP 一键脚本" off \
+        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 2> results
       while read choice; do
         case $choice in
           Back)
@@ -369,29 +367,9 @@ main_menu() {
             my_alias
             echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
             ;;
-          bbr)
-            clear
-            bash <(curl -sL git.io/cg_bbr)
-            echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
-            ;;
-          v2ray)
-            clear
-            bash <(curl -sL git.io/cg_v2ray)
-            echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
-            ;;
           offline)
             clear
             bash <(curl -sL git.io/cg_dl)
-            ;;
-          auto_mount)
-            clear
-            bash <(curl -sL git.io/cg_auto_mount)
-            echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
-            ;;
-          emby)
-            clear
-            bash <(curl -sL git.io/11plus.sh)
-            echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
             ;;
           avdc)
             clear
@@ -400,10 +378,6 @@ main_menu() {
               这个小脚本不带参数则帮您安装AVDC
               带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
             echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
-            ;;
-          cg_sort)
-            clear
-            bash <(curl -sL git.io/cg_sort.sh)
             ;;
           gd_bot)
             bash <(curl -sL git.io/cg_gdbot)
