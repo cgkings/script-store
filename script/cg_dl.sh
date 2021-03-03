@@ -39,15 +39,15 @@ EOF
   #设置自动上传网盘目录为/Download
   [ -z "$(grep "drive-dir=/Download" /root/.aria2c/script.conf)" ] && sed -i 's/#drive-dir=.*$/drive-dir=\/Download/g' /root/.aria2c/script.conf
   #通知remote选择结果及自动上传目录
-  echo -e "$curr_date ${red}[INFO]您选择的remote为：${my_remote}，自动上传目录为：/Download，如有需要，请bash <(curl -sL git.io/aria2.sh)自行修改"
+  echo -e "$curr_date ${green}[INFO]${normal} 您选择的remote为：${my_remote}，自动上传目录为：/Download，如有需要，请bash <(curl -sL git.io/aria2.sh)自行修改"
   service aria2 restart
   #检查是否安装成功
   aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
   if [ "$aria2_install_status" = success ]; then
-    echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！
-    本地下载目录为：/home/download
-    remote为：${my_remote}，自动上传目录为：/Download" >> /root/install_log.txt
+    echo -e "${curr_date} ${green}[INFO]${normal} aria2自动上传已安装配置成功！"
+    echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！本地下载目录为：/home/download,remote为：${my_remote}，自动上传目录为：/Download" >> /root/install_log.txt
   else
+    echo -e "${curr_date} ${red}[ERROR]${normal} aria2自动上传已安装配置成功！"
     echo -e "${curr_date} [ERROR] aria2自动上传安装配置失败！" >> /root/install_log.txt
   fi
 }
