@@ -47,7 +47,7 @@ EOF
     echo -e "${curr_date} ${green}[INFO]${normal} aria2自动上传已安装配置成功！"
     echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！本地下载目录为：/home/download,remote为：${my_remote}，自动上传目录为：/Download" >> /root/install_log.txt
   else
-    echo -e "${curr_date} ${red}[ERROR]${normal} aria2自动上传已安装配置成功！"
+    echo -e "${curr_date} ${red}[ERROR]${normal} aria2自动上传安装配置失败！"
     echo -e "${curr_date} [ERROR] aria2自动上传安装配置失败！" >> /root/install_log.txt
   fi
 }
