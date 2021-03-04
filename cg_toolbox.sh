@@ -31,7 +31,7 @@ initialization() {
   echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
   apt upgrade -y > /dev/null
   echo -e "${curr_date} [INFO] 静默检查并安装常用软件"
-  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale ffmpeg
+  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file fuse jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full locale ffmpeg
   ###设置时区###
   echo -e "${curr_date} [INFO] 静默检查设置中国时区"
   if [ "$(cat /etc/timezone)" != "Asia/Shanghai" ]; then
