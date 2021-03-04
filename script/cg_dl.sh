@@ -59,15 +59,14 @@ install_rsshub() {
   sleep 5s
   cd /home/RSSHub || exit
   npm cache clean --force
-  npm install
-  echo -e "CACHE_TYPE=redis\nCACHE_EXPIRE=600" > /home/RSSHub/.env
+  npm install --production
 }
 
 ################## 运行rsshub ##################
 
 run_rsshub() {
   tmux new -s rsshub -d
-  tmux send -t "rsshub" "cd /home/RSSHub && git pull && npm install & npm start" Enter
+  tmux send -t "rsshub" "cd /home/RSSHub && npm start" Enter
 }
 
 ################## 安装flexget ##################
