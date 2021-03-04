@@ -60,13 +60,9 @@ install_rsshub() {
   cd /home/RSSHub || exit
   npm cache clean --force
   npm install --production
-}
-
-################## 运行rsshub ##################
-
-run_rsshub() {
   tmux new -s rsshub -d
   tmux send -t "rsshub" "cd /home/RSSHub && npm start" Enter
+  echo -e "rsshub已完成部署动作，可网页访问你的ip:1200，看下效果吧！"
 }
 
 ################## 安装flexget ##################
@@ -81,46 +77,30 @@ install_flexget() {
     mkdir -p 755 /var/log/flexget && chown root:adm /var/log/flexget
     #建立 flexget 的配置文件
     read -r -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址，有需要自行修改，路径为：/root/.config/flexget/config.yml：" config_yml_link
-    config_yml_link=${config_yml_link:-https://raw.githubusercontent.com/cgkings/script-store/master/config/config.yml}
-    wget -qN ${config_yml_link} -O /root/.config/flexget/config.yml
-    aria2_key=$(cat /root/.aria2c/aria2.conf | grep "rpc-secret" | awk -F= '{print $2}')
-    sed -i 's/secret:.*$/secret: '$aria2_key'/g' /root/.config/flexget/config.yml
+    config_yml_link=${config_yml_link:-https://raw.githubusercontent.com/cgkings/script-store/master/config/cn_yml/config.yml}
+    mkdir -p 755 /root/.config/flexget && wget -qN "${config_yml_link}" -O /root/.config/flexget/config.yml
+    aria2_key=$(grep "rpc-secret" /root/.aria2c/aria2.conf | awk -F= '{print $2}')
+    sed -i "s/secret:.*$/secret: $aria2_key/g" /root/.config/flexget/config.yml
     #建立软连接
     ln -sf /home/software/flexget/bin/flexget /usr/local/bin/
     #设置为自动启动，在 rc.local 中增加启动命令
     /home/software/flexget/bin/flexget -L error -l /var/log/flexget/flexget.log daemon start -d
   fi
-}
-
-################## 配置flexget刷新时间 ##################
-config_flexget() {
-  read -r -t 5 -p "flexget刷新时间设置为(单位：分钟,5秒超时或回车默认20分钟)：" fresh_time
-  fresh_time=${fresh_time:-15}
-  config_flexget_do
-}
-
-config_flexget_do() {
-  cron_list=$(echo $(crontab -l))
-  flexget_dir=$(echo $(which flexget))
-  cron_config="*/${fresh_time} * * * * /usr/local/bin/flexget -c /root/.config/flexget/config.yml --cron execute"
-  if [[ ${cron_list} =~ ${cron_config} ]]; then
-    echo "该配置计划任务已添加，无须重复添加"
+  if [ -z "$(crontab -l | grep "flexget")" ]; then
+    crontab -l | {
+                   cat
+                        echo "*/10 * * * * /usr/local/bin/flexget -c /root/.config/flexget/config.yml --cron execute"
+    }                                            | crontab -
   else
-    if [[ ${cron_list} =~ ${flexget_dir} ]]; then
-      sed -i '/\/usr\/local\/bin\/flexget/d' /var/spool/cron/crontabs/root
-      crontab -l | {
+    #删除包含flexget的计划任务，重新创建
+    sed -i '/flexget/d' /var/spool/cron/crontabs/root
+    crontab -l | {
                    cat
-                        echo "${cron_config}"
-      }                                          | crontab -
-    else
-      crontab -l | {
-                   cat
-                        echo "${cron_config}"
-      }                                          | crontab -
-    fi
+                        echo "*/10 * * * * /usr/local/bin/flexget -c /root/.config/flexget/config.yml --cron execute"
+    }                                            | crontab -
   fi
   flexget --test execute
-  echo -e "flexget已完成部署动作，等${fresh_time}分钟，用<flexget status>命令看一下状态吧！"
+  echo -e "flexget已完成部署动作，等10分钟，用<flexget status>命令看一下状态吧！"
   echo -e "如安装有异常，请联系作者"
 }
 
@@ -148,9 +128,7 @@ check_nodejs
 if [ -z "$1" ]; then
   install_aria2
   install_rsshub
-  run_rsshub
   install_flexget
-  config_flexget
 else
   case "$1" in
     A | a)
@@ -160,12 +138,10 @@ else
     R | r)
       echo
       install_rsshub
-      run_rsshub
       ;;
     F | f)
       echo
       install_flexget
-      config_flexget
       ;;
     H | h)
       echo
