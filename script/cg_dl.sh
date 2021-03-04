@@ -80,9 +80,9 @@ install_flexget() {
     #建立 flexget 日志存放
     mkdir -p 755 /var/log/flexget && chown root:adm /var/log/flexget
     #建立 flexget 的配置文件
-    read -r -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址，有需要自行修改，路径为：/root/.config/flexget/config.yml：" config_yml_ip
-    config_yml_ip=${config_yml_ip:-https://raw.githubusercontent.com/cgkings/script-store/master/config/config.yml}
-    wget -qN ${config_yml_ip} -O /root/.config/flexget/config.yml
+    read -r -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址，有需要自行修改，路径为：/root/.config/flexget/config.yml：" config_yml_link
+    config_yml_link=${config_yml_link:-https://raw.githubusercontent.com/cgkings/script-store/master/config/config.yml}
+    wget -qN ${config_yml_link} -O /root/.config/flexget/config.yml
     aria2_key=$(cat /root/.aria2c/aria2.conf | grep "rpc-secret" | awk -F= '{print $2}')
     sed -i 's/secret:.*$/secret: '$aria2_key'/g' /root/.config/flexget/config.yml
     #建立软连接
