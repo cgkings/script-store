@@ -241,6 +241,9 @@ check_release() {
     release='ubuntu'
   elif cat  | grep -q -E -i "redhat|red hat|centos" /etc/issue; then
     release='centos'
+  else
+    echo -e "${red}[ERROR]${normal} 您的系统太奇葩，本脚本不支持"
+    exit
   fi
 }
 

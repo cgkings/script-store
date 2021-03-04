@@ -18,83 +18,72 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
-ip_addr=$(curl -s ifconfig.me)
+check_sys
+check_release
+ip_addr=$(hostname -I | awk '{print $1}')
 
-################## 前置变量 ##################
+################## 安装emby ##################
+check_emby_version() {
+  #获取官网最新正式版版本号(排除beta版)
+  emby_version=$(curl -s https://github.com/MediaBrowser/Emby.Releases/releases/ | grep -Eo "tag/[0-9.]+\">([0-9.]+.*)" | grep -v "beta" | grep -Eo "[0-9.]+" | head -n1)
+  #获取本地emby版本号
+  if [[ "${release}" == "centos" ]]; then
+    emby_local_version=$(rpm -q emby-server | grep -Eo "[0-9.]+\.[0-9]+")
+  elif [[ "${release}" == "debian" ]] || [[ "${release}" == "ubuntu" ]] || [[ "${release}" == "armdebian" ]]; then
+    emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
+  fi
+}
+
 check_emby() {
-        check_dir_file "/usr/lib/systemd/system/emby-server.service"
-        [ "$?" -ne 0 ] && echo -e "${curr_date} ${RED}未检测到Emby程序.请重新运行脚本安装Emby.${END}" && exit 1
-        return 0
-}
-
-check_emby_local_version() {
-        if [[ "${release}" == "centos" ]]; then
-                emby_local_version=$(rpm -q emby-server | grep -Eo "[0-9.]+\.[0-9]+")
-  elif       [[ "${release}" == "debian" ]] || [[ "${release}" == "ubuntu" ]] || [[ "${release}" == "armdebian" ]]; then
-                emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
-  else
-                echo -e "${RED}获取emby版本失败.暂时不支持您的操作系统.${END}"
-  fi
-}
-
-#安装Emby
-#
-
-setup_emby() {
-        emby_version=$(curl -s https://github.com/MediaBrowser/Emby.Releases/releases/ | grep -Eo "tag/[0-9.]+\">([0-9.]+.*)" | grep -v "beta" | grep -Eo "[0-9.]+" | head -n1)
-        centos_packet_file="emby-server-rpm_${emby_version}_x86_64.rpm"
-        debian_packet_file="emby-server-deb_${emby_version}_amd64.deb"
-        armdebian64_packet_file="emby-server-deb_${emby_version}_arm64.deb"
-        url="https://github.com/MediaBrowser/Emby.Releases/releases/download"
-        debian_url="${url}/${emby_version}/${debian_packet_file}"
-        armdebian64_url="${url}/${emby_version}/${armdebian64_packet_file}"
-        centos_url="${url}/${emby_version}/${centos_packet_file}"
-
-        check_emby_local_version
-
-        if [ -n "${emby_local_version}" ]; then
-
-                if [ "${emby_local_version}" = "${emby_version}" ]; then
-                        sleep 1s
-                        echo
-                        echo -e "${curr_date} 本系统已安装最新版，无需操作。"
-                        return 0
+  #判断emby本地安装状态
+  if [ -f /usr/lib/systemd/system/emby-server.service ]; then
+    #如已安装，获取本地安装的emby版本
+    check_emby_local_version
+    if [ "${emby_local_version}" = "${emby_version}" ]; then
+      sleep 1s
+      echo
+      echo -e "${curr_date} ${green}[INFO]${normal} 您的系统已安装最新版emby。"
+      return 0
     else
-                        sleep 1s
-                        echo -e "${curr_date} 已安装版本为：${RED}${emby_local_version}${END}.最新版本为：${RED}${emby_version}${END}.正在为您更新..."
-                        echo
+      sleep 1s
+      echo -e "${curr_date} ${green}[INFO]${normal} 已安装版本为：${emby_local_version}.最新版本为:${emby_version}.请自便！"
+      return 0
     fi
+  else
+    #如未安装，则进行安装
+    echo -e "${curr_date} ${green}[INFO]${normal} 您的系统是 ${release}。正在为您准备安装包,请稍等..."
+    if [[ "${release}" == "centos" ]]; then
+      yum install https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-rpm_"${emby_version}"_x86_64.rpm
+    elif [[ "${release}" == "debian" ]] || [[ "${release}" == "ubuntu" ]] || [[ "${release}" == "armdebian" ]]; then
+      wget -vN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
+      dpkg -i emby-server-deb_"${emby_version}"_amd64.deb
+      sleep 1s
+      rm -f emby-server-deb_"${emby_version}"_amd64.deb
+    fi
+    echo -e "${curr_date} ${green}[INFO]${normal} Emby安装成功.您可以访问  http://${ip_addr}:8096 进一步配置Emby."
   fi
-        echo -e "${curr_date} 您的系统是 ${RED}${release}${END}。正在为您准备安装包,请稍等..."
-        if [[ "${release}" = "debian" ]]; then
-                if [[ "${sys}" = "x86_64" ]]; then
-                        wget -c "${debian_url}" && dpkg -i "${debian_packet_file}"
-                        sleep 1s
-                        rm -f "${debian_packet_file}"
-    fi
-  elif [[ "${release}" = "armdebian" ]]; then
-    if [[ "${sys}" = "aarch64" ]]; then
-
-                        wget -c "${armdebian64_url}" && dpkg -i "${armdebian64_packet_file}"
-    fi
-  elif       [[ "${release}" = "ubuntu" ]]; then
-                if [[ "${sys}" = "x86_64" ]]; then
-                        wget -c "${debian_url}" && dpkg -i "${debian_packet_file}"
-                        sleep 1s
-                        rm -f "${debian_packet_file}"
-    fi
-  elif       [[ "${release}" = "centos" ]]; then
-                if [[ "${sys}" = "x86_64" ]]; then
-                        yum install -y "${centos_url}"
-                        sleep 1s
-                        rm -f "${centos_packet_file}"
-    fi
-  fi
-        echo -e "Emby安装成功.您可以访问 ${RED}http://${ip_addr}:8096/${END} 进一步配置Emby."
 }
 
-#复制Emby配置文件
-#
+################## 破解emby ##################
+pojie_emby() {
+  sudo -i #切换为 root 用户
+  systemctl stop emby-server.service #结束 emby 进程
+  使用 find / -name EmbyServer 找到 emby，比如这里我的 emby 所在目录为/opt/emby-server/system/
+  wget -O /opt/emby-server/system/System.Net.Http.dll 'http://file.neko.re/EmbyCrack/unix-x64/System.Net.Http.dll' --no-check-certificate #(注意替换掉命令中的 emby 所在目录)下载破解程序集替换原有程序
+  systemctl start emby-server.service #启动 Emby 进程
+}
+
+################## 备份emby ##################
+bak_emby() {
+  check_emby
+  
+}
+
+echo "Restarting Emby server.."
+sudo systemctl restart emby-server
+
+################## 还原emby ##################
+
 renew_emby() {
         if [ -d /var/lib/emby.bak ]; then
                  echo -e "$(curr_date) 找到已备份的emby配置文件，正在还原..."
@@ -104,7 +93,7 @@ renew_emby() {
                  echo -e "$(curr_date) 已还原Emby."
   else
                 echo
-                 echo -e "$(curr_date) ${RED}未知错误.还原失败!${END}"
+                 echo -e "$(curr_date) ${red}未知错误.还原失败!${END}"
   fi
 }
 get_nfo_db_path() {
@@ -136,7 +125,9 @@ copy_emby_config() {
         opt_file="Emby-server数据库.tar.gz"
         var_config_file="Emby-VarLibEmby数据库.tar.gz"
 
-        check_emby
+        check_dir_file "/usr/lib/systemd/system/emby-server.service"
+        [ "$?" -ne 0 ] && echo -e "${curr_date} ${red}未检测到Emby程序.请重新运行脚本安装Emby.${END}" && exit 1
+
   get_nfo_db_path
         if [ -f /usr/lib/systemd/system/emby-server.service ]; then
                 echo -e "$(curr_date) 停用Emby服务..."
@@ -156,13 +147,13 @@ copy_emby_config() {
                 echo -e "$(curr_date) 已找到emby配置文件，正在备份..."
                 mv -f /var/lib/emby /var/lib/emby.bak
                 sleep 2s
-                echo -e "$(curr_date) 已将 ${RED}/var/lib/emby${END} 备份到当前目录."
+                echo -e "$(curr_date) 已将 ${red}/var/lib/emby${END} 备份到当前目录."
                 echo
   elif        [ -d /var/lib/emby.bak ]; then
                 echo -e "$(curr_date) 已备份，无需备份."
                 sleep 2s
   fi
-        echo -e "$(curr_date) 正在安装削刮库到 ${RED}${nfo_db_path}${END} 需要很长时间,请耐心等待..."
+        echo -e "$(curr_date) 正在安装削刮库到 ${red}${nfo_db_path}${END} 需要很长时间,请耐心等待..."
         if [ ! -d "${nfo_db_path}" ]; then
                 mkdir ${nfo_db_path}
   fi
@@ -170,7 +161,7 @@ copy_emby_config() {
                 if [ -f "${db_path}${nfo_db_file}" ]; then
                         untar ${db_path}${nfo_db_file}  ${nfo_db_path}
     else
-                        echo -e "$(curr_date) 未能找到削刮包 ${RED}${db_path}${nfo_db_file}${END} 请确认无误后重新运行脚本."
+                        echo -e "$(curr_date) 未能找到削刮包 ${red}${db_path}${nfo_db_file}${END} 请确认无误后重新运行脚本."
                         echo
                         renew_emby
                         exit 1
@@ -189,7 +180,7 @@ copy_emby_config() {
                 if [ -f ${db_path}${var_config_file} ]; then
                         untar ${db_path}${var_config_file} /var/lib
     else
-                        echo -e "$(curr_date) 未能找到配置文件包 ${RED}${db_path}${var_config_file}${END} 请确认无误后重新运行脚本."
+                        echo -e "$(curr_date) 未能找到配置文件包 ${red}${db_path}${var_config_file}${END} 请确认无误后重新运行脚本."
                         echo
                         renew_emby
                         exit 1
@@ -205,7 +196,7 @@ copy_emby_config() {
                 echo
 
   else
-                echo -e "$(curr_date) 未找到 ${RED}${db_path}${END},请检查是否正确挂载。确认无误后重新执行脚本."
+                echo -e "$(curr_date) 未找到 ${red}${db_path}${END},请检查是否正确挂载。确认无误后重新执行脚本."
                 echo
                 renew_emby
                 exit 1
@@ -218,7 +209,7 @@ copy_emby_config() {
         sleep 1s
         echo -e "$(curr_date) 配置完成."
         echo
-        echo -e "访问地址为:${RED}http://${ip_addr}:8096。账号：admin 密码为空${END}"
+        echo -e "访问地址为:${red}http://${ip_addr}:8096。账号：admin 密码为空${END}"
 }
 
 ################## 前置变量 ##################
@@ -226,11 +217,10 @@ setup_emby
 
 #安装命令
 wget https://github.com/MediaBrowser/Emby.Releases/releases/download/3.5.3.0/emby-server-deb_3.5.3.0_amd64.deb
+
 dpkg -i emby-server-deb_3.5.3.0_amd64.deb
 
-#破解命令
-sudo -i 切换为 root 用户
-使用 systemctl stop emby-server.service 结束 emby 进程
-使用 find / -name EmbyServer 找到 emby，比如这里我的 emby 所在目录为/opt/emby-server/system/
-使用 wget -O /opt/emby-server/system/System.Net.Http.dll 'http://file.neko.re/EmbyCrack/unix-x64/System.Net.Http.dll' --no-check-certificate（注意替换掉命令中的 emby 所在目录）下载破解程序集替换原有程序
-启动 Emby 进程 systemctl start emby-server.service
+或者
+
+filename=$(ls ./*.deb)
+dpkg -i "$filename"
