@@ -241,6 +241,7 @@ EOF
 ################## 执  行  命  令 ##################
 check_sys
 check_rclone
+check_command fuse
 if [ -z $1 ]; then
   mount_menu
 else
