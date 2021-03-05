@@ -77,7 +77,13 @@ pojie_emby() {
 sys_emby() {
   sudo -i #切换为 root 用户
   systemctl stop emby-server.service #结束 emby 进程
-  sed -i '/222/a\啊啊啊' /root/test.txt
+  sed -i '/[Service]/a\Restart = on-failure\nRestartSec = 5' /usr/lib/systemd/system/emby-server.service
+  
+
+
+
+
+
 }
 
 ################## 备份emby ##################
