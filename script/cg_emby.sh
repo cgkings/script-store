@@ -73,10 +73,17 @@ pojie_emby() {
   systemctl start emby-server.service #启动 Emby 进程
 }
 
+################## 修改emby服务 ##################
+sys_emby() {
+  sudo -i #切换为 root 用户
+  systemctl stop emby-server.service #结束 emby 进程
+  sed -i '/222/a\啊啊啊' /root/test.txt
+}
+
 ################## 备份emby ##################
 bak_emby() {
   check_emby
-  
+
 }
 
 echo "Restarting Emby server.."
