@@ -67,10 +67,10 @@ check_emby() {
 ################## 破解emby ##################
 pojie_emby() {
   sudo -i #切换为 root 用户
-  systemctl stop emby-server.service #结束 emby 进程
+  systemctl stop emby-server #结束 emby 进程
   rm -f /opt/emby-server/system/System.Net.Http.dll
   wget https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll #(注意替换掉命令中的 emby 所在目录)下载破解程序集替换原有程序
-  systemctl start emby-server.service #启动 Emby 进程
+  systemctl start emby-server #启动 Emby 进程
 }
 
 ################## 修改emby服务,fail自动重启 ##################
@@ -79,8 +79,8 @@ sys_emby() {
   systemctl stop emby-server #结束 emby 进程
   sed -i '/[Service]/a\Restart = on-failure\nRestartSec = 5' /usr/lib/systemd/system/emby-server.service
   
-
-
+  systemctl daemon-reload
+  systemctl start emby-server
 }
 
 ################## 卸载emby ##################
@@ -226,14 +226,8 @@ copy_emby_config() {
 }
 
 ################## 前置变量 ##################
-setup_emby
 
-#安装命令
-wget https://github.com/MediaBrowser/Emby.Releases/releases/download/3.5.3.0/emby-server-deb_3.5.3.0_amd64.deb
 
-dpkg -i emby-server-deb_3.5.3.0_amd64.deb
+/usr/lib/systemd/system/rclone-mntgd.service
 
-或者
-
-filename=$(ls ./*.deb)
-dpkg -i "$filename"
+/usr/lib/systemd/system/emby-server.service

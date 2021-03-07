@@ -95,7 +95,7 @@ EOF
       ;;
     2)
       echo
-      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
+      mount_tag="--umask 000 --allow-other --allow-non-empty --use-mmap --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode writes --cache-dir=/home/cache --buffer-size 512M --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
       ;;
     3)
       echo
