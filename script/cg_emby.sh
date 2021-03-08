@@ -18,8 +18,6 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
-check_sys
-check_release
 ip_addr=$(hostname -I | awk '{print $1}')
 
 ################## 安装emby ##################
@@ -70,6 +68,8 @@ pojie_emby() {
   systemctl stop emby-server #结束 emby 进程
   rm -f /opt/emby-server/system/System.Net.Http.dll
   wget https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll #(注意替换掉命令中的 emby 所在目录)下载破解程序集替换原有程序
+  sleep 3s
+  systemctl daemon-reload
   systemctl start emby-server #启动 Emby 进程
 }
 
@@ -77,155 +77,40 @@ pojie_emby() {
 sys_emby() {
   sudo -i #切换为 root 用户
   systemctl stop emby-server #结束 emby 进程
-  sed -i '/[Service]/a\Restart = on-failure\nRestartSec = 5' /usr/lib/systemd/system/emby-server.service
-  
-  systemctl daemon-reload
-  systemctl start emby-server
+  sed -i '/[Service]/a\Restart=on-failure\nRestartSec=5' /usr/lib/systemd/system/emby-server.service
+  sleep 3s
+  systemctl daemon-reload && systemctl start emby-server
 }
 
 ################## 卸载emby ##################
-dpkg -r --purge emby-server
+del_emby() {
+  dpkg -r --purge emby-server
+}
 
 ################## 备份emby ##################
 bak_emby() {
   check_emby
-
+  systemctl stop emby-server #结束 emby 进程
+  rm -rf /var/lib/emby/cache/* #清空cache
+  cd /var/lib && tar -cvf emby_bak.tar emby #打包/var/lib/emby
+  rclone move 'emby_bak.tar' "$my_remote": -vP #上传gd
+  systemctl start emby-server
 }
-
-echo "Restarting Emby server.."
-sudo systemctl restart emby-server
 
 ################## 还原emby ##################
-
-renew_emby() {
-        if [ -d /var/lib/emby.bak ]; then
-                 echo -e "$(curr_date) 找到已备份的emby配置文件，正在还原..."
-                 mv -f /var/lib/emby.bak /var/lib/emby
-                 systemctl start emby-server.service
-                 echo
-                 echo -e "$(curr_date) 已还原Emby."
-  else
-                echo
-                 echo -e "$(curr_date) ${red}未知错误.还原失败!${END}"
-  fi
-}
-get_nfo_db_path() {
-  echo
-  echo -e "请输入削刮包安装路径，留空则默认为 $(red /home/Emby).\n如果是相对路径则是默认在 $(red /home) 目录下创建输入的目录名称."
-  read -p "请输入路径(例如:/mnt/xg)：" nfo_db_path
-  if [ -d /home/Emby ]; then
-    temp_date=$(date +%y%m%d%H%M%S)
-    echo
-    echo -e "找到 $(red /home/Emby) 正备份为 $(red /home/Emby_${temp_date}.bak)..."
-    sleep 1s
-    mv /home/Emby /home/Emby_${temp_date}.bak
-  fi
-  if [ "${nfo_db_path}" == "" ]; then
-    nfo_db_path="/home/Emby"
-  elif [ "${nfo_db_path:0:1}" != "/" ]; then
-                nfo_db_path="/home/${nfo_db_path}"
-    echo -e "正在创建 $(red ${nfo_db_path}) 链接到$(red /home/Emby)"
-    ln -s "${nfo_db_path}" /home/Emby
-  else
-    ln -s "${nfo_db_path}" /home/Emby
-    echo -e "正在创建 $(red ${nfo_db_path}) 链接到$(red /home/Emby)"
-  fi
-}
-
-copy_emby_config() {
-        db_path="/mnt/video/EmbyDatabase/"
-        nfo_db_file="Emby削刮库.tar.gz"
-        opt_file="Emby-server数据库.tar.gz"
-        var_config_file="Emby-VarLibEmby数据库.tar.gz"
-
-        check_dir_file "/usr/lib/systemd/system/emby-server.service"
-        [ "$?" -ne 0 ] && echo -e "${curr_date} ${red}未检测到Emby程序.请重新运行脚本安装Emby.${END}" && exit 1
-
-  get_nfo_db_path
-        if [ -f /usr/lib/systemd/system/emby-server.service ]; then
-                echo -e "$(curr_date) 停用Emby服务..."
-                systemctl stop emby-server.service
-                sleep 2s
-                echo
-                echo -e "$(curr_date) 已停用Emby服务"
-  else
-                sleep 2s
-                echo
-                echo -e "$(curr_date) 未找到emby.请重新执行安装脚本安装."
-                exit 1
-  fi
-
-        if [ -d /var/lib/emby ]; then
-                echo
-                echo -e "$(curr_date) 已找到emby配置文件，正在备份..."
-                mv -f /var/lib/emby /var/lib/emby.bak
-                sleep 2s
-                echo -e "$(curr_date) 已将 ${red}/var/lib/emby${END} 备份到当前目录."
-                echo
-  elif        [ -d /var/lib/emby.bak ]; then
-                echo -e "$(curr_date) 已备份，无需备份."
-                sleep 2s
-  fi
-        echo -e "$(curr_date) 正在安装削刮库到 ${red}${nfo_db_path}${END} 需要很长时间,请耐心等待..."
-        if [ ! -d "${nfo_db_path}" ]; then
-                mkdir ${nfo_db_path}
-  fi
-        if [  -d ${db_path} ]; then
-                if [ -f "${db_path}${nfo_db_file}" ]; then
-                        untar ${db_path}${nfo_db_file}  ${nfo_db_path}
-    else
-                        echo -e "$(curr_date) 未能找到削刮包 ${red}${db_path}${nfo_db_file}${END} 请确认无误后重新运行脚本."
-                        echo
-                        renew_emby
-                        exit 1
-    fi
-                if [ "$?" -eq 0 ]; then
-                        echo -e "$(curr_date) Emby削刮包安装完成."
-    else
-                        echo -e "$(curr_date) 异常退出.请检查挂载并从新运行脚本."
-                        exit 1
-    fi
-                echo
-
-                sleep 2s
-                echo -e "$(curr_date) 正在安装emby配置文件.请稍等..."
-
-                if [ -f ${db_path}${var_config_file} ]; then
-                        untar ${db_path}${var_config_file} /var/lib
-    else
-                        echo -e "$(curr_date) 未能找到配置文件包 ${red}${db_path}${var_config_file}${END} 请确认无误后重新运行脚本."
-                        echo
-                        renew_emby
-                        exit 1
-
-    fi
-
-                if [ "$?" -eq 0 ]; then
-                        echo -e "$(curr_date) Emby程序配置完成."
-    else
-                        echo -e "$(curr_date) 异常退出.请检查挂载并从新运行脚本."
-                        exit 1
-    fi
-                echo
-
-  else
-                echo -e "$(curr_date) 未找到 ${red}${db_path}${END},请检查是否正确挂载。确认无误后重新执行脚本."
-                echo
-                renew_emby
-                exit 1
-
-  fi
-
-        echo -e "$(curr_date) 启动emby服务..."
-        systemctl start emby-server.service
-
-        sleep 1s
-        echo -e "$(curr_date) 配置完成."
-        echo
-        echo -e "访问地址为:${red}http://${ip_addr}:8096。账号：admin 密码为空${END}"
+revert_emby() {
+    systemctl stop emby-server #结束 emby 进程
+    fclone copy wdc:emby_bak.tar /root -vP
+    rm -rf /var/lib/emby
+    tar -xvf emby_bak.tar -C /var/lib && rm -f emby_bak.tar
+    systemctl start emby-server
 }
 
 ################## 前置变量 ##################
+check_sys
+check_release
+
+
 
 
 /usr/lib/systemd/system/rclone-mntgd.service
