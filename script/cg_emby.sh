@@ -156,7 +156,7 @@ main_menu() {
       esac
     ;;
     Install_Unattended)
-      whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
+      whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 20 54 13 \
         "Back" "返回上级菜单(Back to main menu)" off \
         "mount" "挂载gd" off \
         "swap" "自动设置2倍物理内存的虚拟内存" off \
