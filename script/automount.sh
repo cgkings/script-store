@@ -91,11 +91,11 @@ EOF
   case $tag_choose_result in
     1)
       echo
-      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
+      mount_tag="--transfers 64 --buffer-size 400M    --dir-cache-time 1000h --vfs-cache-max-age 336h "
       ;;
     2)
       echo
-      mount_tag="--umask 000 --allow-other --allow-non-empty --use-mmap --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode writes --cache-dir=/home/cache --buffer-size 512M --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
+      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 10m --vfs-cache-mode full --use-mmap --buffer-size 512M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 64M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
       ;;
     3)
       echo
