@@ -46,6 +46,8 @@ ExecStart = /usr/bin/rclone mount cgking1: /home/gd \
 --vfs-read-chunk-size-limit 512M \
 #传输的线程数，太大会耗尽资源，太小影响速度(默认 4)
 --transfers 4 \
+#设置每个文件的带宽控制，我将其限制为比我想播放的最大比特率大一点
+--bwlimit-file 16M
 #日志级别输出 
 --log-level INFO \
 #日志文件的位置
@@ -61,5 +63,3 @@ WantedBy = multi-user.target
 
 #如果大小达到上限并首先删除最早的文件，这将限制缓存的使用期限
 --vfs-cache-max-age 336h \
-#设置每个文件的带宽控制，我将其限制为比我想播放的最大比特率大一点
---bwlimit-file 16M
