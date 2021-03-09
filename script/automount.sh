@@ -95,7 +95,7 @@ EOF
       ;;
     2)
       echo
-      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 10m --vfs-cache-mode full --use-mmap --buffer-size 512M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 64M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
+      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
       ;;
     3)
       echo
