@@ -107,13 +107,13 @@ del_emby() {
 
 ################## 主菜单 ##################
 main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "注：本脚本的emby安装和卸载、备份和还原需要配套使用" 18 80 10 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "注：本脚本的emby安装和卸载、备份和还原需要配套使用，ESC退出" 18 80 10 \
     "Install_standard" "基础安装(分项单选)" \
     "Install_Unattended" "无人值守(重装多选)" \
     "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Install_standard)
-      standard_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "单选模式" --menu --nocancel "注：本脚本的emby安装和卸载、备份和还原需要配套使用" 22 65 10 \
+      standard_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "单选模式" --menu --nocancel "注：本脚本的emby安装和卸载、备份和还原需要配套使用，ESC退出" 22 65 10 \
       "Back" "返回上级菜单(Back to main menu)" \
       "install" "安装emby" \
       "pojie" "破解emby" \
@@ -150,11 +150,14 @@ main_menu() {
         del_emby
         exit
         ;;
-        *) ;;
+        *)
+        whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "退出脚本" --msgbox "Goodbye！有事您再来！" 8 68
+        exit 0
+        ;;
       esac
     ;;
     Install_Unattended)
-      whiptail --clear --ok-button "回车开始执行" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式" --checklist --separate-output --nocancel "请按空格及方向键来多选。" 20 54 13 \
+      whiptail --clear --ok-button "回车开始执行" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式" --checklist --separate-output --nocancel "请按空格及方向键来多选，ESC退出" 20 54 13 \
         "Back" "返回上级菜单(Back to main menu)" off \
         "mount" "挂载gd" off \
         "swap" "自动设置2倍物理内存的虚拟内存" off \
@@ -172,7 +175,7 @@ main_menu() {
             remote_choose
             td_id_choose
             dir_choose
-            bash <(curl -sL https://git.io/cg_auto_mount) s $my_remote $td_id $mount_path
+            bash <(curl -sL git.io/cg_mount.sh) s $my_remote $td_id $mount_path
             ;;
           swap)
             bash <(curl -sL git.io/cg_swap) a
@@ -189,14 +192,17 @@ main_menu() {
           revert)
             revert_emby
             ;;
-          *) ;;
+          *)
+            whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "退出脚本" --msgbox "Goodbye！有事您再来！" 8 68
+            exit 0            
+            ;;
         esac
       done < results
       rm results
       exit 0
       ;;
-    Exit)
-      whiptail --title "Bash Exited" --msgbox "Goodbye" 8 68
+    Exit | *)
+      whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "退出脚本" --msgbox "Goodbye！有事您再来！" 8 68
       exit 0
       ;;
   esac
