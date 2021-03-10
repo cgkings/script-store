@@ -208,9 +208,9 @@ mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --po
 if [ -z "$1" ]; then
   mount_menu
 else
-  my_remote=$2
-  td_id=$3
-  mount_path=$4
+  my_remote="$2"
+  td_id="$3"
+  mount_path="$4"
   case "$1" in
     L | l)
       echo
