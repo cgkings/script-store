@@ -57,7 +57,7 @@ bash <(curl -sL git.io/cg_fqcopy)
 
 ### 一键挂载脚本
 ```
-bash <(curl -sL git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
+bash <(curl -sL git.io/cg_mount.sh) [flags1] [flags2] [flags3] [flags4]
 ```
 **[用法]**<br>
 *注意：无参数则进入主菜单,使用命令参数直接创建挂载，参数不够4个进入帮助!!*<br>
@@ -78,7 +78,7 @@ bash <(curl -sL git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
 *flags4 为挂载路径（本地路径）*<br>
   
 *例如：*<br>
-`bash <(curl -sL https://git.io/cg_auto_mount) L remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd`
+`bash <(curl -sL git.io/cg_mount.sh) L remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd`
 
 ### 影片媒体库脚本【刮削、EMBY】
 ```

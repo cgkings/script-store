@@ -129,7 +129,7 @@ EOF
 mount_help() {
   cat << EOF
 用法(Usage):
-  bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
+  bash <(curl -sL git.io/cg_mount.sh) [flags1] [flags2] [flags3] [flags4]
   注意：无参数则进入主菜单,使用命令参数直接创建挂载，参数不够4个进入帮助!
 
 [flags1]可用参数(Available flags)：
@@ -147,7 +147,7 @@ mount_help() {
 [flags4]可用参数(Available flags)：
   flags4 为挂载路径（本地路径）
   
-例如：bash <(curl -sL https://git.io/cg_auto_mount) L remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd
+例如：bash <(curl -sL git.io/cg_mount.sh) L remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd
 EOF
 }
 
