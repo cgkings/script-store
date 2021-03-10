@@ -284,6 +284,18 @@ remote_choose() {
   remote_list=($(cat ~/.config/rclone/remote_list.txt))
   remote_choose_num=$(whiptail --clear --ok-button "上下键选择,回车键确定" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "remote选择" --menu --nocancel "注：千万别按ESC键！" 18 62 10 "${remote_list[@]}" 3>&1 1>&2 2>&3)
   my_remote=$(awk '{print $2}' /root/.config/rclone/remote_list.txt | sed -n "$remote_choose_num"p)
+  rm -f ~/.config/rclone/remote_list.txt
+}
+
+################## 选择team drive ##################[done]
+td_id_choose() {
+  #生成td_id列表
+  fclone backend lsdrives "$my_remote": -o separator=';' > ~/.config/rclone/td_list.txt
+  #格式化td列表
+  sed -i 's/ //g;s/\;/    /g' ~/.config/rclone/td_list.txt
+  td_list=($(cat ~/.config/rclone/td_list.txt))
+  td_id=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "remote选择" --menu --nocancel "注：上下键回车选择,千万别按ESC键！" 18 62 10 "${td_list[@]}" 3>&1 1>&2 2>&3)
+  rm -f ~/.config/rclone/td_list.txt
 }
 
 ################## 语言设置 ##################[done]
@@ -393,7 +405,7 @@ check_nodejs() {
     check_command nodejs
     npm install npm -g
     echo -e "${curr_date} [INFO] nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
-  fi  
+  fi
   if [ -z "$(command -v yarn)" ]; then
     npm install -g yarn n --force
     yarn set version latest

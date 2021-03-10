@@ -19,11 +19,6 @@
 source <(curl -sL git.io/cg_script_option)
 setcolor
 
-################## 选择挂载目录ID ##################[done]
-td_id_choose() {
-  read -r -p "请输入需要挂载网盘或文件夹ID:" td_id
-}
-
 ################## 选择挂载路径 ##################[done]
 dir_check() {
   if [[ ${mount_path} =~ "/" ]]; then
