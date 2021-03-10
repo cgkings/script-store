@@ -149,7 +149,7 @@ EOF
 ################## 开  始  菜  单 ##################
 mount_menu() {
   clear
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_mount 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "注：h参数查看参数模式帮助，ESC退出脚本" 14 55 6 \
     "1" "临时挂载" \
     "2" "服务挂载" \
     "3" "删除挂载" \
@@ -177,13 +177,8 @@ mount_menu() {
       mount_del
       exit
       ;;
-    4)
+    4 | *)
       exit
-      ;;
-    *)
-      echo
-      echo "输入错误，请重新输入"
-      mount_menu
       ;;
   esac
 }
