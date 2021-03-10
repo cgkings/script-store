@@ -5,7 +5,7 @@
 apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 ```
 [说明]()
-### BBR加速一键脚本【转自未知】
+### BBR加速一键脚本【转自HJM】
 ```
 bash <(curl -sL git.io/cg_bbr)
 ```
@@ -55,39 +55,32 @@ bash <(curl -sL git.io/cg_fqcopy)
 ```
 [说明]()
 
-### 挂载脚本【小组件】【 google drive & 6pan 】
+### 一键挂载脚本
 ```
 bash <(curl -sL git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
 ```
 **[用法]**<br>
-*注意：无参数则进入主菜单,参数少于3个显示help，即1,2,3为脚本参数执行方式必备!*<br>
-*[flags1]可用参数(Available flags)：*<br>
-*`L1` `L2` `L3`  临时创建挂载(1,2,3代表挂载方案)*<br>
-*`S1` `S2` `S3`  服务创建挂载(1,2,3代表挂载方案)*<br>
-*`D`             删除挂载*<br>
-*`h`             命令帮助* <br>
+*注意：无参数则进入主菜单,使用命令参数直接创建挂载，参数不够4个进入帮助!!*<br>
 
 *[flags1]可用参数(Available flags)：*<br>
-`bash <(curl -sL https://git.io/cg_auto_mount) L1,2,3` 临时创建挂载(1,2,3代表挂载方案) <br>
-`bash <(curl -sL https://git.io/cg_auto_mount) S1,2,3` 服务创建挂载(1,2,3代表挂载方案) <br>
-`bash <(curl -sL https://git.io/cg_auto_mount) D` 删除挂载<br>
-`bash <(curl -sL https://git.io/cg_auto_mount) H` 命令帮助<br>
-  
+*`L`  临时创建挂载*<br>
+*`S`  服务创建挂载*<br>
+*`D`  删除挂载*<br>
+*`h`  命令帮助* <br>  
+
 *[flags2]可用参数(Available flags)：*<br>
 *flags2 为需要创建挂载的remote名称，可查阅~/.config/rclone/rclone.conf*<br>
 
 *[flags3]可用参数(Available flags)：*<br>
-*flags3 为挂载盘或文件夹的ID*<br>
+*flags3 为挂载盘或文件夹的ID（网盘ID）*<br>
 
 *[flags4]可用参数(Available flags)：*<br>
-*flags4 为挂载路径*<br>
+*flags4 为挂载路径（本地路径）*<br>
   
 *例如：*<br>
-`bash <(curl -sL https://git.io/cg_auto_mount) l1 remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd`
+`bash <(curl -sL https://git.io/cg_auto_mount) L remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd`
 
-### 影片媒体库脚本【刮削、EMBY、Jellyfin】【转自TG why大佬】
+### 影片媒体库脚本【刮削、EMBY】
 ```
-bash <(curl -sL git.io/11plus.sh)
+bash <(curl -sL git.io/cg_emby)
 ```
-
-我只是个搬运工！

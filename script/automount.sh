@@ -78,37 +78,6 @@ mount_del() {
   echo -e "$curr_date [Info] 删除挂载[done]"
 }
 
-################## 挂载参数选择 ##################
-tag_choose() {
-  cat << EOF
-1、256G硬盘或以上[回车默认值]
-2、小硬盘，2G内存以上
-3、小硬盘，512M-1G内存
-注：如参数不合适，可自行修改脚本内挂载参数行，已备注
-EOF
-  read -r -n1 -p "请选择挂载参数:(回车默认1)" tag_choose_result
-  tag_choose_result=${tag_choose_result:-1}
-  case $tag_choose_result in
-    1)
-      echo
-      mount_tag="--transfers 64 --buffer-size 400M    --dir-cache-time 1000h --vfs-cache-max-age 336h "
-      ;;
-    2)
-      echo
-      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
-      ;;
-    3)
-      echo
-      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
-      ;;
-    *)
-      echo
-      echo "输入错误，请重新输入"
-      mount_menu
-      ;;
-  esac
-}
-
 ################## 临  时  挂  载 ##################
 
 mount_creat() {
@@ -130,20 +99,20 @@ mount_server_creat() {
 [Unit]
 Description = rclone-${mount_path_name}
 AssertPathIsDirectory = ${mount_path}
-Wants = network-online.target
-After = network-online.target
+Wants=network-online.target
+After=network-online.target
 
 [Service]
-Type = notify
-KillMode = none
-Restart = on-failure
-RestartSec = 5
-User = root
-ExecStart = fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag}
-ExecStop = fusermount -qzu ${mount_path}
+User=root
+ExecStartPre=fusermount -qzu ${mount_path}
+ExecStart=fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag}
+ExecStop=fusermount -qzu ${mount_path}
+Restart=always
+RestartSec=2
+StartLimitInterval=0
 
 [Install]
-WantedBy = multi-user.target
+WantedBy=multi-user.target
 EOF
   sleep 2s
   echo -e "$curr_date [Info] 服务创建成功。"
@@ -168,24 +137,24 @@ mount_help() {
   cat << EOF
 用法(Usage):
   bash <(curl -sL https://git.io/cg_auto_mount) [flags1] [flags2] [flags3] [flags4]
-  注意：无参数则进入主菜单,参数少于3个显示help，即1,2,3为脚本参数执行方式必备!
+  注意：无参数则进入主菜单,使用命令参数直接创建挂载，参数不够4个进入帮助!
 
 [flags1]可用参数(Available flags)：
-  bash <(curl -sL https://git.io/cg_auto_mount) l1,2,3  临时创建挂载(1,2,3代表挂载方案)
-  bash <(curl -sL https://git.io/cg_auto_mount) s1,2,3  服务创建挂载(1,2,3代表挂载方案)
-  bash <(curl -sL https://git.io/cg_auto_mount) d       删除挂载
-  bash <(curl -sL https://git.io/cg_auto_mount) h       命令帮助
+  L  临时创建挂载
+  S  服务创建挂载
+  d  删除挂载
+  h  命令帮助
   
 [flags2]可用参数(Available flags)：
   flags2 为需要创建挂载的remote名称，可查阅~/.config/rclone/rclone.conf
 
 [flags3]可用参数(Available flags)：
-  flags3 为挂载盘或文件夹ID
+  flags3 为挂载盘或文件夹ID（网盘ID）
 
 [flags4]可用参数(Available flags)：
-  flags4 为挂载路径
+  flags4 为挂载路径（本地路径）
   
-例如：bash <(curl -sL https://git.io/cg_auto_mount) l1 remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd
+例如：bash <(curl -sL https://git.io/cg_auto_mount) L remote 0AAa0DHcTPGi9Uk9PVA /mnt/gd
 EOF
 }
 
@@ -193,23 +162,17 @@ EOF
 
 mount_menu() {
   clear
-  cat << EOF
-———————————————————————————————————————
-{green}mount一键脚本 by cgkings${normal}
-${green}1、临时挂载${normal}
-${green}2、服务挂载${normal}
-${green}3、删除挂载${normal}
-${green}4、退出${normal}
-———————————————————————————————————————
-EOF
-  read -n1 -p "请输入数字 [1-4]:" num
-  case "$num" in
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_mount 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
+    "1" "临时挂载" \
+    "2" "服务挂载" \
+    "3" "删除挂载" \
+    "4" "退出" 3>&1 1>&2 2>&3)
+  case $Mainmenu in
     1)
       echo
       remote_choose
       td_id_choose
       dir_choose
-      tag_choose
       mount_creat
       exit
       ;;
@@ -218,7 +181,6 @@ EOF
       remote_choose
       td_id_choose
       dir_choose
-      tag_choose
       mount_server_creat
       exit
       ;;
@@ -242,48 +204,31 @@ EOF
 check_sys
 check_rclone
 check_command fuse
-if [ -z $1 ]; then
+mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
+if [ -z "$1" ]; then
   mount_menu
 else
   my_remote=$2
   td_id=$3
-  mount_path=$4 
+  mount_path=$4
   case "$1" in
-    L1 | l1)
+    L | l)
       echo
-      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
-      dir_check
-      mount_creat
+      if [ -z "$4" ]; then
+        mount_help
+      else
+        dir_check
+        mount_creat
+      fi
       ;;
-    L2 | l2)
+    S | s)
       echo
-      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
-      dir_check
-      mount_creat
-      ;;
-    L3 | l3)
-      echo
-      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
-      dir_check
-      mount_creat
-      ;;
-    S1 | s1)
-      echo
-      mount_tag="--transfers 64 --buffer-size 400M --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-ahead 100G --vfs-cache-max-size 100G --allow-non-empty --allow-other --dir-cache-time 1000h --vfs-cache-max-age 336h --umask 000"
-      dir_check
-      mount_server_creat
-      ;;
-    S2 | s2)
-      echo
-      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 1G --dir-cache-time 12h --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G"
-      dir_check
-      mount_server_creat
-      ;;
-    S3 | s3)
-      echo
-      mount_tag="--transfers 16 --umask 0000 --default-permissions --allow-other --vfs-cache-mode full --buffer-size 512M --dir-cache-time 12h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 512M"
-      dir_check
-      mount_server_creat
+      if [ -z "$4" ]; then
+        mount_help
+      else
+        dir_check
+        mount_server_creat
+      fi
       ;;
     D | d)
       echo

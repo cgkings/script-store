@@ -10,7 +10,7 @@ Type=notify
 #stop服务，不杀进程
 KillMode=none
 #当非正常退出时，自动重启
-Restart=on-failure
+Restart=always
 RestartSec=5
 #运行用户
 User=root
@@ -28,12 +28,12 @@ ExecStart = /usr/bin/rclone mount cgking1: /home/gd \
 --poll-interval 1h \
 #rclone响应内核的时间限制。不支持Windows。
 --daemon-timeout=10m
-#Cache mode off|minimal|writes|full (默认off)，writes|full模式支持所有正常的文件系统操作，缓存资源使用buffer-size加上vfs-read-ahead，注意full模式不支持FAT/exFAT文件系统，log日志将显示error，rclone效率奇差
---vfs-cache-mode full \
-#用于缓存数据的内存量，注意此为单线程内存缓存消耗
---buffer-size 512M \
 #取代Go内存分配器，优化内存占用的尝试，由于无法适用所有系统，故未列入默认值
 --use-mmap
+#用于缓存数据的内存量，注意此为单线程内存缓存消耗
+--buffer-size 512M \
+#Cache mode off|minimal|writes|full (默认off)，writes|full模式支持所有正常的文件系统操作，缓存资源使用buffer-size加上vfs-read-ahead，注意full模式不支持FAT/exFAT文件系统，log日志将显示error，rclone效率奇差
+--vfs-cache-mode full \
 #用于缓存的本地磁盘
 --cache-dir=/home/cache \
 #full模式时，对buffer-size的额外补充，buffer-size用内存，vfs-read-ahead用硬盘

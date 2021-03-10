@@ -69,16 +69,14 @@ pojie_emby() {
   rm -f /opt/emby-server/system/System.Net.Http.dll
   wget https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll #(注意替换掉命令中的 emby 所在目录)下载破解程序集替换原有程序
   sleep 3s
-  systemctl daemon-reload
-  systemctl start emby-server #启动 Emby 进程
+  systemctl daemon-reload && systemctl start emby-server
 }
 
 ################## 修改emby服务,fail自动重启 ##################
 sys_emby() {
   sudo -i #切换为 root 用户
   systemctl stop emby-server #结束 emby 进程
-  sed -i '/[Service]/a\Restart=on-failure\nRestartSec=5' /usr/lib/systemd/system/emby-server.service
-  sleep 3s
+  sed -i '/[Service]/a\Restart=always\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
   systemctl daemon-reload && systemctl start emby-server
 }
 
@@ -109,13 +107,13 @@ del_emby() {
 
 ################## 主菜单 ##################
 main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "注：本脚本的emby安装和卸载、备份和还原需要配套使用" 18 80 10 \
     "Install_standard" "基础安装(分项单选)" \
     "Install_Unattended" "无人值守(重装多选)" \
     "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Install_standard)
-      standard_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "单选模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
+      standard_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "单选模式" --menu --nocancel "注：本脚本的emby安装和卸载、备份和还原需要配套使用" 22 65 10 \
       "Back" "返回上级菜单(Back to main menu)" \
       "install" "安装emby" \
       "pojie" "破解emby" \
@@ -174,7 +172,7 @@ main_menu() {
             remote_choose
             td_id_choose
             dir_choose
-            bash <(curl -sL https://git.io/cg_auto_mount) s2 $my_remote $td_id $mount_path
+            bash <(curl -sL https://git.io/cg_auto_mount) s $my_remote $td_id $mount_path
             ;;
           swap)
             bash <(curl -sL git.io/cg_swap) a
