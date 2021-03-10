@@ -41,18 +41,12 @@ dir_check() {
 }
 
 dir_choose() {
-  read -p "请输入需要挂载目录的路径（回车默认/mnt,非绝对路径：含/创建该路径，不含为/mnt/输入文件夹名）:" mount_path
-  mount_path=${mount_path:-/mnt}
+  mount_path=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "本地挂载路径输入" --nocancel "注：默认值：/mnt/gd,如路径不含“/”,则挂载路径视为：/mnt/你的输入" 10 68 /mnt/gd 3>&1 1>&2 2>&3)
   dir_check
-  echo -e "您的挂载目录为 ${mount_path}"
 }
 
 ################## 删除服务 ##################
 mount_del() {
-  check_command fuse
-  if [ -z "$mount_path" ]; then
-    read -r -p "请输入需要删除的挂载目录路径:" mount_path
-  fi
   if [ -z "$mount_path_name" ]; then
     mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
   fi
@@ -74,7 +68,6 @@ mount_del() {
 }
 
 ################## 临  时  挂  载 ##################
-
 mount_creat() {
   mount_del
   echo -e "$curr_date [Info] 开始临时挂载..."
@@ -154,7 +147,6 @@ EOF
 }
 
 ################## 开  始  菜  单 ##################
-
 mount_menu() {
   clear
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_mount 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
@@ -181,6 +173,7 @@ mount_menu() {
       ;;
     3)
       echo
+      dir_choose
       mount_del
       exit
       ;;
@@ -199,7 +192,8 @@ mount_menu() {
 check_sys
 check_rclone
 check_command fuse
-mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
+mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
+#mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
 if [ -z "$1" ]; then
   mount_menu
 else
@@ -227,6 +221,7 @@ else
       ;;
     D | d)
       echo
+      dir_choose
       mount_del
       ;;
     H | h)
