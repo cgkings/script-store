@@ -71,7 +71,7 @@ mount_del() {
 mount_creat() {
   mount_del
   echo -e "$curr_date [Info] 开始临时挂载..."
-  echo -e "$curr_date [Info] 挂载命令：fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag} &"
+  echo -e "$curr_date [Info] 挂载命令：rclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag} &"
   rclone mount $my_remote: $mount_path --drive-root-folder-id ${td_id} $mount_tag &
   sleep 5s
   echo -e "$curr_date [Info] 临时挂载[done]"
