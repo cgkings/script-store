@@ -96,13 +96,13 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
+Type=notify
+KillMode=none
 User=root
-ExecStartPre=fusermount -qzu ${mount_path}
 ExecStart=fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag}
 ExecStop=fusermount -qzu ${mount_path}
 Restart=always
 RestartSec=2
-StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target
