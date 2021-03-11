@@ -76,8 +76,8 @@ mount_del() {
 mount_creat() {
   mount_del
   echo -e "$curr_date [Info] 开始临时挂载..."
-  echo -e "$curr_date [Info] 挂载命令：rclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag} &"
-  rclone mount $my_remote: $mount_path --drive-root-folder-id ${td_id} $mount_tag &
+  echo -e "$curr_date [Info] 挂载命令：fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag} &"
+  fclone mount $my_remote: $mount_path --drive-root-folder-id ${td_id} $mount_tag &
   sleep 5s
   echo -e "$curr_date [Info] 临时挂载[done]"
   echo -e "$curr_date [Info] 如挂载性能不好，请反馈作者"
@@ -98,7 +98,7 @@ After=network-online.target
 [Service]
 User=root
 ExecStartPre=fusermount -qzu ${mount_path}
-ExecStart=rclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag}
+ExecStart=fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag}
 ExecStop=fusermount -qzu ${mount_path}
 Restart=always
 RestartSec=2
@@ -193,7 +193,7 @@ mount_menu() {
 check_sys
 check_rclone
 check_command fuse
-mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
+mount_tag="--umask 000 --allow-other --allow-non-empty --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 512M  --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --transfers 4 --log-level INFO --log-file=/mnt/rclone.log"
 #mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
 if [ -z "$1" ]; then
   mount_menu
