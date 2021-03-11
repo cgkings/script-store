@@ -101,11 +101,11 @@ check_sys() {
     echo -e "${red}Error:本脚本需要至少100MB内存才能正常运作,Please run this script on machine with more than 100MB total ram!${normal}"
     exit 1
   fi
-  if [[ $(df $PWD | awk '/[0-9]%/{print $(NF-2)}' 2> /dev/null) -le "3000000" ]]; then
-    whiptail --title "free disk space not enough(硬盘可用空间不足)" --msgbox "本脚本需要至少3GB硬盘可用空间才能正常运作,Please run this script on machine with more than 3G free disk space." 8 68
-    echo -e "${red}Error:本脚本需要至少3GB硬盘可用空间才能正常运作,Please run this script on machine with more than 3G free disk space!${normal}"
-    exit 1
-  fi
+  #if [[ $(df $PWD | awk '/[0-9]%/{print $(NF-2)}' 2> /dev/null) -le "3000000" ]]; then
+  #  whiptail --title "free disk space not enough(硬盘可用空间不足)" --msgbox "本脚本需要至少3GB硬盘可用空间才能正常运作,Please run this script on machine with more than 3G free disk space." 8 68
+  #  echo -e "${red}Error:本脚本需要至少3GB硬盘可用空间才能正常运作,Please run this script on machine with more than 3G free disk space!${normal}"
+  #  exit 1
+  #fi
   #Disable cloud-init
   rm -rf /lib/systemd/system/cloud*
   ## 卸载腾讯云云盾
