@@ -34,9 +34,13 @@ initialization() {
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file fuse jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg
   ###设置时区###
   echo -e "${curr_date} [INFO] 静默检查设置中国时区"
-  if [ "$(cat /etc/timezone)" != "Asia/Shanghai" ]; then
-    [ -z "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-    echo "Asia/Shanghai" > /etc/timezone
+  if timedatectl | grep -q Asia/Shanghai; then
+    echo
+  else
+    timedatectl set-timezone 'Asia/Shanghai'
+    timedatectl set-ntp true
+    #  [ -n "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+    #  echo "Asia/Shanghai" > /etc/timezone
     echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   fi
   ###自动设置虚拟内存###
