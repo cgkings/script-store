@@ -182,6 +182,7 @@ alias a2='bash <(curl -sL git.io/aria2.sh)'
 alias am='bash <(curl -sL git.io/cg_auto_mount)'
 alias av='AV_Data_Capture'
 alias yd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1849n4MVDof3ei8UYW3j430N1QPG_J2de} -vP'"
+alias nano="nano -m"
 EOF
   source /root/.bashrc
 }
