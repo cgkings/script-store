@@ -43,7 +43,7 @@ auto_swap() {
   if [ "$totalmem" -le 1024 ]; then
     swapsize="2048MB"
   elif [ "$totalmem" -gt 1024 ]; then
-    swapsize="$(("$totalmem" * 2))MB"
+    swapsize="$((totalmem * 2))MB"
   fi
   if [ "$totalswap" == '0' ]; then
     make-swapfile
@@ -119,31 +119,25 @@ swap_menu() {
     "3" "删除swap" \
     "4" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
-  1)
-    echo
-    auto_swap
-    exit
-    ;;
-  2)
-    echo
-    echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
-    read -r -p "请输入swap数值:" swapsize
-    add_swap
-    exit
-    ;;
-  3)
-    echo
-    del_swap
-    exit
-    ;;
-  4)
-    exit
-    ;;
-  *)
-    echo
-    auto_swap
-    exit
-    ;;
+    1)
+      echo
+      auto_swap
+      exit
+      ;;
+    2)
+      echo
+      swapsize=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_swap。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "swap设置" --nocancel "注：建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！ESC退出" 10 68 2GB 3>&1 1>&2 2>&3)
+      add_swap
+      exit
+      ;;
+    3)
+      echo
+      del_swap
+      exit
+      ;;
+    4 | *)
+      exit
+      ;;
   esac
 }
 
@@ -160,8 +154,7 @@ else
     M | m)
       echo
       if [ -z $2 ]; then
-        echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
-        read -r -p "请输入swap数值:" swapsize
+        swapsize=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_swap。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "swap设置" --nocancel "注：建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！ESC退出" 10 68 2GB 3>&1 1>&2 2>&3)
         add_swap
       else
         swapsize="$2"
