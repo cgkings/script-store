@@ -56,7 +56,7 @@ auto_swap() {
 ################## 自定义添加swap ##################
 add_swap() {
   echo
-  swapsize=$(echo ${swapsize} | tr '[a-z]' '[A-Z]')
+  swapsize=$(echo ${swapsize} | tr '[a-z]' 'A-Z')
   swapsize_unit=${swapsize:0-2:2}
   echo "${swapsize_unit}" | grep -qE '^[0-9]+$'
   if [ $? -eq 0 ]; then
