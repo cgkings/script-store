@@ -43,8 +43,7 @@ dir_check() {
 dir_choose() {
   mount_path=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "本地挂载路径输入" --nocancel "注：默认值：/mnt/gd,如路径不含“/”,则挂载路径视为：/mnt/你的输入,ESC退出" 10 68 /mnt/gd 3>&1 1>&2 2>&3)
   if [ -z "$mount_path" ]; then
-    whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "退出脚本" --msgbox "Goodbye！有事您再来！" 8 68
-    exit 0
+    myexit 0
   else
     dir_check
   fi
@@ -166,7 +165,7 @@ mount_menu() {
       td_id_choose
       dir_choose
       mount_creat
-      exit
+      myexit 0
       ;;
     2)
       echo
@@ -174,17 +173,16 @@ mount_menu() {
       td_id_choose
       dir_choose
       mount_server_creat
-      exit
+      myexit 0
       ;;
     3)
       echo
       dir_choose
       mount_del
-      exit
+      myexit 0
       ;;
     4 | *)
-      whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "退出脚本" --msgbox "Goodbye！有事您再来！" 8 68
-      exit 0
+      myexit 0
       ;;
   esac
 }

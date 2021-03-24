@@ -122,21 +122,25 @@ swap_menu() {
     1)
       echo
       auto_swap
-      exit
+      myexit 0
       ;;
     2)
       echo
       swapsize=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_swap。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "swap设置" --nocancel "注：建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！ESC退出" 10 68 2GB 3>&1 1>&2 2>&3)
-      add_swap
-      exit
+      if [ -z "$swapsize" ]; then
+        myexit 0
+      else
+        add_swap
+        myexit 0
+      fi
       ;;
     3)
       echo
       del_swap
-      exit
+      myexit 0
       ;;
     4 | *)
-      exit
+      myexit 0
       ;;
   esac
 }
@@ -155,7 +159,12 @@ else
       echo
       if [ -z $2 ]; then
         swapsize=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_swap。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "swap设置" --nocancel "注：建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！ESC退出" 10 68 2GB 3>&1 1>&2 2>&3)
-        add_swap
+        if [ -z "$swapsize" ]; then
+          myexit 0
+        else
+          add_swap
+          myexit 0
+        fi
       else
         swapsize="$2"
         add_swap

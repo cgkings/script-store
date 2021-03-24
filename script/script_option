@@ -441,4 +441,16 @@ check_youtubedl() {
   fi
 }
 
-################## 检查6pan-cli ##################
+################## 退出通知 ##################
+myexit() {
+  if [ $1 == 0 ];then
+    exit 0
+    TERM=ansi whiptail --title "正常退出" --infobox "欢迎使用cgkings（王大锤）系列脚本!
+Goodbye！" 8 68
+    sleep 3s
+    clear
+  elif [ $1 == 1 ];then
+    TERM=ansi whiptail --title "异常退出" --infobox "异常退出，请查找原因!" 8 68
+    exit 1
+  fi
+}

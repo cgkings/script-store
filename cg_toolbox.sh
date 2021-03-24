@@ -255,7 +255,7 @@ main_menu() {
           exit
           ;;
         *)
-          whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "退出脚本" --msgbox "Goodbye！有事您再来！" 8 68
+          myexit 0
           ;;
       esac
       ;;
@@ -336,8 +336,7 @@ main_menu() {
           echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
           ;;
         *)
-          whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "退出脚本" --msgbox "Goodbye！有事您再来！" 8 68
-          exit 0
+          myexit 0
           ;;
       esac
       ;;
@@ -419,8 +418,7 @@ main_menu() {
       exit 0
       ;;
     Exit)
-      whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "退出脚本" --msgbox "Goodbye！有事您再来！" 8 68
-      exit 0
+      myexit 0
       ;;
   esac
 }
