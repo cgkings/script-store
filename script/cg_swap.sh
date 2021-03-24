@@ -40,10 +40,10 @@ make-swapfile() {
 
 ################## 自动添加swap ##################
 auto_swap() {
-  if [ $totalmem -le 1024 ]; then
+  if [ "$totalmem" -le 1024 ]; then
     swapsize="2048MB"
-  elif [ $totalmem -gt 1024 ]; then
-    swapsize="$(($totalmem * 2))MB"
+  elif [ "$totalmem" -gt 1024 ]; then
+    swapsize="$(("$totalmem" * 2))MB"
   fi
   if [ "$totalswap" == '0' ]; then
     make-swapfile
@@ -135,6 +135,8 @@ EOF
       ;;
     2)
       echo
+      echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
+      read -r -p "请输入swap数值:" swapsize
       add_swap
       ;;
     3)
