@@ -124,31 +124,24 @@ main_menu() {
       case $standard_menu in
         Back)
         main_menu
-        break
         ;;
         install)
         check_emby
-        exit
         ;;
         pojie)
         pojie_emby
-        exit
         ;;
         youhua)
         sys_emby
-        exit
         ;;
         bak)
         bak_emby
-        exit
         ;;
         revert)
         revert_emby
-        exit
         ;;
         Uninstall)
         del_emby
-        exit
         ;;
         *)
         myexit 0
@@ -197,7 +190,6 @@ main_menu() {
         esac
       done < results
       rm results
-      exit 0
       ;;
     Exit | *)
       myexit 0

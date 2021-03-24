@@ -165,7 +165,6 @@ mount_menu() {
       td_id_choose
       dir_choose
       mount_creat
-      myexit 0
       ;;
     2)
       echo
@@ -173,13 +172,11 @@ mount_menu() {
       td_id_choose
       dir_choose
       mount_server_creat
-      myexit 0
       ;;
     3)
       echo
       dir_choose
       mount_del
-      myexit 0
       ;;
     4 | *)
       myexit 0

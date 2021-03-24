@@ -230,29 +230,23 @@ main_menu() {
       case $standard_menu in
         Back)
           main_menu
-          break
           ;;
         languge)
           setlanguage
-          exit
           ;;
         swap)
           bash <(curl -sL git.io/cg_swap)
-          exit
           ;;
         zsh)
           install_beautify
-          exit
           ;;
         buyvm_disk)
           buyvm_disk
-          exit
           ;;
         develop)
           check_python
           check_nodejs
           check_go
-          exit
           ;;
         *)
           myexit 0
@@ -400,13 +394,11 @@ main_menu() {
             clear
             bash <(curl -sL git.io/cg_baota)
             echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
-            exit
             ;;
           *) ;;
         esac
       done < results
       rm results
-      exit 0
       ;;
     Benchmark)
       clear
@@ -415,7 +407,6 @@ main_menu() {
       else
         curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s full
       fi
-      exit 0
       ;;
     Exit)
       myexit 0
