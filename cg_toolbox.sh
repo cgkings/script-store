@@ -28,8 +28,8 @@ initialization() {
 初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
   echo -e "${curr_date} [INFO] 静默升级系统软件源"
   apt-get update --fix-missing -y > /dev/null
-  echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
-  apt upgrade -y > /dev/null
+  #echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
+  #apt upgrade -y > /dev/null
   echo -e "${curr_date} [INFO] 静默检查并安装常用软件"
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file fuse jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg
   ###设置时区###
@@ -44,6 +44,7 @@ initialization() {
     echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   fi
   ###自动设置虚拟内存###
+  echo -e "${curr_date} [INFO] 静默检查设置虚拟内存"
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
 }
 
