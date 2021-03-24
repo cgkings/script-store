@@ -446,7 +446,7 @@ myexit() {
   if [ $1 == 0 ];then
     TERM=ansi whiptail --title "正常退出" --infobox "欢迎使用cgkings（王大锤）系列脚本!
 Goodbye！" 8 68
-    sleep 3s
+    sleep 1s
     clear
     exit 0
   elif [ $1 == 1 ];then
