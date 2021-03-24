@@ -113,41 +113,33 @@ EOF
 ################## 开  始  菜  单 ##################
 swap_menu() {
   clear
-  cat << EOF
-—————————————————————————————————————————————————————————
-  ${green}当前SWAP：$totalswap MB"
-  swap一键脚本 by cgkings
-  1、全自动添加swap[默认值][内存*2，最小设置2G]
-  2、自定义添加swap
-  3、删除swap
-  4、退出
-  注：输入2、3、4外任意字符，默认选1.自动添加
-  感谢wuhuai2020、moerats、github众多作者，我只是整合代码${normal}
-—————————————————————————————————————————————————————————
-EOF
-  read -r -n1 -p "请输入数字 [1-4]:" num
-  case "$num" in
-    1)
-      echo
-      auto_swap
-      ;;
-    2)
-      echo
-      echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
-      read -r -p "请输入swap数值:" swapsize
-      add_swap
-      ;;
-    3)
-      echo
-      del_swap
-      ;;
-    4)
-      exit
-      ;;
-    *)
-      echo
-      auto_swap
-      ;;
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_swap。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "当前SWAP：$totalswap MB" --menu --nocancel "注：h参数查看参数模式帮助，ESC退出脚本" 14 55 6 \
+    "1" "全自动添加swap(内存*2，最小设置2G)" \
+    "2" "自定义添加swap" \
+    "3" "删除swap" \
+    "4" "退出" 3>&1 1>&2 2>&3)
+  case $Mainmenu in
+  1)
+    echo
+    auto_swap
+    ;;
+  2)
+    echo
+    echo -e "${green}请输入需要添加的swap，建议为物理内存的2倍大小\n默认为MB，您也可以输入数字+[KB、MB、GB]的方式！（例如：4GB、4096MB、4194304KB）！${normal}"
+    read -r -p "请输入swap数值:" swapsize
+    add_swap
+    ;;
+  3)
+    echo
+    del_swap
+    ;;
+  4)
+    exit
+    ;;
+  *)
+    echo
+    auto_swap
+    ;;
   esac
 }
 
