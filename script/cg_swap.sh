@@ -23,9 +23,9 @@ totalswap=$(free -m | awk '/Swap:/{print $2}')
 
 ################## 生 成swap ##################
 make-swapfile() {
-  echo -e "${green}正在为您创建"$swapsize"的swap分区...${normal}"
+  echo -e "${green}正在为您创建 $swapsize 的swap分区...${normal}"
   #分配大小
-  fallocate -l ${swapsize} /swapfile
+  fallocate -l "$swapsize" /swapfile
   #设置适当的权限
   chmod 600 /swapfile
   #设置swap区
@@ -35,7 +35,7 @@ make-swapfile() {
   echo '/swapfile none swap defaults 0 0' >> /etc/fstab
   echo -e "${green}swap创建成功，信息如下：${normal}"
   cat /proc/swaps
-  cat /proc/meminfo | grep Swap
+  grep Swap /proc/meminfo
 }
 
 ################## 自动添加swap ##################
@@ -80,10 +80,8 @@ add_swap() {
 
 ################## 删 除 swap ##################
 del_swap() {
-  #检查是否存在swapfile
-  grep -q "swapfile" /etc/fstab
-  #如果存在就将其移除
-  if [ $? -eq 0 ]; then
+  #检查是否存在swapfile,如果存在就将其移除
+  if grep -q "swapfile" /etc/fstab; then
     echo -e "${green}swapfile已发现，正在删除SWAP空间...${normal}"
     sed -i '/swapfile/d' /etc/fstab
     echo "3" > /proc/sys/vm/drop_caches
