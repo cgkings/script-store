@@ -45,7 +45,7 @@ auto_swap() {
   elif [ "$totalmem" -gt 1024 ]; then
     swapsize="$((totalmem * 2))MB"
   fi
-  if [ "$totalswap" == '0' ]; then
+  if [ "$totalswap" == 0 ]; then
     make-swapfile
   else
     del_swap
@@ -122,7 +122,6 @@ swap_menu() {
     1)
       echo
       auto_swap
-      myexit 0
       ;;
     2)
       echo
@@ -131,13 +130,11 @@ swap_menu() {
         myexit 0
       else
         add_swap
-        myexit 0
       fi
       ;;
     3)
       echo
       del_swap
-      myexit 0
       ;;
     4 | *)
       myexit 0
