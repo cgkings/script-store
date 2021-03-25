@@ -45,10 +45,10 @@ auto_swap() {
   elif [ "$totalmem" -gt 1024 ]; then
     swapsize="$((totalmem * 2))MB"
   fi
-  if [ "$totalswap" == 0 ]; then
+  if grep -q "swapfile" /etc/fstab ;then
+    del_swap
     make-swapfile
   else
-    del_swap
     make-swapfile
   fi
 }
@@ -67,13 +67,10 @@ add_swap() {
       add_swap
     fi
   fi
-  #检查是否存在swapfile
-  grep -q "swapfile" /etc/fstab
-  #如果不存在将为其创建swap
-  if [ $? -ne 0 ]; then
+  if grep -q "swapfile" /etc/fstab ;then
+    del_swap
     make-swapfile
   else
-    del_swap
     make-swapfile
   fi
 }
@@ -122,6 +119,7 @@ swap_menu() {
     1)
       echo
       auto_swap
+      exit 0
       ;;
     2)
       echo
@@ -135,6 +133,7 @@ swap_menu() {
     3)
       echo
       del_swap
+      exit 0
       ;;
     4 | *)
       myexit 0
