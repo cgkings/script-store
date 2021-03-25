@@ -262,7 +262,7 @@ main_menu() {
         "v2ray" "一键搭建V2ray[转自233boy]" \
         "offline" "离线下载3件套[aria2/rsshub/flexget]" \
         "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" \
-        "emby" "EMBY一键安装搭建脚本[转自wuhuai2020]" \
+        "emby" "EMBY一键安装搭建脚本" \
         "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" \
         "cg_sort" "网盘文件整理" \
         "gd_bot" "搭建gd转存bot[未完成]" \
