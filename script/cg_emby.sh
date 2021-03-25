@@ -34,6 +34,7 @@ check_emby_version() {
 }
 
 check_emby() {
+  sudo -i #切换为 root 用户
   check_emby_version
   #判断emby本地安装状态
   if [ -f /usr/lib/systemd/system/emby-server.service ]; then
@@ -59,6 +60,17 @@ check_emby() {
       sleep 1s
       rm -f emby-server-deb_"${emby_version}"_amd64.deb
     fi
+    #安装常用插件
+    echo -e "${curr_date} ${green}[INFO]${normal} 安装emby常用插件（Subscene射手字幕/JAV_scraper/Auto Organize/douban/Reports）."
+    #wget -N -O kernel-
+    #chown 998.998 /var/lib/emby/plugins/Emby.Subtitle.Subscene.dll  修改用户和用户组
+    #chown 998.998 /var/lib/emby/plugins/JavScraper.dll
+    #
+    #修改emby服务,fail自动重启
+    echo -e "${curr_date} ${green}[INFO]${normal} 修改emby服务设置fail自动重启."
+    systemctl stop emby-server #结束 emby 进程
+    sed -i '/[Service]/a\Restart=always\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
+    systemctl daemon-reload && systemctl start emby-server
     echo -e "${curr_date} ${green}[INFO]${normal} Emby安装成功.您可以访问  http://${ip_addr}:8096 进一步配置Emby."
   fi
 }
@@ -70,14 +82,6 @@ pojie_emby() {
   rm -f /opt/emby-server/system/System.Net.Http.dll
   wget https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll #(注意替换掉命令中的 emby 所在目录)下载破解程序集替换原有程序
   sleep 3s
-  systemctl daemon-reload && systemctl start emby-server
-}
-
-################## 修改emby服务,fail自动重启 ##################
-sys_emby() {
-  sudo -i #切换为 root 用户
-  systemctl stop emby-server #结束 emby 进程
-  sed -i '/[Service]/a\Restart=always\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
   systemctl daemon-reload && systemctl start emby-server
 }
 
@@ -118,7 +122,6 @@ main_menu() {
       "Back" "返回上级菜单(Back to main menu)" \
       "install" "安装emby" \
       "pojie" "破解emby" \
-      "youhua" "优化emby（fail自动重启）" \
       "bak" "备份emby" \
       "revert" "还原emby" \
       "Uninstall" "卸载emby" 3>&1 1>&2 2>&3)
@@ -131,9 +134,6 @@ main_menu() {
         ;;
         pojie)
         pojie_emby
-        ;;
-        youhua)
-        sys_emby
         ;;
         bak)
         bak_emby
@@ -156,7 +156,6 @@ main_menu() {
         "swap" "自动设置2倍物理内存的虚拟内存" off \
         "install" "安装emby" off \
         "pojie" "破解emby" off \
-        "youhua" "优化emby（fail自动重启）" off \
         "revert" "还原emby" off 2> results
       while read choice; do
         case $choice in
@@ -179,9 +178,6 @@ main_menu() {
           pojie)
             pojie_emby
           ;;
-          youhua)
-            sys_emby
-            ;;
           revert)
             revert_emby
             ;;
