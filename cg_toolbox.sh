@@ -83,7 +83,8 @@ EOF
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s "$(which zsh)"
-  echo "${red}${on_white}${bold}${curr_date} [INFO]重新登录shell工具生效 ${normal}"
+  echo "${red}${on_white}${bold}${curr_date} [INFO]即将reset生效 ${normal}"
+  reset
 }
 
 ################## buyvm挂载256G硬盘 ##################
@@ -270,7 +271,7 @@ main_menu() {
       case $extend_menu in
         Back)
           main_menu
-          break
+          return 0
           ;;
         my_alias)
           my_alias
@@ -302,7 +303,7 @@ main_menu() {
           ;;
         emby)
           clear
-          bash <(curl -sL git.io/11plus.sh)
+          bash <(curl -sL git.io/cg_emby)
           echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
           ;;
         avdc)
