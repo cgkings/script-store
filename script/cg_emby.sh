@@ -34,10 +34,10 @@ check_emby_version() {
 }
 
 check_emby() {
+  check_emby_version
   #判断emby本地安装状态
   if [ -f /usr/lib/systemd/system/emby-server.service ]; then
     #如已安装，获取本地安装的emby版本
-    check_emby_local_version
     if [ "${emby_local_version}" = "${emby_version}" ]; then
       sleep 1s
       echo
