@@ -188,8 +188,15 @@ mount_menu() {
 check_sys
 check_rclone
 check_command fuse
-mount_tag="--umask 000 --allow-other --allow-non-empty --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 512M  --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --transfers 4 --log-level INFO --log-file=/mnt/rclone.log"
-#mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size 50G --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
+#自动计算缓存空间
+Avail_size=$(df -h /home|awk '{print $4}'|sed -n 2p)
+cache_size=$((Avail_size / 2))
+#自动计算内存缓冲区空间
+totalmem=$(free -m | awk '/Mem:/{print $2}')
+buffer_mem="$((totalmem / 2))M"
+#挂载参数
+mount_tag="--umask 000 --allow-other --allow-non-empty --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --vfs-cache-max-size $cache_size --buffer-size $buffer_mem --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --transfers 4 --log-level INFO --log-file=/mnt/rclone.log"
+#mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size $cache_size --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
 if [ -z "$1" ]; then
   mount_menu
 else
