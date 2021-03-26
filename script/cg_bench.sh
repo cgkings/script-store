@@ -17,10 +17,6 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
-#机器所在地IP
-ip_addr=$(hostname -I | awk '{print $1}')
-#SSH登录所在地IP
-OwnerIP=$(who am i | awk '{print $NF}' | sed -e 's/[()]//g')
 check_command virt-what
 
 ################## 显示机器配置信息 ##################
@@ -51,9 +47,5 @@ io_test(){
 }
 
 net_speed() {
-  wget -qN https://github.com/cgkings/script-store/raw/master/tools/besttrace4linux.zip && unar besttrace4linux.zip -o /home && rm -f besttrace4linux.zip
-  chmod +x /home/besttrace4linux/*
-  /home/besttrace4linux/besttrace 120.237.4.195
-
-  besttrace 119.6.6.6
+  wget -qN https://github.com/cgkings/script-store/raw/master/tools/besttrace && chmod +x besttrace && ./besttrace "$(who am i | awk '{print $NF}' | sed -e 's/[()]//g')"
 }
