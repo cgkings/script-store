@@ -51,6 +51,9 @@ io_test(){
 }
 
 net_speed() {
-  wget -qN https://cdn.ipip.net/17mon/besttrace4linux.zip && unar besttrace4linux.zip -o /home && rm -f besttrace4linux.zip
-  chmod +x besttrace
+  wget -qN https://github.com/cgkings/script-store/raw/master/tools/besttrace4linux.zip && unar besttrace4linux.zip -o /home && rm -f besttrace4linux.zip
+  chmod +x /home/besttrace4linux/*
+  /home/besttrace4linux/besttrace 120.237.4.195
+
+  besttrace 119.6.6.6
 }
