@@ -221,38 +221,80 @@ main_menu() {
   case $Mainmenu in
     ## 基础标准安装
     Install_standard)
-      standard_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "系统设置模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
-        "Back" "返回上级菜单(Back to main menu)" \
-        "languge" "设置系统语言" \
-        "swap" "设置虚拟内存" \
-        "zsh" "安装oh my zsh &tmux" \
-        "buyvm_disk" "buyvm挂载256G硬盘" \
-        "develop" "安装python/nodejs/go开发环境" 3>&1 1>&2 2>&3)
-      case $standard_menu in
-        Back)
-          main_menu
-          ;;
-        languge)
+       whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
+        "Back" "返回上级菜单(Back to main menu)" off \
+        "languge" "设置系统语言（中文）" off \
+        "swap" "设置虚拟内存（2倍物理内存）" off \
+        "zsh" "安装oh my zsh &tmux" off \
+        "buyvm_disk" "buyvm挂载256G硬盘" off \
+        "develop1" "安装python开发环境" off \
+        "develop2" "安装nodejs开发环境" off \
+        "develop3" "安装go开发环境" 3>&1 1>&2 2>&3)
+        "my_alias" "自定义别名[可通过alias命令查看]" off \
+        "offline" "离线下载3件套[aria2/rsshub/flexget]" off \
+        "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" off \
+        "gd_bot" "搭建gd转存bot[未完成]" off \
+        "lnmp" "LNMP 一键脚本" off \
+        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 2> results
+      while read choice; do
+        case $choice in
+          Back)
+            main_menu
+            break
+            ;;
+          languge)
           setlanguage
           ;;
-        swap)
-          bash <(curl -sL git.io/cg_swap)
-          ;;
-        zsh)
-          install_beautify
-          ;;
-        buyvm_disk)
-          buyvm_disk
-          ;;
-        develop)
-          check_python
-          check_nodejs
-          check_go
-          ;;
-        *)
+          swap)
+            bash <(curl -sL git.io/cg_swap) a
+            ;;
+          zsh)
+            install_beautify
+            ;;
+          buyvm_disk)
+            buyvm_disk
+            ;;
+          develop1)
+            check_python
+          develop2)
+            check_nodejs
+          develop3)
+            check_go
+            ;;
+          my_alias)
+            my_alias
+            echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
+            ;;
+          offline)
+            clear
+            bash <(curl -sL git.io/cg_dl)
+            ;;
+          avdc)
+            clear
+            bash <(curl -sL git.io/cg_avdc)
+            echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
+              这个小脚本不带参数则帮您安装AVDC
+              带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
+            echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
+            ;;
+          gd_bot)
+            bash <(curl -sL git.io/cg_gdbot)
+            ;;
+          lnmp)
+            clear
+            install_LNMP
+            ;;
+          baota)
+            clear
+            bash <(curl -sL git.io/cg_baota)
+            echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
+            ;;
+          *) 
           myexit 0
           ;;
-      esac
+        esac
+      done < results
+      rm results
       ;;
     Install_extend)
       extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 14 \
@@ -335,79 +377,30 @@ main_menu() {
           ;;
       esac
       ;;
-    Install_Unattended)
-      whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
-        "Back" "返回上级菜单(Back to main menu)" off \
-        "swap" "自动设置2倍物理内存的虚拟内存" off \
-        "zsh" "安装oh my zsh &tmux" on \
-        "buyvm_disk" "buyvm挂载256G硬盘" on \
-        "develop" "安装python/nodejs/go开发环境" on \
-        "my_alias" "自定义别名[可通过alias命令查看]" on \
-        "offline" "离线下载3件套[aria2/rsshub/flexget]" off \
-        "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" off \
-        "gd_bot" "搭建gd转存bot[未完成]" off \
-        "lnmp" "LNMP 一键脚本" off \
-        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 2> results
-      while read choice; do
-        case $choice in
-          Back)
-            main_menu
-            break
-            ;;
-          swap)
-            bash <(curl -sL git.io/cg_swap) a
-            ;;
-          zsh)
-            install_beautify
-            ;;
-          buyvm_disk)
-            buyvm_disk
-            ;;
-          develop)
-            check_python
-            check_nodejs
-            check_go
-            ;;
-          my_alias)
-            my_alias
-            echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
-            ;;
-          offline)
-            clear
-            bash <(curl -sL git.io/cg_dl)
-            ;;
-          avdc)
-            clear
-            bash <(curl -sL git.io/cg_avdc)
-            echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
-              这个小脚本不带参数则帮您安装AVDC
-              带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-            echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
-            ;;
-          gd_bot)
-            bash <(curl -sL git.io/cg_gdbot)
-            ;;
-          lnmp)
-            clear
-            install_LNMP
-            ;;
-          baota)
-            clear
-            bash <(curl -sL git.io/cg_baota)
-            echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
-            ;;
-          *) ;;
-        esac
-      done < results
-      rm results
-      ;;
     Benchmark)
-      clear
-      if (whiptail --title "测试模式" --yes-button "快速测试" --no-button "完整测试" --yesno "效能测试方式(fast or full)?" 8 68); then
-        curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s fast
-      else
-        curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s full
-      fi
+      Benchmark_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "测试模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
+        "Back" "返回上级菜单(Back to main menu)" \
+        "1" "设备基础配置" \
+        "2" "硬盘I/O测试" \
+        "3" "网络测试" 3>&1 1>&2 2>&3)
+      case $Benchmark_menu in
+        Back)
+          main_menu
+          return 0
+          ;;
+        1)
+          VPS_INFO
+          ;;
+        2)
+          io_test
+          ;;
+        3) 
+          curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s fast
+          ;;
+        *)
+          exit 0
+          ;;
+      esac
       ;;
     Exit)
       myexit 0
