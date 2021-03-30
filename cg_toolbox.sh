@@ -215,28 +215,27 @@ main_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
     "Install_standard" "系统设置(buyvm挂载/虚拟内存/语言设置/开发环境)" \
     "Install_extend" "扩展安装(fq/离线下载三件套/网络工具/emby/挂载)" \
-    "Install_Unattended" "新机无人值守(选择安装项，自动静默安装)[未完成]" \
     "Benchmark" "效能测试" \
     "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     ## 基础标准安装
     Install_standard)
        whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
-        "Back" "返回上级菜单(Back to main menu)" off \
-        "languge" "设置系统语言（中文）" off \
-        "swap" "设置虚拟内存（2倍物理内存）" off \
-        "zsh" "安装oh my zsh &tmux" off \
-        "buyvm_disk" "buyvm挂载256G硬盘" off \
-        "develop1" "安装python开发环境" off \
-        "develop2" "安装nodejs开发环境" off \
-        "develop3" "安装go开发环境" 3>&1 1>&2 2>&3)
-        "my_alias" "自定义别名[可通过alias命令查看]" off \
-        "offline" "离线下载3件套[aria2/rsshub/flexget]" off \
-        "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" off \
-        "gd_bot" "搭建gd转存bot[未完成]" off \
-        "lnmp" "LNMP 一键脚本" off \
-        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 2> results
-      while read choice; do
+      "Back" "返回上级菜单(Back to main menu)" off \
+      "languge" "设置系统语言（中文）" off \
+      "swap" "设置虚拟内存（2倍物理内存）" off \
+      "zsh" "安装oh my zsh &tmux" off \
+      "buyvm_disk" "buyvm挂载256G硬盘" off \
+      "develop1" "安装python开发环境" off \
+      "develop2" "安装nodejs开发环境" off \
+      "develop3" "安装go开发环境" off \
+      "my_alias" "自定义别名[可通过alias命令查看]" off \
+      "offline" "离线下载3件套[aria2/rsshub/flexget]" off \
+      "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" off \
+      "gd_bot" "搭建gd转存bot[未完成]" off \
+      "lnmp" "LNMP 一键脚本" off \
+      "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 2> results
+      while read -r choice; do
         case $choice in
           Back)
             main_menu
@@ -256,8 +255,10 @@ main_menu() {
             ;;
           develop1)
             check_python
+            ;;
           develop2)
             check_nodejs
+            ;;
           develop3)
             check_go
             ;;
