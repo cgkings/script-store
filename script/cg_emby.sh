@@ -100,6 +100,7 @@ revert_emby() {
     bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
     "${bak_list[@]}" 3>&1 1>&2 2>&3)
     if [ -z "$bak_name" ]; then
+      rm -f ~/.config/rclone/bak_list.txt
       myexit 0
     else
       systemctl stop emby-server #结束 emby 进程
@@ -107,6 +108,7 @@ revert_emby() {
       rm -rf /var/lib/emby
       tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
       systemctl start emby-server
+      rm -rf ~/.config/rclone/bak_list.txt
     fi
 }
 
