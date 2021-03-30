@@ -38,17 +38,8 @@ check_emby() {
   check_emby_version
   #判断emby本地安装状态
   if [ -f /usr/lib/systemd/system/emby-server.service ]; then
-    #如已安装，获取本地安装的emby版本
-    if [ "${emby_local_version}" = "${emby_version}" ]; then
-      sleep 1s
-      echo
-      echo -e "${curr_date} ${green}[INFO]${normal} 您的系统已安装最新版emby。"
+      echo -e "${curr_date} ${green}[INFO]${normal} 您的系统已安装emby $emby_local_version,关于版本升级，请在网页操作。"
       return 0
-    else
-      sleep 1s
-      echo -e "${curr_date} ${green}[INFO]${normal} 已安装版本为：${emby_local_version}.最新版本为:${emby_version}.请自便！"
-      return 0
-    fi
   else
     #如未安装，则进行安装
     echo -e "${curr_date} ${green}[INFO]${normal} 您的系统是 ${release}。正在为您准备安装包,请稍等..."
