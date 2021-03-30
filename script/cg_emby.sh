@@ -34,12 +34,10 @@ check_emby_version() {
 }
 
 check_emby() {
-  sudo -i #切换为 root 用户
   check_emby_version
   #判断emby本地安装状态
   if [ -f /usr/lib/systemd/system/emby-server.service ]; then
       echo -e "${curr_date} ${green}[INFO]${normal} 您的系统已安装emby $emby_local_version,关于版本升级，请在网页操作。"
-      return 0
   else
     #如未安装，则进行安装
     echo -e "${curr_date} ${green}[INFO]${normal} 您的系统是 ${release}。正在为您准备安装包,请稍等..."
@@ -58,11 +56,15 @@ check_emby() {
     #chown 998.998 /var/lib/emby/plugins/JavScraper.dll
     #
     #修改emby服务,fail自动重启
+    if grep -q "Restart=always" /usr/lib/systemd/system/emby-server.service; then
+    echo
+    else
     echo -e "${curr_date} ${green}[INFO]${normal} 修改emby服务设置fail自动重启."
     systemctl stop emby-server #结束 emby 进程
     sed -i '/[Service]/a\Restart=always\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
     systemctl daemon-reload && systemctl start emby-server
     echo -e "${curr_date} ${green}[INFO]${normal} Emby安装成功.您可以访问  http://${ip_addr}:8096 进一步配置Emby."
+    fi
   fi
 }
 
