@@ -48,6 +48,54 @@ initialization() {
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
 }
 
+################## 语言设置 ##################[done]
+setlanguage_cn() {
+  if [[ $LANG == "zh_CN.UTF-8" ]]; then
+    return 0
+  else
+    chattr -i /etc/locale.gen #解除文件修改限制
+    cat > '/etc/locale.gen' << EOF
+zh_CN.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
+EOF
+    locale-gen
+    update-locale
+    chattr -i /etc/default/locale
+    cat > '/etc/default/locale' << EOF
+LANGUAGE="zh_CN.UTF-8"
+LANG="zh_CN.UTF-8"
+LC_ALL="zh_CN.UTF-8"
+EOF
+    #apt-get install manpages-zh -y
+    export LANGUAGE="zh_CN.UTF-8"
+    export LANG="zh_CN.UTF-8"
+    export LC_ALL="zh_CN.UTF-8"
+  fi
+}
+
+setlanguage_us() {
+  if [[ $LANG == "en_US.UTF-8" ]]; then
+    return 0
+  else
+    chattr -i /etc/locale.gen #解除文件修改限制
+    cat > '/etc/locale.gen' << EOF
+zh_TW.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
+EOF
+    locale-gen
+    update-locale
+    chattr -i /etc/default/locale
+    cat > '/etc/default/locale' << EOF
+LANGUAGE="en_US.UTF-8"
+LANG="en_US.UTF-8"
+LC_ALL="en_US.UTF-8"
+EOF
+    export LANGUAGE="en_US.UTF-8"
+    export LANG="en_US.UTF-8"
+    export LC_ALL="en_US.UTF-8"
+  fi
+}
+
 ################## 安装装逼神器 oh my zsh & on my tmux ##################待完善
 install_beautify() {
   ####设置颜色###
@@ -220,26 +268,30 @@ main_menu() {
   case $Mainmenu in
     ## 基础标准安装
     Install_standard)
-      whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式[未完成]" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
+      whiptail --clear --ok-button "安装完成后自动重启" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "基础安装模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件。" 22 65 16 \
         "Back" "返回上级菜单(Back to main menu)" off \
-        "languge" "设置系统语言（中文）" off \
-        "swap" "设置虚拟内存（2倍物理内存）" off \
-        "zsh" "安装oh my zsh &tmux" off \
+        "languge_cn" "设置系统语言（中文）" off \
+        "languge_us" "设置系统语言（英文）" on \
+        "swap" "设置虚拟内存（2倍物理内存）" on \
         "buyvm_disk" "buyvm挂载256G硬盘" off \
-        "develop1" "安装python开发环境" off \
-        "develop2" "安装nodejs开发环境" off \
+        "develop1" "安装python开发环境" on \
+        "develop2" "安装nodejs开发环境" on \
         "develop3" "安装go开发环境" off \
-        "my_alias" "自定义别名[可通过alias命令查看]" off \
+        "my_alias" "自定义别名(alias命令查看)" on \
         "lnmp" "LNMP 一键脚本" off \
-        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" off 2> results
+        "baota" "宝塔面板一键脚本" off \
+        "zsh" "安装oh my zsh &tmux" on 2> results
       while read -r choice; do
         case $choice in
           Back)
             main_menu
             break
             ;;
-          languge)
-            setlanguage
+          languge_cn)
+            setlanguage_cn
+            ;;
+          languge_us)
+            setlanguage_us
             ;;
           swap)
             bash <(curl -sL git.io/cg_swap) a
