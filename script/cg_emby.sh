@@ -95,7 +95,7 @@ revert_emby() {
     check_emby
     remote_choose
     td_id_choose
-    fclone lsf upsa: --include 'emby_bak*' --files-only > ~/.config/rclone/bak_list.txt
+    fclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'emby_bak*' --files-only -F "pt" --separator "    " > ~/.config/rclone/bak_list.txt
     bak_list=($(cat ~/.config/rclone/bak_list.txt))
     bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
     "${bak_list[@]}" 3>&1 1>&2 2>&3)

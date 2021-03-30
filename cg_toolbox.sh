@@ -53,7 +53,7 @@ initialization() {
 ################## 语言设置 ##################[done]
 setlanguage_cn() {
   if [[ $LANG == "zh_CN.UTF-8" ]]; then
-    return 0
+    echo
   else
     chattr -i /etc/locale.gen #解除文件修改限制
     cat > '/etc/locale.gen' << EOF
@@ -77,7 +77,7 @@ EOF
 
 setlanguage_us() {
   if [[ $LANG == "en_US.UTF-8" ]]; then
-    return 0
+    echo
   else
     chattr -i /etc/locale.gen #解除文件修改限制
     cat > '/etc/locale.gen' << EOF
