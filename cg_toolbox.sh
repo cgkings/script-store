@@ -21,17 +21,19 @@ setcolor
 
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
 initialization() {
-  check_sys
   clear
   TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "初始化中...(initializing)
 请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)
 初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
+  check_sys
   echo -e "${curr_date} [INFO] 静默升级系统软件源"
   apt-get update --fix-missing -y > /dev/null
   #echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
   #apt upgrade -y > /dev/null
   echo -e "${curr_date} [INFO] 静默检查并安装常用软件"
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file fuse jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential
+  check_youtubedl
+  check_rclone
   ###设置时区###
   echo -e "${curr_date} [INFO] 静默检查设置中国时区"
   if timedatectl | grep -q Asia/Shanghai; then
@@ -94,6 +96,39 @@ EOF
     export LANG="en_US.UTF-8"
     export LC_ALL="en_US.UTF-8"
   fi
+}
+
+################## 批量别名 ##################
+my_alias() {
+  check_youtubedl
+  cat >> /root/.bashrc << EOF
+
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+alias ls='ls --color=auto'
+alias la='ls -lAh'
+alias lsa='ls -lah'
+alias md='mkdir -p'
+alias rd='rmdir'
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
+alias untar='tar -zxvf'
+alias wget='wget -c'
+alias tmuxl='tmux ls'
+alias tmuxa='tmux a -t'
+alias tmuxn='tmux new -s'
+alias c='clear'
+alias toolbox='bash <(curl -sL git.io/cg_toolbox)'
+alias swap='bash <(curl -sL git.io/cg_swap)'
+alias a2='bash <(curl -sL git.io/aria2.sh)'
+alias am='bash <(curl -sL git.io/cg_auto_mount)'
+alias av='AV_Data_Capture'
+alias yd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1849n4MVDof3ei8UYW3j430N1QPG_J2de} -vP'"
+alias nano="nano -m"
+EOF
+  source /root/.bashrc
 }
 
 ################## 安装装逼神器 oh my zsh & on my tmux ##################待完善
@@ -202,39 +237,6 @@ ${curr_date} [INFO] 您使用了lnmp一键包！
   添加数据库：lnmp database add
   查看帮助：lnmp
 EOF
-}
-
-################## 批量别名 ##################
-my_alias() {
-  check_youtubedl
-  cat >> /root/.bashrc << EOF
-
-alias l.='ls -d .* --color=auto'
-alias ll='ls -l --color=auto'
-alias ls='ls --color=auto'
-alias la='ls -lAh'
-alias lsa='ls -lah'
-alias md='mkdir -p'
-alias rd='rmdir'
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
-alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
-alias untar='tar -zxvf'
-alias wget='wget -c'
-alias tmuxl='tmux ls'
-alias tmuxa='tmux a -t'
-alias tmuxn='tmux new -s'
-alias c='clear'
-alias toolbox='bash <(curl -sL git.io/cg_toolbox)'
-alias swap='bash <(curl -sL git.io/cg_swap)'
-alias a2='bash <(curl -sL git.io/aria2.sh)'
-alias am='bash <(curl -sL git.io/cg_auto_mount)'
-alias av='AV_Data_Capture'
-alias yd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1849n4MVDof3ei8UYW3j430N1QPG_J2de} -vP'"
-alias nano="nano -m"
-EOF
-  source /root/.bashrc
 }
 
 ################## menu_go_on ##################
@@ -460,5 +462,4 @@ main_menu() {
 
 ################## 执  行  命  令 ##################
 initialization
-check_rclone
 main_menu

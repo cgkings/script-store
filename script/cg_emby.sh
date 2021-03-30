@@ -24,7 +24,7 @@ ip_addr=$(hostname -I | awk '{print $1}')
 check_emby_version() {
   #获取官网最新正式版版本号(排除beta版)
   emby_version=$(curl -s https://github.com/MediaBrowser/Emby.Releases/releases/ | grep -Eo "tag/[0-9.]+\">([0-9.]+.*)" | grep -v "beta" | grep -Eo "[0-9.]+" | head -n1)
-  emby_version=${emby_version:-"4.6.0.34"}
+  emby_version=${emby_version:-"4.5.4.0"}
   #获取本地emby版本号
   if [[ "${release}" == "centos" ]]; then
     emby_local_version=$(rpm -q emby-server | grep -Eo "[0-9.]+\.[0-9]+")
