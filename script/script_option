@@ -199,13 +199,22 @@ check_rclone() {
   fi
   #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
   if [ ! -f /root/.config/rclone/rclone.conf ]; then
-    echo -e "${curr_date} ${red}[警告]${normal}： 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用."
-  #else
-  #检查conf文件内root_folder_id是否为空，如不为空就全部清空
-  #  [ -n "$(awk '/root_folder_id/{print $3}' ~/.config/rclone/rclone.conf)" ] && sed -i "s/root_folder_id = .*$/root_folder_id = /g" ~/.config/rclone/rclone.conf
+    if grep -q "未检测到rclone配置文件" /root/install_log.txt; then
+      echo
+    else
+      echo -e "${curr_date} ${red}[警告]${normal}： 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用." >> /root/install_log.txt
+    fi
+  else
+    if grep -q "已检测到rclone配置文件" /root/install_log.txt; then
+      echo
+    else
+      echo -e "${curr_date} ${red}[INFO]${normal}： 已检测到rclone配置文件，rclone/fclone可以使用了." >> /root/install_log.txt
+    fi
   fi
   ###file-max设置，解决too many open files问题###
-  if [ "$(ulimit -n)" != 65535 ]; then
+  if grep -q "65535" /etc/security/limits.conf; then
+    echo
+  else
     echo -e "\nfs.file-max = 6553500" >> /etc/sysctl.conf
     sysctl -p
     cat >> /etc/security/limits.conf << EOF

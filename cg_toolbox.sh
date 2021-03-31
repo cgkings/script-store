@@ -24,21 +24,19 @@ initialization() {
   #TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "初始化中...(initializing)
 #请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)
 #初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
-  sleep 0.5
-  echo 5
-  check_sys
-  sleep 0.5s
+  sleep 1s
   echo 10
+  check_sys
+  sleep 1s
+  echo 20
   #echo -e "${curr_date} [INFO] 静默升级系统软件源"
-  TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "静默升级系统软件源" 8 100
-  apt-get update --fix-missing -y > /dev/null
-  sleep 0.5s
+  sleep 1s
   echo 50
   #echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
   #apt upgrade -y > /dev/null
-  echo -e "${curr_date} [INFO] 静默检查并安装常用软件"
+  #echo -e "${curr_date} [INFO] 静默检查并安装常用软件"
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file fuse jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential
-  sleep 0.5s
+  sleep 1s
   echo 70
   check_youtubedl
   sleep 1s
