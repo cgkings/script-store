@@ -63,7 +63,7 @@ check_emby() {
       systemctl stop emby-server #结束 emby 进程
       sed -i '/[Service]/a\Restart=always\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
       systemctl daemon-reload && systemctl start emby-server
-      echo -e "${curr_date} ${green}[INFO]${normal} Emby安装成功.您可以访问  http://${ip_addr}:8096 进一步配置Emby."
+      whiptail --title "EMBY安装成功提示！！！" --msgbox "恭喜您EMBY安装成功，请您访问：http://${ip_addr}:8096 进一步配置Emby, 感谢使用~~~" 10 60
     fi
   fi
 }

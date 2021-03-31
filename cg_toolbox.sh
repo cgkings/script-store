@@ -21,20 +21,32 @@ setcolor
 
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
 initialization() {
-  clear
-  TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "初始化中...(initializing)
-请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)
-初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
+  #TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "初始化中...(initializing)
+#请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)
+#初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
+  sleep 0.5
+  echo 5
   check_sys
-  echo -e "${curr_date} [INFO] 静默升级系统软件源"
+  sleep 0.5s
+  echo 10
+  #echo -e "${curr_date} [INFO] 静默升级系统软件源"
+  TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "静默升级系统软件源" 8 100
   apt-get update --fix-missing -y > /dev/null
+  sleep 0.5s
+  echo 50
   #echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
   #apt upgrade -y > /dev/null
   echo -e "${curr_date} [INFO] 静默检查并安装常用软件"
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file fuse jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential
+  sleep 0.5s
+  echo 70
   check_youtubedl
+  sleep 0.5s
+  echo 80
   check_rclone
   ###设置时区###
+  sleep 0.5s
+  echo 90
   echo -e "${curr_date} [INFO] 静默检查设置中国时区"
   if timedatectl | grep -q Asia/Shanghai; then
     echo
@@ -46,8 +58,12 @@ initialization() {
     echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   fi
   ###自动设置虚拟内存###
+  sleep 0.5s
+  echo 95
   echo -e "${curr_date} [INFO] 静默检查设置虚拟内存"
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
+  sleep 0.5s
+  echo 100
 }
 
 ################## 语言设置 ##################[done]
@@ -461,5 +477,5 @@ main_menu() {
 }
 
 ################## 执  行  命  令 ##################
-initialization
+initialization | whiptail --gauge "正在安装Nginx,过程可能需要几分钟请稍后.........." 6 60 0
 main_menu
