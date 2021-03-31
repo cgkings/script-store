@@ -477,5 +477,5 @@ main_menu() {
 }
 
 ################## 执  行  命  令 ##################
-initialization | whiptail --gauge "正在安装Nginx,过程可能需要几分钟请稍后.........." 6 60 0
+initialization | whiptail --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
 main_menu
