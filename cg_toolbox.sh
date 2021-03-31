@@ -41,7 +41,7 @@ initialization() {
   sleep 0.5s
   echo 70
   check_youtubedl
-  sleep 0.5s
+  sleep 1s
   echo 80
   check_rclone
   ###设置时区###
@@ -62,7 +62,7 @@ initialization() {
   echo 95
   echo -e "${curr_date} [INFO] 静默检查设置虚拟内存"
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
-  sleep 0.5s
+  sleep 1s
   echo 100
 }
 
