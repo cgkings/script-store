@@ -187,15 +187,20 @@ mount_menu() {
 ################## 执  行  命  令 ##################
 check_sys
 check_rclone
-check_command fuse
-#自动计算缓存空间
-Avail_size=$(df -h /home|awk '{print $4}'|sed -n 2p|sed 's/G//g')
-cache_size="$(echo $Avail_size / 2|bc)G"
-#自动计算内存缓冲区空间
-totalmem=$(free -m | awk '/Mem:/{print $2}')
-buffer_mem="$((totalmem / 2))M"
+if [ ! -f /etc/fuse.conf ]; then
+  echo -e "$curr_date 未找到fuse包.正在安装..."
+  sleep 1s
+  if [[ "${release}" = "centos" ]];then
+          yum install fuse -y > /dev/null
+  elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]];then
+          apt-get install fuse -y > /dev/null
+  fi
+  echo
+  echo -e "$curr_date fuse安装完成." >> /root/install_log.txt
+  echo
+fi
 #挂载参数,缓存目录默认在/home/cache
-mount_tag="--umask 000 --allow-other --allow-non-empty --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size $buffer_mem --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --transfers 4 --log-level INFO --log-file=/mnt/rclone.log"
+mount_tag="--umask 000 --allow-other --allow-non-empty --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --cache-dir=/home/cache --vfs-cache-mode writes --use-mmap --buffer-size 256M --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --transfers 4 --log-level INFO --log-file=/mnt/rclone.log"
 #mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size $cache_size --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
 if [ -z "$1" ]; then
   mount_menu
