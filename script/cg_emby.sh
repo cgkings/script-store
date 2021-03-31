@@ -62,20 +62,14 @@ check_emby() {
       echo -e "${curr_date} ${green}[INFO]${normal} 修改emby服务设置fail自动重启."
       systemctl stop emby-server #结束 emby 进程
       sed -i '/[Service]/a\Restart=always\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
+      #破解emby
+      rm -f /opt/emby-server/system/System.Net.Http.dll
+      wget https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll #(注意替换掉命令中的 emby 所在目录)下载破解程序集替换原有程序
+      sleep 3s
       systemctl daemon-reload && systemctl start emby-server
       whiptail --title "EMBY安装成功提示！！！" --msgbox "恭喜您EMBY安装成功，请您访问：http://${ip_addr}:8096 进一步配置Emby, 感谢使用~~~" 10 60
     fi
   fi
-}
-
-################## 破解emby ##################
-pojie_emby() {
-  sudo -i #切换为 root 用户
-  systemctl stop emby-server #结束 emby 进程
-  rm -f /opt/emby-server/system/System.Net.Http.dll
-  wget https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll #(注意替换掉命令中的 emby 所在目录)下载破解程序集替换原有程序
-  sleep 3s
-  systemctl daemon-reload && systemctl start emby-server
 }
 
 ################## 备份emby ##################
@@ -128,8 +122,7 @@ main_menu() {
     Install_standard)
       standard_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "单选模式" --menu --nocancel "注：本脚本的emby安装和卸载、备份和还原需要配套使用，ESC退出" 22 65 10 \
         "Back" "返回上级菜单(Back to main menu)" \
-        "install" "安装emby" \
-        "pojie" "破解emby" \
+        "install" "安装emby[已破解]" \
         "bak" "备份emby" \
         "revert" "还原emby" \
         "Uninstall" "卸载emby" 3>&1 1>&2 2>&3)
@@ -139,9 +132,6 @@ main_menu() {
           ;;
         install)
           check_emby
-          ;;
-        pojie)
-          pojie_emby
           ;;
         bak)
           bak_emby
@@ -163,7 +153,6 @@ main_menu() {
         "mount" "挂载gd" off \
         "swap" "自动设置2倍物理内存的虚拟内存" off \
         "install" "安装emby" off \
-        "pojie" "破解emby" off \
         "revert" "还原emby" off 2> results
       while read choice; do
         case $choice in
@@ -182,9 +171,6 @@ main_menu() {
             ;;
           install)
             check_emby
-            ;;
-          pojie)
-            pojie_emby
             ;;
           revert)
             revert_emby
