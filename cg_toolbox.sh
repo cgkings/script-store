@@ -43,7 +43,7 @@ initialization() {
   echo 80
   check_rclone
   ###设置时区###
-  sleep 1s
+  sleep 0.5s
   echo 90
   if timedatectl | grep -q Asia/Shanghai; then
     echo > /dev/null
@@ -58,7 +58,7 @@ initialization() {
   sleep 1s
   echo 95
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
-  sleep 3s
+  sleep 0.5s
   echo 100
 }
 
