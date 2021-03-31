@@ -202,13 +202,13 @@ check_rclone() {
   #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
   if [ ! -f /root/.config/rclone/rclone.conf ]; then
     if grep -q "未检测到rclone配置文件" /root/install_log.txt; then
-      echo
+      return 0
     else
       echo -e "${curr_date} [警告]： 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用." >> /root/install_log.txt
     fi
   else
     if grep -q "已检测到rclone配置文件" /root/install_log.txt; then
-      echo
+      return 0
     else
       echo -e "${curr_date} [INFO]： 已检测到rclone配置文件，rclone/fclone可以使用了." >> /root/install_log.txt
     fi

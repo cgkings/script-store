@@ -46,7 +46,7 @@ initialization() {
   sleep 1s
   echo 90
   if timedatectl | grep -q Asia/Shanghai; then
-    echo
+    return 0
   else
     timedatectl set-timezone 'Asia/Shanghai'
     timedatectl set-ntp true
