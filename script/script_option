@@ -204,7 +204,7 @@ check_rclone() {
     if grep -q "未检测到rclone配置文件" /root/install_log.txt; then
       echo > /dev/null
     else
-      echo -e "${curr_date} [警告] 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用." >> /root/install_log.txt
+      echo -e "${curr_date} [警告] 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用" >> /root/install_log.txt
     fi
   else
     if grep -q "已检测到rclone配置文件" /root/install_log.txt; then
