@@ -24,10 +24,10 @@ initialization() {
   #TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "初始化中...(initializing)
 #请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)
 #初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
-  sleep 1s
+  sleep 0.5s
   echo 10
   check_sys
-  sleep 1s
+  sleep 0.5s
   echo 20
   #echo -e "${curr_date} [INFO] 静默升级系统软件源"
   sleep 1s
@@ -36,12 +36,12 @@ initialization() {
   #apt upgrade -y > /dev/null
   #echo -e "${curr_date} [INFO] 静默检查并安装常用软件"
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file fuse jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential
-  sleep 1s
+  sleep 0.5s
   echo 70
-  check_youtubedl > /dev/null
-  sleep 1s
+  check_youtubedl
+  sleep 0.5s
   echo 80
-  check_rclone > /dev/null
+  check_rclone
   ###设置时区###
   sleep 1s
   echo 90
@@ -453,5 +453,4 @@ main_menu() {
 
 ################## 执  行  命  令 ##################
 initialization | whiptail --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
-reset
 main_menu

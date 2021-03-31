@@ -188,7 +188,9 @@ check_rclone() {
   #检查fclone安装状态，没装就安装
   if [ -z "$(command -v fclone)" ]; then
     echo -e "${curr_date} ${red}fclone${normal} 不存在.正在为您安装，请稍后..."
-    wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip && unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ && rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone && fclone version
+    wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone-v0.4.1-linux-amd64.zip
+    unzip -qo fclone-v0.4.1-linux-amd64.zip -d /usr/bin/ > /dev/null
+    rm -f fclone-v0.4.1-linux-amd64.zip && chmod +x /usr/bin/fclone
     echo -e "${curr_date} [INFO] fclone已安装" >> /root/install_log.txt
   fi
   #检查rclone安装状态，没装就安装
@@ -213,7 +215,7 @@ check_rclone() {
   fi
   ###file-max设置，解决too many open files问题###
   if grep -q "65535" /etc/security/limits.conf; then
-    echo
+    return 0
   else
     echo -e "\nfs.file-max = 6553500" >> /etc/sysctl.conf
     sysctl -p
