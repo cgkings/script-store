@@ -194,7 +194,7 @@ check_rclone() {
   #检查rclone安装状态，没装就安装
   if [ -z "$(command -v rclone)" ]; then
     echo -e "${curr_date} ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
-    bash <(curl -L -s https://rclone.org/install.sh) > /dev/null && rclone version
+    bash <(curl -sL https://rclone.org/install.sh) > /dev/null
     echo -e "${curr_date} [INFO] rclone已安装" >> /root/install_log.txt
   fi
   #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
@@ -202,13 +202,13 @@ check_rclone() {
     if grep -q "未检测到rclone配置文件" /root/install_log.txt; then
       echo
     else
-      echo -e "${curr_date} ${red}[警告]${normal}： 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用." >> /root/install_log.txt
+      echo -e "${curr_date} [警告]： 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用." >> /root/install_log.txt
     fi
   else
     if grep -q "已检测到rclone配置文件" /root/install_log.txt; then
       echo
     else
-      echo -e "${curr_date} ${red}[INFO]${normal}： 已检测到rclone配置文件，rclone/fclone可以使用了." >> /root/install_log.txt
+      echo -e "${curr_date} [INFO]： 已检测到rclone配置文件，rclone/fclone可以使用了." >> /root/install_log.txt
     fi
   fi
   ###file-max设置，解决too many open files问题###
@@ -235,7 +235,6 @@ root hard nproc 65535
 EOF
     echo -e "\nsession required pam_limits.so" >> /etc/pam.d/common-session
     echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
-    reset
   fi
 }
 
@@ -381,7 +380,7 @@ check_nodejs() {
 check_youtubedl() {
   if [ -z "$(command -v youtube-dl)" ]; then
     echo -e "${curr_date} ${red}youtube-dl${normal} 不存在.正在为您安装，请稍后..."
-    sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+    sudo curl -sL https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
     sudo chmod a+rx /usr/local/bin/youtube-dl
     echo -e "${curr_date} [INFO] youtube-dl已安装" >> /root/install_log.txt
   fi

@@ -38,14 +38,13 @@ initialization() {
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file fuse jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential
   sleep 1s
   echo 70
-  check_youtubedl
+  check_youtubedl > /dev/null
   sleep 1s
   echo 80
-  check_rclone
+  check_rclone > /dev/null
   ###设置时区###
-  sleep 0.5s
+  sleep 1s
   echo 90
-  echo -e "${curr_date} [INFO] 静默检查设置中国时区"
   if timedatectl | grep -q Asia/Shanghai; then
     echo
   else
@@ -56,9 +55,8 @@ initialization() {
     echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   fi
   ###自动设置虚拟内存###
-  sleep 0.5s
+  sleep 1s
   echo 95
-  echo -e "${curr_date} [INFO] 静默检查设置虚拟内存"
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
   sleep 1s
   echo 100
@@ -455,4 +453,5 @@ main_menu() {
 
 ################## 执  行  命  令 ##################
 initialization | whiptail --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
+reset
 main_menu
