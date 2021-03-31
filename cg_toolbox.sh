@@ -255,27 +255,6 @@ ${curr_date} [INFO] 您使用了lnmp一键包！
 EOF
 }
 
-################## menu_go_on ##################
-menu_go_on() {
-  echo -e "安装日志路径：/root/install_log.txt"
-  echo -e "${black}${on_white}${bold}                               我们的生活充满阳  光                               ${normal}"
-  echo -e "${red}是否还要继续?${normal}"
-  read -r -n1 -p "Y继续执行，其它任意键退出脚本[Y/n]" res
-  echo
-  case "$res" in
-    Y | y)
-      main_menu
-      ;;
-    N | n)
-      exit 1
-      ;;
-    *)
-      echo "输入错误"
-      exit 1
-      ;;
-  esac
-}
-
 ################## 主    菜    单 ##################
 main_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 80 10 \
