@@ -30,7 +30,8 @@ initialization() {
   sleep 0.5s
   echo 20
   #echo -e "${curr_date} [INFO] 静默升级系统软件源"
-  sleep 1s
+  apt-get update --fix-missing > /dev/null
+  sleep 0.5s
   echo 50
   #echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
   #apt upgrade -y > /dev/null
