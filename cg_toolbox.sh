@@ -58,7 +58,7 @@ initialization() {
   sleep 1s
   echo 95
   [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
-  sleep 1s
+  sleep 3s
   echo 100
 }
 
