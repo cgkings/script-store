@@ -66,7 +66,7 @@ initialization() {
 ################## 语言设置 ##################[done]
 setlanguage_cn() {
   if [[ $LANG == "zh_CN.UTF-8" ]]; then
-    echo
+    echo > /dev/null
   else
     chattr -i /etc/locale.gen #解除文件修改限制
     cat > '/etc/locale.gen' << EOF
@@ -85,12 +85,13 @@ EOF
     export LANGUAGE="zh_CN.UTF-8"
     export LANG="zh_CN.UTF-8"
     export LC_ALL="zh_CN.UTF-8"
+    echo -e "${curr_date} [INFO] 设置语言为中文" >> /root/install_log.txt
   fi
 }
 
 setlanguage_us() {
   if [[ $LANG == "en_US.UTF-8" ]]; then
-    echo
+    echo > /dev/null
   else
     chattr -i /etc/locale.gen #解除文件修改限制
     cat > '/etc/locale.gen' << EOF
@@ -108,6 +109,7 @@ EOF
     export LANGUAGE="en_US.UTF-8"
     export LANG="en_US.UTF-8"
     export LC_ALL="en_US.UTF-8"
+    echo -e "${curr_date} [INFO] 设置语言为英文" >> /root/install_log.txt
   fi
 }
 
