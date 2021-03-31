@@ -452,5 +452,5 @@ main_menu() {
 }
 
 ################## 执  行  命  令 ##################
-initialization | whiptail --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
+initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
 main_menu
