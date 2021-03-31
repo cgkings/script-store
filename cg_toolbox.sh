@@ -187,7 +187,7 @@ EOF
 
 ################## buyvm挂载256G硬盘 ##################
 buyvm_disk() {
-  disk=$(fdisk -l | grep 256 | awk '{print $2}' | sed -n '1p' | awk -F ":" '{print $1}') #获取256G磁盘名
+  disk=$(fdisk -l|grep 256|sed -n '$p'|awk '{print $1}') #获取256G磁盘名
   mount_status=$(df -h | grep "$disk")                                     #挂载状态
   if [ -z "$disk" ]; then
     echo -e "未找到256G磁盘，请到控制台先加卷后再运行本脚本"
@@ -205,12 +205,12 @@ wq
 EOF
       partprobe                                            #不重启重新读取分区信息
       #格式化ext4分区
-      mkfs -t ext4 "$disk"1 << EOF
+      mkfs -t ext4 "$disk" << EOF
 y
 EOF
       mkdir -p 755 /home                                   #确保/home目录存在
-      mount "$disk"1 /home                                 #将256G硬盘挂载到系统/home文件夹
-      echo "${disk}1 /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
+      mount "$disk" /home                                 #将256G硬盘挂载到系统/home文件夹
+      echo "${disk} /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
     else
       echo -e "256G磁盘已挂载，无须重复操作"
     fi
@@ -252,6 +252,33 @@ ${curr_date} [INFO] 您使用了lnmp一键包！
   添加数据库：lnmp database add
   查看帮助：lnmp
 EOF
+}
+
+################## 效率检测 ##################
+VPS_INFO() {
+  clear
+  whiptail --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "机器配置信息" --msgbox "
+CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')
+CPU 核心: $(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo)
+CPU 频率: $(awk -F: '/cpu MHz/ {freq=$2} END {print freq}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//') MHz
+硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2>/dev/null|grep total|awk '{ print $2 }') / 1024)) GB
+内存容量: $(free -m | awk '/Mem/ {print $2}') MB
+虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB
+开机时长: $( awk '{a=$1/86400;b=($1%86400)/3600;c=($1%3600)/60} {printf("%d days, %d hour %d min\n",a,b,c)}' /proc/uptime)
+系统负载: $( w | head -1 | awk -F'load average:' '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//')
+系统    : $(lsb_release -a | awk -F':' '/Description/ {print $2}')
+架构    : $(uname -m)
+内核    : $(uname -r)
+虚拟架构: $(virt-what)
+本地地址：$(hostname -I | awk '{print $1}')" 20 65
+  clear
+}
+
+io_test(){
+  whiptail --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "硬盘I/O测试" --msgbox "
+硬盘I/O (第一次测试) :$( (LANG=C dd if=/dev/zero of=test_$$ bs=64k count=16k conv=fdatasync && rm -f test_$$ ) 2>&1 | awk -F, '{io=$NF} END { print io}' | sed 's/^[ \t]*//;s/[ \t]*$//')
+硬盘I/O (第二次测试) :$( (LANG=C dd if=/dev/zero of=test_$$ bs=64k count=16k conv=fdatasync && rm -f test_$$ ) 2>&1 | awk -F, '{io=$NF} END { print io}' | sed 's/^[ \t]*//;s/[ \t]*$//')
+硬盘I/O (第三次测试) :$( (LANG=C dd if=/dev/zero of=test_$$ bs=64k count=16k conv=fdatasync && rm -f test_$$ ) 2>&1 | awk -F, '{io=$NF} END { print io}' | sed 's/^[ \t]*//;s/[ \t]*$//')" 20 65
 }
 
 ################## 主    菜    单 ##################
@@ -436,9 +463,11 @@ main_menu() {
           ;;
         1)
           VPS_INFO
+          main_menu
           ;;
         2)
           io_test
+          main_menu
           ;;
         3)
           curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s fast
