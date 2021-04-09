@@ -124,6 +124,28 @@ EOF
   df -h
 }
 
+################## 选择挂载参数 ##################
+choose_mount_tag() {
+  if (whiptail --title "挂载参数选择" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --yesno "默认挂载参数如下，是否使用默认值？ /
+--umask 000                              *权限设置
+--allow-other                            *允许多用户使用
+--allow-non-empty                        *多盘同地址挂载
+--daemon-timeout=10m                     *内核响应超时
+--dir-cache-time 24h                     *缓存强制刷新时间
+--poll-interval 1h                       *轮询gd盘变动间隔
+--cache-dir=/home/cache                  *缓存目录
+--vfs-cache-mode writes                  *vfs模式
+--use-mmap                               *内存占用优化
+--buffer-size 512M                       *内存缓冲区
+--vfs-read-chunk-size 128M               *最小缓存块
+--vfs-read-chunk-size-limit 1G           *缓存块倍增极限值
+--log-level INFO --log-file=/mnt/rclone.log" 20 65); then
+    echo "You chose Yes. Exit status was $?."
+  else
+    echo "You chose No. Exit status was $?."
+  fi
+}
+
 ################## 脚本参数帮助 ##################
 mount_help() {
   cat << EOF
@@ -190,9 +212,9 @@ check_rclone
 if [ ! -f /etc/fuse.conf ]; then
   echo -e "$curr_date 未找到fuse包.正在安装..."
   sleep 1s
-  if [[ "${release}" = "centos" ]];then
+  if [[ "${release}" = "centos" ]]; then
           yum install fuse -y > /dev/null
-  elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]];then
+  elif [[ "${release}" = "debian" || "${release}" = "ubuntu" ]]; then
           apt-get install fuse -y > /dev/null
   fi
   echo
@@ -200,8 +222,8 @@ if [ ! -f /etc/fuse.conf ]; then
   echo
 fi
 #挂载参数,缓存目录默认在/home/cache
-mount_tag="--umask 000 --allow-other --allow-non-empty --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --cache-dir=/home/cache --vfs-cache-mode writes --use-mmap --buffer-size 512M --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
-#mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size $cache_size --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --transfers 16 --log-level INFO --log-file=/mnt/rclone.log"
+mount_tag="--umask 000 --allow-other --allow-non-empty --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 512M --vfs-read-ahead 8G --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
+#mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size $cache_size --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
 if [ -z "$1" ]; then
   mount_menu
 else
