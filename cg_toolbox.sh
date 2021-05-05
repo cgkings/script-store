@@ -55,11 +55,8 @@ initialization() {
     #  echo "Asia/Shanghai" > /etc/timezone
     echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   fi
-  ###自动设置虚拟内存###
   sleep 1s
   echo 95
-  [[ $(free -m | awk '/Swap:/{print $2}') == 0 ]] && bash <(curl -sL git.io/cg_swap) a
-  sleep 0.5s
   echo 100
 }
 
