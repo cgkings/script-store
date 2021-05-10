@@ -80,7 +80,7 @@ bak_emby() {
   systemctl stop emby-server #结束 emby 进程
   rm -rf /var/lib/emby/cache/* #清空cache
   cd /var/lib && tar -cvf emby_bak_"$(date "+%Y-%m-%d")".tar emby #打包/var/lib/emby
-  fclone move emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
+  rclone move emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
   systemctl start emby-server
 }
 
@@ -89,7 +89,7 @@ revert_emby() {
     check_emby
     remote_choose
     td_id_choose
-    fclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/    /g' > ~/.config/rclone/bak_list.txt
+    rclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/    /g' > ~/.config/rclone/bak_list.txt
     bak_list=($(cat ~/.config/rclone/bak_list.txt))
     bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
     "${bak_list[@]}" 3>&1 1>&2 2>&3)
@@ -98,9 +98,9 @@ revert_emby() {
       myexit 0
     else
       systemctl stop emby-server #结束 emby 进程
-      fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
+      rclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
       rm -rf /var/lib/emby
-      tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
+      tar -xvf "/root/$bak_name" -C /var/lib && rm -f "/root/$bak_name"
       systemctl start emby-server
       rm -rf ~/.config/rclone/bak_list.txt
     fi
