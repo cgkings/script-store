@@ -25,12 +25,15 @@ check_qbt() {
 install_qbt() {
   clear
   apt-get remove qbittorrent-nox -y
+  #获取最新版本号，并下载安装
   qbtver=$(curl -s "https://api.github.com/repos/c0re100/qBittorrent-Enhanced-Edition/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
   wget -qN https://github.com/c0re100/qBittorrent-Enhanced-Edition/releases/download/"${qbtver}"/qbittorrent-nox_x86_64-linux-musl_static.zip
   unzip -o qbittorrent*.zip && rm -f qbittorrent*.zip
   mv -f qbittorrent-nox /usr/bin/
   chmod +x /usr/bin/qbittorrent-nox
-  mkdir -p /home/qbt & chmod 755 /home/qbt
+  #备份配置文件：cd /home && tar -cvf qbt_bat20210528.tar qbt
+  #还原qbt配置：wget && rm -rf /home/qbt && tar -xvf qbt_bat20210528.tar -C /home && rm -f qbt_bat20210528.tar && chmod 755 /home/qbt
+  #建立qbt服务
   cat > '/etc/systemd/system/qbt.service' << EOF
 [Unit]
 Description=qBittorrent Daemon Service
@@ -52,7 +55,7 @@ RestartSec=3s
 [Install]
 WantedBy=multi-user.target
 EOF
-  systemctl daemon-reload && systemctl enable qbt.service
+  systemctl daemon-reload && systemctl enable qbt.service && systemctl restart qbt.service
   cd /usr/share/nginx/qBittorrent/data/GeoIP/
   curl -LO --progress-bar https://raw.githubusercontent.com/johnrosen1/vpstoolbox/master/binary/GeoLite2-Country.mmdb
   systemctl restart qbittorrent.service
