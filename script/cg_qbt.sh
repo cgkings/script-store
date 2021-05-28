@@ -53,15 +53,8 @@ RestartSec=3s
 WantedBy=multi-user.target
 EOF
   systemctl daemon-reload && systemctl enable qbt.service
-  mkdir /usr/share/nginx/qBittorrent/
-  mkdir /usr/share/nginx/qBittorrent/downloads/
-  mkdir /usr/share/nginx/qBittorrent/data/
-  mkdir /usr/share/nginx/qBittorrent/data/GeoIP/
   cd /usr/share/nginx/qBittorrent/data/GeoIP/
   curl -LO --progress-bar https://raw.githubusercontent.com/johnrosen1/vpstoolbox/master/binary/GeoLite2-Country.mmdb
-  cd
-  chmod 755 /usr/share/nginx/
-  chown -R nginx:nginx /usr/share/nginx/
   systemctl restart qbittorrent.service
   clear
 }
