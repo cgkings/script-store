@@ -68,7 +68,6 @@ install_qbt_origin() {
     apt-get install qbittorrent-nox -y
   elif [[ ${dist} == ubuntu ]]; then
     add-apt-repository ppa:qbittorrent-team/qbittorrent-stable -y
-    apt-get update
     apt-get install qbittorrent-nox -y
   else
     echo "fail"
@@ -80,18 +79,15 @@ Description=qBittorrent Daemon Service
 Documentation=https://github.com/c0re100/qBittorrent-Enhanced-Edition
 Wants=network-online.target
 After=network-online.target nss-lookup.target
-
 [Service]
 Type=simple
 User=root
 RemainAfterExit=yes
 ExecStart=/usr/bin/qbittorrent-nox --profile=/usr/share/nginx/
 TimeoutStopSec=infinity
-LimitNOFILE=51200
-LimitNPROC=51200
+LimitNOFILE=65536
 Restart=on-failure
 RestartSec=3s
-
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -107,6 +103,4 @@ EOF
   chmod 755 /usr/share/nginx/
   chown -R nginx:nginx /usr/share/nginx/
   systemctl restart qbittorrent.service
-  clear
 }
-
