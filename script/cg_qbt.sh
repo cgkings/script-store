@@ -147,9 +147,8 @@ qb_del() {
 ################## 主执行模块 ##################
 check_rclone
 check_qbt
-if [ ! -d /home/qbt ]
-then
-	mkdir -p /home/qbt
+if [ ! -d /home/qbt ]; then
+  mkdir -p /home/qbt
 fi
 if [ -z "$content_dir" ]; then
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行" >> /home/qbt/qb.log
