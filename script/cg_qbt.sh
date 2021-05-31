@@ -16,7 +16,7 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
-#/root/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
+#/home/qbt/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
 torrent_name=$1 # %N：Torrent名称=mide-007-C
 content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
 files_num=$3 # %C
@@ -41,7 +41,7 @@ check_qbt() {
     unzip -o qbittorrent*.zip && rm -f qbittorrent*.zip
     mv -f qbittorrent-nox /usr/bin/
     chmod +x /usr/bin/qbittorrent-nox
-    #备份配置文件：cd /home && tar -cvf qbt_bat20210528.tar qbt
+    #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
     #还原qbt配置：
     wget && rm -rf /home/qbt && tar -xvf qbt_bat20210528.tar -C /home && rm -f qbt_bat20210528.tar && chmod 755 /home/qbt
     #建立qbt服务
@@ -136,6 +136,7 @@ qb_del() {
   if [ -n "${cookie}" ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] 登录成功！cookie:${cookie}" >> /home/qbt/qb.log
     curl "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
+    rm -f "$content_dir"
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] 删除成功！种子名称:${torrent_name}" >> /home/qbt/qb.log
   else
     echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 登录失败！" >> /home/qbt/qb.log
