@@ -67,7 +67,7 @@ RestartSec=3s
 WantedBy=multi-user.target
 EOF
     systemctl daemon-reload && systemctl enable qbt.service && systemctl restart qbt.service
-    cat >> /home/qbt/qb.log << EOF
+    cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
@@ -145,6 +145,7 @@ qb_del() {
 }
 
 ################## 主执行模块 ##################
+check_rclone
 check_qbt
 if [ -z "$content_dir" ]; then
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行" >> /home/qbt/qb.log
