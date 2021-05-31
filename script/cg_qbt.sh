@@ -98,13 +98,13 @@ rclone_upload() {
   if [ -z "${file_category}" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   elif [ "${file_category}" == "chs" ]; then
-    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
+    rclone_dest="{1hzETacfMuAIBAsHqKIys-98glIMRb-iv}"
   elif [ "${file_category}" == "fc2" ]; then
-    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
+    rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
   elif [ "${file_category}" == "suren" ]; then
-    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
+    rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
   elif [ "${file_category}" == "pohuaiban" ]; then
-    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
+    rclone_dest="{1S-b-47Pe54j6wh6ph5t6eY5ZjZqnacqw}"
   else
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   fi
