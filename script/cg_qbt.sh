@@ -136,7 +136,7 @@ qb_del() {
   if [ -n "${cookie}" ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] 登录成功！cookie:${cookie}" >> /home/qbt/qb.log
     curl "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
-    rm -f "$content_dir"
+    rm -rf "$content_dir"
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] 删除成功！种子名称:${torrent_name}" >> /home/qbt/qb.log
   else
     echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 登录失败！" >> /home/qbt/qb.log
