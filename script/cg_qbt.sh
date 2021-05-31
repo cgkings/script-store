@@ -34,7 +34,7 @@ rclone_remote="upsa"
 check_qbt() {
     if [ -z "$(command -v qbittorrent-nox)" ]; then
     clear
-    apt-get remove qbittorrent-nox -y
+    #apt-get remove qbittorrent-nox -y
     #获取最新版本号，并下载安装
     # qbtver=$(curl -s "https://api.github.com/repos/c0re100/qBittorrent-Enhanced-Edition/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     wget -qN https://github.com/c0re100/qBittorrent-Enhanced-Edition/releases/download/release-$qb_version/qbittorrent-nox_x86_64-linux-musl_static.zip
@@ -43,7 +43,7 @@ check_qbt() {
     chmod +x /usr/bin/qbittorrent-nox
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
     #还原qbt配置：
-    wget && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod 755 /home/qbt
+    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
     #建立qbt服务
     cat > '/etc/systemd/system/qbt.service' << EOF
 [Unit]
