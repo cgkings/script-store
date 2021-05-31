@@ -43,7 +43,7 @@ check_qbt() {
     chmod +x /usr/bin/qbittorrent-nox
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
     #还原qbt配置：
-    wget && rm -rf /home/qbt && tar -xvf qbt_bat20210528.tar -C /home && rm -f qbt_bat20210528.tar && chmod 755 /home/qbt
+    wget && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod 755 /home/qbt
     #建立qbt服务
     cat > '/etc/systemd/system/qbt.service' << EOF
 [Unit]
