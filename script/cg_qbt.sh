@@ -27,7 +27,7 @@ file_category=$6 #%L：分类=btzz
 qb_version="4.3.5.10"
 qb_username="cgking"
 qb_password="340622"
-qb_web_url="$(hostname -I | awk '{print $1}'):8070"
+qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
 rclone_remote="upsa"
 
 ################## 检查qbt安装情况 ##################
@@ -108,38 +108,49 @@ rclone_upload() {
   else
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   fi
-  cat >> /home/qbt/qb.log << EOF
------------------------------------------------------------------------------
-种子名称：${torrent_name}
-内容路径：${content_dir}
-文件数量：${files_num}
-文件大小：${torrent_size} Bytes
-文件哈希: ${file_hash}
-分类名称：${file_category}
------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] $torrent_name 分类=$file_category 开始上传
------------------------------------------------------------------------------
-EOF
   fclone move "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vvP --min-size 100M --log-file=/home/qbt/bt_upload.log
   RCLONE_EXIT_CODE=$?
   if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') [INFO] Upload done: ${torrent_name} -> ${rclone_remote}:${rclone_dest}" >> /home/qbt/qb.log
+    cat >> /home/qbt/qb.log << EOF
+--------------------------------------------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done：${torrent_name} ==> ${rclone_remote}:${rclone_dest}
+EOF
+    rm -rf "$content_dir"
+    qb_del
   else
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Upload failed: ${torrent_name}" >> /home/qbt/qb.log
+    cat >> /home/qbt/qb_fail.log << EOF
+--------------------------------------------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ Upload failed:
+分类名称：${file_category}
+种子名称：${torrent_name}
+内容路径：${content_dir}
+文件哈希: ${file_hash}
+上传目标：${rclone_remote}:${rclone_dest}
+--------------------------------------------------------------------------------------------------------------
+EOF
     exit 1
   fi
 }
 
 ################## rclone上传模块 ##################
 qb_del() {
-  cookie=$(curl -i --header "Referer: ${qb_web_url}" --data "username=${qb_username}&password=${qb_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
+  cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qb_username}&password=${qb_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
   if [ -n "${cookie}" ]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] 登录成功！cookie:${cookie}" >> /home/qbt/qb.log
-    curl "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
-    rm -rf "$content_dir"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] 删除成功！种子名称:${torrent_name}" >> /home/qbt/qb.log
+    curl -s "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
+    cat >> /home/qbt/qb.log << EOF
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ login  done：${cookie}
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ delete done：${content_dir}
+--------------------------------------------------------------------------------------------------------------
+EOF
   else
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 登录失败！" >> /home/qbt/qb.log
+    cat >> /home/qbt/qb_fail.log << EOF
+--------------------------------------------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ 登录删除失败！:
+分类名称：${file_category}
+种子名称：${torrent_name}
+cookie : ${cookie}
+--------------------------------------------------------------------------------------------------------------
+EOF
     exit 1
   fi
 }
@@ -155,5 +166,4 @@ if [ -z "$content_dir" ]; then
   exit 1 #异常退出
 else
   rclone_upload
-  qb_del
 fi
