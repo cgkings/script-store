@@ -113,7 +113,7 @@ rclone_upload() {
   if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
     cat >> /home/qbt/qb.log << EOF
 --------------------------------------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done：${torrent_name} ==> ${rclone_remote}:${rclone_dest}
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done：${file_category}:${torrent_name} ==> ${rclone_remote}:${rclone_dest}
 EOF
     rm -rf "$content_dir"
     qb_del
