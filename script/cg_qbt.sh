@@ -138,7 +138,6 @@ qb_del() {
     cat >> /home/qbt/qb.log << EOF
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ login  done：${cookie}
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ delete done：${content_dir}
---------------------------------------------------------------------------------------------------------------
 EOF
   else
     cat >> /home/qbt/qb_fail.log << EOF
