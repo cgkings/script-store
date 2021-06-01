@@ -120,12 +120,10 @@ EOF
   else
     cat >> /home/qbt/qb_fail.log << EOF
 --------------------------------------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ Upload failed:
+$(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ Upload failed:"$content_dir" "$rclone_remote":"$rclone_dest"
 分类名称：${file_category}
 种子名称：${torrent_name}
-内容路径：${content_dir}
 文件哈希: ${file_hash}
-上传目标：${rclone_remote}:${rclone_dest}
 --------------------------------------------------------------------------------------------------------------
 EOF
     exit 1
@@ -148,6 +146,7 @@ EOF
 $(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ 登录删除失败！:
 分类名称：${file_category}
 种子名称：${torrent_name}
+文件哈希: ${file_hash}
 cookie : ${cookie}
 --------------------------------------------------------------------------------------------------------------
 EOF
