@@ -369,7 +369,6 @@ main_menu() {
     Install_extend)
       extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 14 \
         "Back" "返回上级菜单(Back to main menu)" \
-        "my_alias" "自定义别名[可通过alias命令查看]" \
         "bbr" "BBR一键加速[转自HJM]" \
         "v2ray" "一键搭建V2ray[转自233boy]" \
         "offline" "离线下载3件套[aria2/rsshub/flexget]" \
@@ -384,10 +383,6 @@ main_menu() {
         Back)
           main_menu
           return 0
-          ;;
-        my_alias)
-          my_alias
-          echo -e "${curr_date} [INFO] 您设置了my_alias别名！" >> /root/install_log.txt
           ;;
         bbr)
           clear
