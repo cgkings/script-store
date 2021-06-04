@@ -96,14 +96,14 @@ revert_emby() {
     if [ -z "$bak_name" ]; then
       rm -f ~/.config/rclone/bak_list.txt
       myexit 0
-    else
+  else
       systemctl stop emby-server #结束 emby 进程
       fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
       rm -rf /var/lib/emby
       tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
       systemctl start emby-server
       rm -rf ~/.config/rclone/bak_list.txt
-    fi
+  fi
 }
 
 ################## 卸载emby ##################
@@ -118,7 +118,7 @@ main_menu() {
     "install" "安装emby[已破解]" \
     "bak" "备份emby" \
     "revert" "还原emby" \
-    "Uninstall" "卸载emby"
+    "Uninstall" "卸载emby" \
     "Install_Unattended" "无人值守(重装多选)" \
     "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
