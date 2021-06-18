@@ -38,6 +38,9 @@ check_qbt() {
       wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
     elif [ "${qb_install_choose}" == "2" ]; then
       wget -qN https://github.com/c0re100/qBittorrent-Enhanced-Edition/releases/download/release-4.3.5.10/qbittorrent-nox_x86_64-linux-musl_static.zip && unzip -o qbittorrent*.zip && rm -f qbittorrent*.zip && mv -f qbittorrent-nox /usr/bin/ && chmod +x /usr/bin/qbittorrent-nox
+    else
+      echo 配置出错
+      return 1
     fi
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
     #还原qbt配置：
