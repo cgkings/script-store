@@ -19,12 +19,11 @@ setcolor
 #/home/qbt/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
 torrent_name=$1 # %N：Torrent名称=mide-007-C
 content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
-files_num=$3 # %C
-torrent_size=$4 #%Z
+#files_num=$3 # %C
+#torrent_size=$4 #%Z
 file_hash=$5 #%I
 file_category=$6 #%L：分类=btzz
-
-qb_version="4.3.5.10"
+qb_install_choose="1"  #值为1，则安装原版4.3.5，值为2，则安装增强版4.3.5.10
 qb_username="cgking"
 qb_password="340622"
 qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
@@ -32,15 +31,14 @@ rclone_remote="upsa"
 
 ################## 检查qbt安装情况 ##################
 check_qbt() {
-    if [ -z "$(command -v qbittorrent-nox)" ]; then
+  if [ -z "$(command -v qbittorrent-nox)" ]; then
     clear
-    #apt-get remove qbittorrent-nox -y
-    #获取最新版本号，并下载安装
-    # qbtver=$(curl -s "https://api.github.com/repos/c0re100/qBittorrent-Enhanced-Edition/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-    wget -qN https://github.com/c0re100/qBittorrent-Enhanced-Edition/releases/download/release-$qb_version/qbittorrent-nox_x86_64-linux-musl_static.zip
-    unzip -o qbittorrent*.zip && rm -f qbittorrent*.zip
-    mv -f qbittorrent-nox /usr/bin/
-    chmod +x /usr/bin/qbittorrent-nox
+    apt-get remove qbittorrent-nox -y && rm -f /usr/bin/qbittorrent-nox
+    if [ "${qb_install_choose}" == "1" ]; then
+      wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
+    elif [ "${qb_install_choose}" == "2" ]; then
+      wget -qN https://github.com/c0re100/qBittorrent-Enhanced-Edition/releases/download/release-4.3.5.10/qbittorrent-nox_x86_64-linux-musl_static.zip && unzip -o qbittorrent*.zip && rm -f qbittorrent*.zip && mv -f qbittorrent-nox /usr/bin/ && chmod +x /usr/bin/qbittorrent-nox
+    fi
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
     #还原qbt配置：
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
@@ -113,7 +111,7 @@ rclone_upload() {
   if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
     cat >> /home/qbt/qb.log << EOF
 --------------------------------------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done：${file_category}:${torrent_name} ==> ${rclone_remote}:${rclone_dest}
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done ${file_category}:${torrent_name} ==> ${rclone_remote}:${rclone_dest}
 EOF
     rm -rf "$content_dir"
     qb_del
@@ -136,8 +134,8 @@ qb_del() {
   if [ -n "${cookie}" ]; then
     curl -s "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
     cat >> /home/qbt/qb.log << EOF
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ login  done：${cookie}
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ delete done：${content_dir}
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ login  done ${cookie}
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ delete done ${content_dir}
 EOF
   else
     cat >> /home/qbt/qb_fail.log << EOF
@@ -160,7 +158,7 @@ if [ ! -d /home/qbt ]; then
   mkdir -p /home/qbt
 fi
 if [ -z "$content_dir" ]; then
-  echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行" >> /home/qbt/qb.log
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行"                         >> /home/qbt/qb.log
   exit 1 #异常退出
 else
   rclone_upload
