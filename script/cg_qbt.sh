@@ -22,7 +22,7 @@ content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
 #files_num=$3 # %C
 #torrent_size=$4 #%Z
 file_hash=$5 #%I
-file_category=$6 #%L：分类=btzz
+file_category=$6 #%L：分类
 qb_install_choose="1"  #值为1，则安装原版4.3.5，值为2，则安装增强版4.3.5.10
 qb_username="cgking"
 qb_password="340622"
@@ -81,57 +81,7 @@ EOF
   fi
 }
 
-# ################## 检查上传类型：文件or目录 ##################
-# check_content_dir() {
-#   if [ -f "${content_dir}" ]; then
-#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型：文件" >> ${log_dir}/qb.log
-#     type="file"
-#   elif [ -d "${content_dir}" ]; then
-#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型：目录" >> ${log_dir}/qb.log
-#     type="dir"
-#   else
-#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 未知类型，取消上传" >> ${log_dir}/qb.log
-#   fi
-# }
-
-################## rclone上传模块 ##################
-rclone_upload() {
-  if [ -z "${file_category}" ]; then
-    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
-  elif [ "${file_category}" == "chs" ]; then
-    rclone_dest="{1hzETacfMuAIBAsHqKIys-98glIMRb-iv}"
-  elif [ "${file_category}" == "fc2" ]; then
-    rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
-  elif [ "${file_category}" == "suren" ]; then
-    rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
-  elif [ "${file_category}" == "pohuaiban" ]; then
-    rclone_dest="{1S-b-47Pe54j6wh6ph5t6eY5ZjZqnacqw}"
-  else
-    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
-  fi
-  fclone move "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vP --min-size 100M --log-file=/home/qbt/bt_upload.log
-  RCLONE_EXIT_CODE=$?
-  if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
-    cat >> /home/qbt/qb.log << EOF
---------------------------------------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done ${file_category}:${torrent_name} ==> ${rclone_remote}:${rclone_dest}
-EOF
-    rm -rf "$content_dir"
-    qb_del
-  else
-    cat >> /home/qbt/qb_fail.log << EOF
---------------------------------------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ Upload failed:"$content_dir" "$rclone_remote":"$rclone_dest"
-分类名称：${file_category}
-种子名称：${torrent_name}
-文件哈希: ${file_hash}
---------------------------------------------------------------------------------------------------------------
-EOF
-    exit 1
-  fi
-}
-
-################## rclone上传模块 ##################
+################## qbt删除种子 ##################
 qb_del() {
   cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qb_username}&password=${qb_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
   if [ -n "${cookie}" ]; then
@@ -154,15 +104,71 @@ EOF
   fi
 }
 
+# ################## 检查上传类型：文件or目录 ##################
+# check_content_dir() {
+#   if [ -f "${content_dir}" ]; then
+#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型：文件" >> ${log_dir}/qb.log
+#     type="file"
+#   elif [ -d "${content_dir}" ]; then
+#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型：目录" >> ${log_dir}/qb.log
+#     type="dir"
+#   else
+#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 未知类型，取消上传" >> ${log_dir}/qb.log
+#   fi
+# }
+
+################## rclone上传模块 ##################
+rclone_upload() {
+  fclone move "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vP --min-size 100M --log-file=/home/qbt/bt_upload.log
+  RCLONE_EXIT_CODE=$?
+  if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
+    cat >> /home/qbt/qb.log << EOF
+--------------------------------------------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done ${file_category}:${torrent_name} ==> ${rclone_remote}:${rclone_dest}
+EOF
+  else
+    cat >> /home/qbt/qb_fail.log << EOF
+--------------------------------------------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ Upload failed:"$content_dir" "$rclone_remote":"$rclone_dest"
+分类名称：${file_category}
+种子名称：${torrent_name}
+文件哈希: ${file_hash}
+--------------------------------------------------------------------------------------------------------------
+EOF
+  fi
+}
+
 ################## 主执行模块 ##################
 check_rclone
 check_qbt
-if [ ! -d /home/qbt ]; then
-  mkdir -p /home/qbt
-fi
+mkdir -p /home/qbt
 if [ -z "$content_dir" ]; then
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行"                         >> /home/qbt/qb.log
-  exit 1 #异常退出
+  exit 0
 else
-  rclone_upload
+  if [ -z "${file_category}" ]; then
+    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
+    rclone_upload
+  elif [ "${file_category}" == "chs" ]; then
+    rclone_dest="{1hzETacfMuAIBAsHqKIys-98glIMRb-iv}"
+    rclone_upload
+    qb_del
+  elif [ "${file_category}" == "fc2" ]; then
+    rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
+    rclone_upload
+    qb_del
+  elif [ "${file_category}" == "suren" ]; then
+    rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
+    rclone_upload
+    qb_del
+  elif [ "${file_category}" == "pohuaiban" ]; then
+    rclone_dest="{1S-b-47Pe54j6wh6ph5t6eY5ZjZqnacqw}"
+    rclone_upload
+    qb_del
+  else
+    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
+    rclone_upload
+  fi
 fi
+#获取特定种子的分享率命令：curl -s "http://205.185.127.160:8070/api/v2/torrents/properties?hash=d24f98e3b90560629456424fa63833126396ff3a" --cookie "SID=h31J/C2MEOOzu0b3hd/URtmKi7AwIJcI" | jq .share_ratio
+#逐一查看未分类中的已完成种子的分享率 curl -s "http://51.158.153.55:8070/api/v2/torrents/info?filter=completed&category=" --cookie "SID=1Np3WU0feLDOcCtQWBp9cRAqFiQ2vBrj"|jq ".[0]|.ratio"
