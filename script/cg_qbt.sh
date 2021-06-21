@@ -4,18 +4,13 @@
 # bash <(curl -sL git.io/cg_qbt.sh)
 # File Name: cg_qbt.sh
 # Author: cgking
-# Created Time : 2021.5.28
+# Created Time : 2021.6.21
 # Description:qbittonrrent脚本
 # System Required: Debian/Ubuntu
 # Version: final
 #=============================================================
-#set -e #异常则退出整个脚本，避免错误累加
-#set -x #脚本调试，逐行执行并输出执行的脚本命令行
 
 ################## 前置变量设置 ##################
-# shellcheck source=/dev/null
-source <(curl -sL git.io/cg_script_option)
-setcolor
 #/home/qbt/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
 torrent_name=$1 # %N：Torrent名称=mide-007-C
 content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
