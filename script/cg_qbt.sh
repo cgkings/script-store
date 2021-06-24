@@ -114,7 +114,7 @@ EOF
 
 ################## rclone上传模块 ##################
 rclone_upload() {
-  fclone move "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vP --transfers=1 --min-size 100M --log-file=/home/qbt/bt_upload.log
+  fclone copy "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vP --transfers=1 --min-size 100M --log-file=/home/qbt/bt_upload.log
   RCLONE_EXIT_CODE=$?
   if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
     cat >> /home/qbt/qb.log << EOF
