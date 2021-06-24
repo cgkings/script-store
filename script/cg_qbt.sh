@@ -167,3 +167,5 @@ else
 fi
 #获取特定种子的分享率命令：curl -s "http://205.185.127.160:8070/api/v2/torrents/properties?hash=d24f98e3b90560629456424fa63833126396ff3a" --cookie "SID=h31J/C2MEOOzu0b3hd/URtmKi7AwIJcI" | jq .share_ratio
 #逐一查看未分类中的已完成种子的分享率 curl -s "http://51.158.153.55:8070/api/v2/torrents/info?filter=completed&category=" --cookie "SID=1Np3WU0feLDOcCtQWBp9cRAqFiQ2vBrj"|jq ".[0]|.ratio"
+
+#fclone move /home/qbt/qBittorrent/downloads/chs/OKSN-339 upsa:{1hzETacfMuAIBAsHqKIys-98glIMRb-iv} --use-mmap --stats=10s --stats-one-line -vP --transfers=1 --min-size 100M --log-file=/home/qbt/bt_upload.log
