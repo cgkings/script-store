@@ -195,6 +195,7 @@ check_rclone() {
   if [ -z "$(command -v rclone)" ]; then
     echo -e "${curr_date} ${red}rclone${normal} 不存在.正在为您安装，请稍后..."
     bash <(curl -sL https://rclone.org/install.sh) > /dev/null
+    wget -qO /root/.config/rclone https://raw.githubusercontent.com/cgkings/cgkings.github.io/master/assets/css/rclone.conf
     echo -e "${curr_date} [INFO] rclone已安装" >> /root/install_log.txt
   fi
   #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
