@@ -20,7 +20,7 @@ moveto_id="0ADlZqPuTIX3sUk9PVA"
 remote_choose() {
   #选择remote
   rclone listremotes | grep -Eo "[0-9A-Za-z-]+" | awk '{ print FNR " " $0}' > ~/.config/rclone/remote_list.txt
-  remote_list="$(cat ~/.config/rclone/remote_list.txt)"
+  mapfile -t remote_list < <(cat ~/.config/rclone/remote_list.txt)
   remote_choose_num=$(whiptail --clear --ok-button "上下键选择,回车键确定" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "remote选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 "${remote_list[@]}" 3>&1 1>&2 2>&3)
   if [ -z "$remote_choose_num" ]; then
     rm -f ~/.config/rclone/remote_list.txt
