@@ -52,13 +52,13 @@ singlefile() {
   exit
 }
 
-######################移动有码文件##########################
+######################移动文件##########################
 file_move() {
   suma=0
   for forder_num in {A..Z}; do
     suma=$((suma + 1))
     echo -e "即将开始整理从A到Z的视频文件，当前进度 $suma / 26"
-    fclone move "$my_remote:{$from_id}" "$my_remote:{$moveto_id}/$forder_num" --drive-server-side-across-configs -vv --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include "[$forder_num]*.*" --ignore-case --delete-empty-src-dirs --ignore-errors --check-first
+    fclone move "$my_remote:{$from_id}" "$my_remote:{$moveto_id}/$forder_num" --drive-server-side-across-configs -vv --checkers=256 --transfers=320 --drive-pacer-min-sleep=1ms --drive-pacer-burst=1000 --include "[$forder_num]*.{mp4,mkv,avi,rmvb,rm,wmv}" --ignore-case --delete-empty-src-dirs --ignore-errors --check-first
     rclone dedupe "$my_remote:/$forder_num" --dedupe-mode largest --by-hash -vv --drive-use-trash=false --drive-root-folder-id $moveto_id
   done
 }
