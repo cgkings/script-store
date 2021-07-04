@@ -18,6 +18,7 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
+check_sys
 
 ################## 安装avdc ##################
 install_avdc() {
@@ -41,7 +42,6 @@ run_avdc() {
 }
 
 ################## 执  行  命  令 ##################
-check_sys
 check_command unzip wget tmux
 if [ -z $1 ]; then
   install_avdc

@@ -17,58 +17,52 @@
 ################## 前置变量 ##################
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
-setcolor
+curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ip_addr=$(hostname -I | awk '{print $1}')
-
+emby_version="4.6.4.0"
+emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
 ################## 安装emby ##################
-check_emby_version() {
-  #获取官网最新正式版版本号(排除beta版)
-  emby_version=$(curl -s https://github.com/MediaBrowser/Emby.Releases/releases/ | grep -Eo "tag/[0-9.]+\">([0-9.]+.*)" | grep -v "beta" | grep -Eo "[0-9.]+" | head -n1)
-  emby_version=${emby_version:-"4.6.4.0"}
-  #获取本地emby版本号
-  if [[ "${release}" == "centos" ]]; then
-    emby_local_version=$(rpm -q emby-server | grep -Eo "[0-9.]+\.[0-9]+")
-  elif [[ "${release}" == "debian" ]] || [[ "${release}" == "ubuntu" ]] || [[ "${release}" == "armdebian" ]]; then
-    emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
+check_emby() {
+  #判断emby本地安装状态
+  if [ -f /usr/lib/systemd/system/emby-server.service ]; then
+    if [ "$emby_local_version" = "$emby_version" ]; then
+      echo -e "${curr_date} [INFO] 本机原emby版本为 $emby_local_version,无须重复安装"
+    else
+      echo -e "${curr_date} [INFO] 本机原emby版本为 $emby_local_version，建议安装为 $emby_version"
+    fi
+  else
+    #如未安装，则进行安装
+    echo -e "${curr_date} [INFO] emby $emby_version 不存在.正在为您安装，请稍等..."
+    wget -vN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
+    dpkg -i emby-server-deb_"${emby_version}"_amd64.deb
+    sleep 1s
+    rm -f emby-server-deb_"${emby_version}"_amd64.deb
+    whiptail --title "EMBY安装成功提示！！！" --msgbox "恭喜您EMBY $emby_version 安装成功，请您访问：http://${ip_addr}:8096 进一步配置Emby, 感谢使用~~~" 10 60
   fi
 }
 
-check_emby() {
-  check_emby_version
-  #判断emby本地安装状态
-  if [ -f /usr/lib/systemd/system/emby-server.service ]; then
-      echo -e "${curr_date} ${green}[INFO]${normal} 您的系统已安装emby $emby_local_version"
+##################破解emby####################
+crack_emby() {
+  systemctl stop emby-server
+  #修改emby服务,fail自动重启
+  if grep -s "Restart=on-failure" /usr/lib/systemd/system/emby-server.service; then
+    echo -e "${curr_date} [INFO] emby服务已设置fail自动重启,无需重复设置."
   else
-    #如未安装，则进行安装
-    echo -e "${curr_date} ${green}[INFO]${normal} 您的系统是 ${release}。正在为您准备安装包,请稍等..."
-    if [[ "${release}" == "centos" ]]; then
-      yum install https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-rpm_"${emby_version}"_x86_64.rpm
-    elif [[ "${release}" == "debian" ]] || [[ "${release}" == "ubuntu" ]] || [[ "${release}" == "armdebian" ]]; then
-      wget -vN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
-      dpkg -i emby-server-deb_"${emby_version}"_amd64.deb
-      sleep 1s
-      rm -f emby-server-deb_"${emby_version}"_amd64.deb
-    fi
-    #安装常用插件
-    echo -e "${curr_date} ${green}[INFO]${normal} 安装emby常用插件（Subscene射手字幕/JAV_scraper/Auto Organize/douban/Reports）."
-    #wget -N -O kernel-
-    #chown 998.998 /var/lib/emby/plugins/Emby.Subtitle.Subscene.dll  修改用户和用户组
-    #chown 998.998 /var/lib/emby/plugins/JavScraper.dll
-    #
-    #修改emby服务,fail自动重启
-    if grep -q "Restart=always" /usr/lib/systemd/system/emby-server.service; then
-      echo
-    else
-      echo -e "${curr_date} ${green}[INFO]${normal} 修改emby服务设置fail自动重启."
-      systemctl stop emby-server #结束 emby 进程
-      sed -i '/[Service]/a\Restart=always\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
-      #破解emby
-      rm -f /opt/emby-server/system/System.Net.Http.dll
-      wget https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll #(注意替换掉命令中的 emby 所在目录)下载破解程序集替换原有程序
-      sleep 3s
-      systemctl daemon-reload && systemctl start emby-server
-      whiptail --title "EMBY安装成功提示！！！" --msgbox "恭喜您EMBY安装成功，请您访问：http://${ip_addr}:8096 进一步配置Emby, 感谢使用~~~" 10 60
-    fi
+    sed -i '/[Service]/a\Restart=on-failure\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
+    echo -e "${curr_date} [INFO] emby服务已设置fail自动重启."
+  fi
+  if [ "$emby_local_version" = "$emby_version" ]; then
+    #破解emby
+    rm -rf /opt/emby-server/system/System.Net.Http.dll /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js /opt/emby-server/system/Emby.Web.dll
+    wget -q https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll --no-check-certificate
+    wget -q https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js --no-check-certificate
+    wget -q https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
+    sleep 3s
+    systemctl daemon-reload && systemctl restart emby-server
+    whiptail --title "EMBY破解成功提示！！！" --msgbox "恭喜您EMBY $emby_version 破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员, 感谢使用~~~" 10 60
+  else
+    echo -e "${curr_date} [ERROR] 您的emby版本为 $emby_local_version，本脚本破解功能仅支持 $emby_version"
+    exit 0
   fi
 }
 
@@ -78,10 +72,11 @@ bak_emby() {
   remote_choose
   td_id_choose
   systemctl stop emby-server #结束 emby 进程
-  rm -rf /var/lib/emby/cache/* #清空cache
+  #rm -rf /var/lib/emby/cache/* #清空cache
   cd /var/lib && tar -cvf emby_bak_"$(date "+%Y-%m-%d")".tar emby #打包/var/lib/emby
   fclone move emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
   systemctl start emby-server
+  echo -e "${curr_date} [INFO] emby备份完毕."
 }
 
 ################## 还原emby ##################
@@ -96,14 +91,15 @@ revert_emby() {
     if [ -z "$bak_name" ]; then
       rm -f ~/.config/rclone/bak_list.txt
       myexit 0
-  else
+    else
       systemctl stop emby-server #结束 emby 进程
       fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
       rm -rf /var/lib/emby
       tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
       systemctl start emby-server
       rm -rf ~/.config/rclone/bak_list.txt
-  fi
+      echo -e "${curr_date} [INFO] emby还原完毕."
+    fi
 }
 
 ################## 卸载emby ##################
@@ -114,7 +110,7 @@ del_emby() {
 
 ################## 主菜单 ##################
 main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "注：本脚本的emby安装和卸载、备份和还原需要配套使用，ESC退出" 18 80 10 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "本机emby版本号：$(emby_local_versio)\n注：本脚本的emby安装和卸载、备份和还原需要配套使用，ESC退出" 19 65 6 \
     "install" "安装emby[已破解]" \
     "bak" "备份emby" \
     "revert" "还原emby" \
@@ -175,8 +171,8 @@ main_menu() {
   esac
 }
 
+################## 执行命令 ##################
 check_sys
-check_release
 check_rclone
 main_menu
 #/usr/lib/systemd/system/rclone-mntgd.service
