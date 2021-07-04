@@ -21,6 +21,18 @@ curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ip_addr=$(hostname -I | awk '{print $1}')
 emby_version="4.6.4.0"
 emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
+emby_local_version=${emby_local_version:-"未安装"}
+
+################## 检查挂载状态 ##################
+check_mount() {
+  mount_status=$(pgrep -f "mount"|wc -l)
+  if [ "$mount_status" -le 0 ];then
+    mount_info="存在"
+  else
+    mount_info="不存在"
+  fi
+}
+
 ################## 安装emby ##################
 check_emby() {
   #判断emby本地安装状态
@@ -54,9 +66,9 @@ crack_emby() {
   if [ "$emby_local_version" = "$emby_version" ]; then
     #破解emby
     rm -rf /opt/emby-server/system/System.Net.Http.dll /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js /opt/emby-server/system/Emby.Web.dll
-    wget -q https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll --no-check-certificate
-    wget -q https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js --no-check-certificate
-    wget -q https://github.com/cgkings/script-store/raw/master/config/System.Net.Http.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
+    wget -q https://github.com/cgkings/script-store/raw/master/config/emby/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll --no-check-certificate
+    wget -q https://raw.githubusercontent.com/cgkings/script-store/master/config/emby/464crack/embypremiere.js -O /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js --no-check-certificate
+    wget -q https://github.com/cgkings/script-store/raw/master/config/emby/464crack/Emby.Web.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
     sleep 3s
     systemctl daemon-reload && systemctl restart emby-server
     whiptail --title "EMBY破解成功提示！！！" --msgbox "恭喜您EMBY $emby_version 破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员, 感谢使用~~~" 10 60
@@ -91,7 +103,7 @@ revert_emby() {
     if [ -z "$bak_name" ]; then
       rm -f ~/.config/rclone/bak_list.txt
       myexit 0
-    else
+  else
       systemctl stop emby-server #结束 emby 进程
       fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
       rm -rf /var/lib/emby
@@ -99,7 +111,7 @@ revert_emby() {
       systemctl start emby-server
       rm -rf ~/.config/rclone/bak_list.txt
       echo -e "${curr_date} [INFO] emby还原完毕."
-    fi
+  fi
 }
 
 ################## 卸载emby ##################
@@ -110,7 +122,7 @@ del_emby() {
 
 ################## 主菜单 ##################
 main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "本机emby版本号：$(emby_local_versio)\n注：本脚本的emby安装和卸载、备份和还原需要配套使用，ESC退出" 19 65 6 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "本机emby版本号:$emby_local_version\n挂载进程:$mount_info\n注：本脚本的emby安装和卸载、备份和还原需要配套使用，ESC退出" 20 65 6 \
     "install" "安装emby[已破解]" \
     "bak" "备份emby" \
     "revert" "还原emby" \
@@ -174,6 +186,5 @@ main_menu() {
 ################## 执行命令 ##################
 check_sys
 check_rclone
+check_mount
 main_menu
-#/usr/lib/systemd/system/rclone-mntgd.service
-#/usr/lib/systemd/system/emby-server.service
