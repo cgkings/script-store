@@ -26,7 +26,7 @@ emby_local_version=${emby_local_version:-"未安装"}
 ################## 检查挂载状态 ##################
 check_mount() {
   mount_status=$(pgrep -f "mount"|wc -l)
-  if [ "$mount_status" -le 0 ];then
+  if [ "$mount_status" -gt 0 ];then
     mount_info="存在"
   else
     mount_info="不存在"
