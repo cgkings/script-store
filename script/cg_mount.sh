@@ -222,7 +222,7 @@ if [ ! -f /etc/fuse.conf ]; then
   echo
 fi
 #挂载参数,缓存目录默认在/home/cache
-mount_tag="--umask 000 --allow-other --allow-non-empty --daemon-timeout=10m --dir-cache-time 24h --poll-interval 1h --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 512M --vfs-read-ahead 8G --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
+mount_tag="--umask 000 --allow-other --allow-non-empty --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 256M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
 #mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size $cache_size --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
 if [ -z "$1" ]; then
   mount_menu
