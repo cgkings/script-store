@@ -122,27 +122,31 @@ del_emby() {
 
 ################## 主菜单 ##################
 main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "本机emby版本号:$emby_local_version\n挂载进程:$mount_info\n注：本脚本的emby安装和卸载、备份和还原需要配套使用，ESC退出" 20 65 6 \
-    "install" "安装emby[已破解]" \
-    "bak" "备份emby" \
-    "revert" "还原emby" \
-    "Uninstall" "卸载emby" \
-    "Install_Unattended" "无人值守(重装多选)" \
-    "Exit" "退出" 3>&1 1>&2 2>&3)
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "本机emby版本号:$emby_local_version\n挂载进程:$mount_info\n注：本脚本适配emby$emby_version，ESC退出" 19 50 7 \
+    "Install" "==>安 装 emby" \
+    "Crack" "==>破 解 emby" \
+    "Bak" "==>备 份 emby" \
+    "Revert" "==>还 原 emby" \
+    "Uninstall" "==>卸 载 emby" \
+    "Automation" "自用无人值守" \
+    "Exit" "退 出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
-    install)
+    Install)
       check_emby
       ;;
-    bak)
+    Crack)
+      crack_emby
+      ;;
+    Bak)
       bak_emby
       ;;
-    revert)
+    Revert)
       revert_emby
       ;;
     Uninstall)
       del_emby
       ;;
-    Install_Unattended)
+    Automation)
       whiptail --clear --ok-button "回车开始执行" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式" --checklist --separate-output --nocancel "请按空格及方向键来多选，ESC退出" 20 54 13 \
         "Back" "返回上级菜单(Back to main menu)" off \
         "mount" "挂载gd" off \
