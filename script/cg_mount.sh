@@ -127,9 +127,9 @@ EOF
 
 ################## 选择挂载参数 ##################
 choose_mount_tag() {
-  choose_mount_tag_status=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "选择挂载参数" --menu --nocancel "注：默认缓存目录为/home/cache，ESC退出脚本" 12 65 3 \
-    "1" "扫库参数 *轮询间隔10s,内存缓冲默认16M，硬盘缓存块1M" \
-    "2" "观看参数 *轮询间隔默认1m,内存缓冲128M，硬盘缓存块默认128M" \
+  choose_mount_tag_status=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "选择挂载参数" --menu --nocancel "注：默认缓存目录为/home/cache，ESC退出脚本" 12 60 3 \
+    "1" "扫库参数 *内存缓冲 16M，硬盘缓存块1M" \
+    "2" "观看参数 *内存缓冲128M，硬盘缓存块128M，预读2G" \
     "3" "退出脚本" 3>&1 1>&2 2>&3)
   case $choose_mount_tag_status in
     1)
@@ -138,7 +138,7 @@ choose_mount_tag() {
       ;;
     2)
       echo
-      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 128M --no-modtime --log-level INFO --log-file=/mnt/rclone.log"
+      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 10s --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 128M --vfs-read-ahead 2G --no-modtime --log-level INFO --log-file=/mnt/rclone.log"
       #mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size $cache_size --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
       ;;
     3 | *)
