@@ -28,7 +28,7 @@ initialization() {
   sleep 0.5s
   echo 50
   #echo -e "${curr_date} [INFO] 静默检查并安装常用软件1"
-  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file
+  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file virt-what
   sleep 0.5s
   echo 70
   #echo -e "${curr_date} [INFO] 静默检查并安装常用软件2"
