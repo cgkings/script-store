@@ -405,7 +405,7 @@ main_menu() {
           ;;
       esac
       ;;
-    Exit)
+    Exit | *)
       myexit 0
       ;;
   esac
