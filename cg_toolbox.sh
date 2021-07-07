@@ -19,10 +19,8 @@
 source <(curl -sL git.io/cg_script_option)
 setcolor
 
-################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
+################## 系统初始化设置【常用工具、时区】 ##################
 initialization() {
-  sleep 0.5s
-  echo 10
   check_sys
   sleep 0.5s
   echo 20
@@ -30,19 +28,19 @@ initialization() {
   apt-get update --fix-missing > /dev/null
   sleep 0.5s
   echo 50
-  #echo -e "${curr_date} [INFO] 静默升级已安装系统软件"
-  #apt upgrade -y > /dev/null
-  #echo -e "${curr_date} [INFO] 静默检查并安装常用软件"
-  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu
+  #echo -e "${curr_date} [INFO] 静默检查并安装常用软件1"
+  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file
   sleep 0.5s
   echo 70
-  check_youtubedl
+  #echo -e "${curr_date} [INFO] 静默检查并安装常用软件2"
+  check_command jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu
   sleep 0.5s
   echo 80
-  check_rclone
-  ###设置时区###
+  #echo -e "${curr_date} [INFO] 静默检查并安装youtubedl"
+  check_youtubedl
   sleep 0.5s
   echo 90
+  #设置中国时区
   if timedatectl | grep -q Asia/Shanghai; then
     echo > /dev/null
   else
@@ -52,8 +50,7 @@ initialization() {
     #  echo "Asia/Shanghai" > /etc/timezone
     echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai成功" >> /root/install_log.txt
   fi
-  sleep 1s
-  echo 95
+  sleep 0.5s
   echo 100
 }
 
@@ -175,8 +172,6 @@ EOF
   cp .tmux/.tmux.conf.local .
   echo -e "${curr_date} [INFO] 装逼神器之oh my tmux 已安装" >> /root/install_log.txt
   sudo chsh -s "$(which zsh)"
-  echo "${red}${on_white}${bold}${curr_date} [INFO]即将reset生效 ${normal}"
-  reset
 }
 
 ################## buyvm挂载256G硬盘 ##################
@@ -289,7 +284,7 @@ main_menu() {
         "Back" "返回上级菜单" off \
         "languge_cn" "设置系统语言（中文）" off \
         "languge_us" "设置系统语言（英文）" on \
-        "swap" "设置虚拟内存（2倍物理内存）" on \
+        "swap" "设置虚拟内存（2倍物理内存）" off \
         "buyvm_disk" "buyvm挂载256G硬盘" off \
         "develop1" "安装python开发环境" on \
         "develop2" "安装nodejs开发环境" on \
