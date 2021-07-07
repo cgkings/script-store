@@ -21,9 +21,6 @@ setcolor
 
 ################## 系统初始化设置【颜色、时区、语言、file-max】 ##################
 initialization() {
-  #TERM=ansi whiptail --title "初始化中(initializing) cg_toolbox by 王大锤" --infobox "初始化中...(initializing)
-#请不要按任何按键直到安装完成(Please do not press any button until the installation is completed)
-#初始化包括安装常用软件、设置中国时区、自动创建虚拟内存（已有则不改变）" 8 100
   sleep 0.5s
   echo 10
   check_sys
