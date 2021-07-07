@@ -250,7 +250,7 @@ root soft nproc 65535
 root hard nproc 65535
 EOF
     echo -e "\nsession required pam_limits.so" >> /etc/pam.d/common-session
-    echo -e "${curr_date} [INFO] file_max 修改成功" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] file_max 修改成功" | tee -a /root/install_log.txt
   fi
 }
 
@@ -263,10 +263,10 @@ check_command() {
       echo -e "${curr_date} ${red}$command_arges${normal} 不存在.正在为您安装，请稍后..."
       if [[ "${release}" = "centos" ]]; then
         yum install "$command_arges" -y > /dev/null
-        echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
+        echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" | tee -a /root/install_log.txt
       elif [[ "${release}" = "debian" || "${release}" = "ubuntu" || "${release}" = "armdebian" ]]; then
         apt-get install "$command_arges" -y --upgrade > /dev/null
-        echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" >> /root/install_log.txt
+        echo -e "${curr_date} [INFO] $command_arges 已完成安装动作，可使用< dpkg --get-selections | grep $command_arges >命令验证安装结果" | tee -a /root/install_log.txt
       else
         echo -e "${curr_date} ${red}对不起！您的系统暂不支持该脚本，请联系作者做定制优化，谢谢！${normal}"
         exit 1
@@ -333,7 +333,7 @@ check_python() {
     pip3 install -U pip > /dev/null
     hash -d pip3
     pip3 install -U wheel requests scrapy Pillow baidu-api cloudscraper fire setuptools virtualenv > /dev/null
-    echo -e "${curr_date} [INFO] pythonh环境已安装" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] pythonh环境已安装" | tee -a /root/install_log.txt
   fi
 }
 
@@ -353,7 +353,7 @@ export GOROOT=/home/go
 export GOPATH=/home/go/gopath
 EOF
     source /root/.bashrc
-    echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] go1.15.6环境已安装,go库路径：/home/go/gopath" | tee -a /root/install_log.txt
   fi
 }
 
@@ -366,12 +366,12 @@ check_nodejs() {
     bash <(curl -sL deb.nodesource.com/setup_15.x)
     check_command nodejs
     npm install npm -g
-    echo -e "${curr_date} [INFO] nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" | tee -a /root/install_log.txt
   fi
   if [ -z "$(command -v yarn)" ]; then
     npm install -g yarn n --force
     yarn set version latest
-    echo -e "${curr_date} [INFO] yarn&n已安装" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] yarn&n已安装" | tee -a /root/install_log.txt
   fi
 }
 
@@ -381,7 +381,7 @@ check_youtubedl() {
     echo -e "${curr_date} ${red}youtube-dl${normal} 不存在.正在为您安装，请稍后..."
     sudo curl -sL https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
     sudo chmod a+rx /usr/local/bin/youtube-dl
-    echo -e "${curr_date} [INFO] youtube-dl已安装" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] youtube-dl已安装" | tee -a /root/install_log.txt
   fi
 }
 
