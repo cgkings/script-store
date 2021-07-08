@@ -1,7 +1,12 @@
 # 
 <p align="center">
-<img src="https://github.com/cgkings/script-store/raw/master/logo.jpg" height="270" width="270"/> 
+<img src="https://github.com/cgkings/script-store/raw/master/logo.jpg" height="320" width="320"/>
 
+<a href="https://github.com/ronggang/PT-Plugin-Plus/releases/latest" title="GitHub Releases"><img src="https://img.shields.io/github/release/ronggang/PT-Plugin-Plus.svg?label=Latest%20Release"></a> 
+<img src="https://img.shields.io/badge/Used-TypeScript%20Vue-blue.svg">
+<a href="https://github.com/cgkings/script-store/raw/master/LICENSE" title="GitHub license"><img src="https://img.shields.io/github/license/ronggang/PT-Plugin-Plus.svg?label=License" alt="GitHub license"/></a>
+<a href="https://t.me/Curly_Mouse"><img src="https://img.shields.io/badge/Telegram-Chat-blue.svg?logo=telegram" alt="Telegram"/></a>
+</p>
 
 # 实用脚本合集
 [TG 群组](https://t.me/vpstoolbox_chat)
