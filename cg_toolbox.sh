@@ -49,13 +49,13 @@ initialization() {
     timedatectl set-ntp true
     #  [ -n "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     #  echo "Asia/Shanghai" > /etc/timezone
-    echo -e "${info_message} 设置时区为Asia/Shanghai,done" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置时区为Asia/Shanghai,done!" | tee -a /root/install_log.txt
   fi
   sleep 0.5s
   echo 100
 }
 
-################## 语言设置 ##################[done]
+################## 语言设置 ##################
 setlanguage_cn() {
   if [[ $LANG == "zh_CN.UTF-8" ]]; then
     echo > /dev/null
@@ -77,7 +77,7 @@ EOF
     export LANGUAGE="zh_CN.UTF-8"
     export LANG="zh_CN.UTF-8"
     export LC_ALL="zh_CN.UTF-8"
-    echo -e "${info_message} 设置语言为中文，done" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置语言为中文，done!" | tee -a /root/install_log.txt
   fi
 }
 
@@ -101,7 +101,7 @@ EOF
     export LANGUAGE="en_US.UTF-8"
     export LANG="en_US.UTF-8"
     export LC_ALL="en_US.UTF-8"
-    echo -e "${info_message} 设置语言为英文，done" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置语言为英文，done!" | tee -a /root/install_log.txt
   fi
 }
 
@@ -137,7 +137,7 @@ alias cgqbt='bash <(curl -sL git.io/cg_qbt.sh)'
 alias yd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1849n4MVDof3ei8UYW3j430N1QPG_J2de} -vP'"
 alias nano="nano -m"
 EOF
-    echo -e "${info_message} 设置alias别名，done！" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置alias别名，done!！" | tee -a /root/install_log.txt
   fi
 }
 
@@ -167,12 +167,12 @@ EOF
   sed -i 's/\# DISABLE_UPDATE_PROMPT="true"/DISABLE_UPDATE_PROMPT="true"/g' /root/.zshrc
   [ -z "$(grep "source /root/.bashrc" ~/.zshrc)" ] && echo -e "\nsource /root/.bashrc" >> /root/.zshrc
   touch ~/.hushlogin #不显示开机提示语
-  echo -e "${info_message} 安装oh my zsh,done" | tee -a /root/install_log.txt
+  echo -e "${info_message} 安装oh my zsh,done!" | tee -a /root/install_log.txt
   #安装oh my tmux
   cd /root && git clone https://github.com/gpakosz/.tmux.git
   ln -sf .tmux/.tmux.conf .
   cp .tmux/.tmux.conf.local .
-  echo -e "${info_message} 安装oh my tmux，done" | tee -a /root/install_log.txt
+  echo -e "${info_message} 安装oh my tmux，done!" | tee -a /root/install_log.txt
   sudo chsh -s "$(which zsh)"
 }
 
@@ -335,7 +335,7 @@ start_menu() {
             myexit 0
             ;;
         esac
-      done < results
+      done! < results
       rm results
       reboot
       ;;
