@@ -15,6 +15,7 @@
 #exec &> /tmp/log.txt   ##脚本执行的过程和结果导入/tmp/log.txt文件中
 ################## 前置变量 ##################
 # shellcheck source=/dev/null
+# shellcheck disable=code[,code...]
 source <(curl -sL git.io/cg_script_option)
 setcolor
 
@@ -22,20 +23,21 @@ setcolor
 initialization() {
   check_sys
   sleep 0.5s
-  echo 20
-  #echo -e "${curr_date} [INFO] 静默升级系统软件源"
+  echo 10
+  #echo -e "${info_message} 静默升级系统软件源"
   apt-get update --fix-missing > /dev/null
   sleep 0.5s
-  echo 50
-  #echo -e "${curr_date} [INFO] 静默检查并安装常用软件1"
+  echo 30
+  #echo -e "${info_message} 静默检查并安装常用软件1"
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file virt-what
   sleep 0.5s
-  echo 70
-  #echo -e "${curr_date} [INFO] 静默检查并安装常用软件2"
+  echo 50
+  #echo -e "${info_message} 静默检查并安装常用软件2"
   check_command jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu
   sleep 0.5s
-  echo 80
-  #echo -e "${curr_date} [INFO] 静默检查并安装youtubedl"
+  echo 70
+  #echo -e "${info_message} 静默检查并安装youtubedl,rclone/fclone"
+  check_rclone
   check_youtubedl
   sleep 0.5s
   echo 90
@@ -47,7 +49,7 @@ initialization() {
     timedatectl set-ntp true
     #  [ -n "$(find /etc -name 'localtime')" ] && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     #  echo "Asia/Shanghai" > /etc/timezone
-    echo -e "${curr_date} [INFO] 设置时区为Asia/Shanghai,done" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置时区为Asia/Shanghai,done" | tee -a /root/install_log.txt
   fi
   sleep 0.5s
   echo 100
@@ -75,7 +77,7 @@ EOF
     export LANGUAGE="zh_CN.UTF-8"
     export LANG="zh_CN.UTF-8"
     export LC_ALL="zh_CN.UTF-8"
-    echo -e "${curr_date} [INFO] 设置语言为中文，done" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置语言为中文，done" | tee -a /root/install_log.txt
   fi
 }
 
@@ -99,13 +101,13 @@ EOF
     export LANGUAGE="en_US.UTF-8"
     export LANG="en_US.UTF-8"
     export LC_ALL="en_US.UTF-8"
-    echo -e "${curr_date} [INFO] 设置语言为英文，done" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置语言为英文，done" | tee -a /root/install_log.txt
   fi
 }
 
 ################## 批量别名 ##################
 my_alias() {
-  if grep -s "alias c='clear'" /root/.bashrc; then
+  if grep -q "alias c='clear'" /root/.bashrc; then
     echo > /dev/null
   else
     cat >> /root/.bashrc << EOF
@@ -135,7 +137,7 @@ alias cgqbt='bash <(curl -sL git.io/cg_qbt.sh)'
 alias yd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1849n4MVDof3ei8UYW3j430N1QPG_J2de} -vP'"
 alias nano="nano -m"
 EOF
-    echo -e "${curr_date} [INFO] 设置my_alias别名，done！" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置my_alias别名，done！" | tee -a /root/install_log.txt
   fi
 }
 
@@ -150,7 +152,7 @@ if [ "$TERM" != "xterm-256color" ]; then
 fi
 EOF
     source /root/.bashrc
-    echo -e "${curr_date} [INFO] 设置256色成功" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置256色成功" | tee -a /root/install_log.txt
   fi
   #安装oh my zsh
   check_command zsh fonts-powerline
@@ -165,12 +167,12 @@ EOF
   sed -i 's/\# DISABLE_UPDATE_PROMPT="true"/DISABLE_UPDATE_PROMPT="true"/g' /root/.zshrc
   [ -z "$(grep "source /root/.bashrc" ~/.zshrc)" ] && echo -e "\nsource /root/.bashrc" >> /root/.zshrc
   touch ~/.hushlogin #不显示开机提示语
-  echo -e "${curr_date} [INFO] 安装oh my zsh,done" | tee -a /root/install_log.txt
+  echo -e "${info_message} 安装oh my zsh,done" | tee -a /root/install_log.txt
   #安装oh my tmux
   cd /root && git clone https://github.com/gpakosz/.tmux.git
   ln -sf .tmux/.tmux.conf .
   cp .tmux/.tmux.conf.local .
-  echo -e "${curr_date} [INFO] 安装oh my tmux，done" | tee -a /root/install_log.txt
+  echo -e "${info_message} 安装oh my tmux，done" | tee -a /root/install_log.txt
   sudo chsh -s "$(which zsh)"
 }
 
@@ -180,7 +182,7 @@ mount_disk() {
   disk=$(fdisk -l | grep "$disk_value GiB" | awk -F '[ ;:]' '{print $2}') #获取磁盘名
   mount_status=$(df -h | grep "$disk")
   if [ -z "$disk" ]; then
-    echo -e "${curr_date} [ERROR]未找到外挂磁盘，请到控制台先加卷后再运行本脚本" | tee -a /root/install_log.txt
+    echo -e "${error_message} 未找到外挂磁盘，请到控制台先加卷后再运行本脚本" | tee -a /root/install_log.txt
     exit
   else
     if [ -z "$mount_status" ]; then
@@ -202,16 +204,27 @@ EOF
       mount "$disk" /home                                 #将256G硬盘挂载到系统/home文件夹
       echo "${disk} /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
     else
-      echo -e "${curr_date} [INFO] $disk_value GiB磁盘已挂载，无须重复操作" | tee -a /root/install_log.txt
+      echo -e "${info_message} $disk_value GiB磁盘已挂载，无须重复操作" | tee -a /root/install_log.txt
     fi
   fi
   mount_status_update=$(df -h | grep "$disk")
   if [ -z "$mount_status_update" ]; then
-    echo -e "${curr_date} [ERROR] $disk_value GiB硬盘尚未挂载到/home" | tee -a /root/install_log.txt
+    echo -e "${error_message} $disk_value GiB硬盘尚未挂载到/home" | tee -a /root/install_log.txt
   else
-    echo -e "${curr_date} [INFO] $disk_value GiB硬盘成功挂载到/home" | tee -a /root/install_log.txt
+    echo -e "${info_message} $disk_value GiB硬盘成功挂载到/home" | tee -a /root/install_log.txt
     df -Th
   fi
+}
+
+check_bbr() {
+
+
+
+
+
+  
+  bash <(curl -sL git.io/cg_bbr)
+  echo -e "${info_message} 您设置了BBR加速！" | tee -a /root/install_log.txt
 }
 
 ################## 效率检测 ##################
@@ -296,10 +309,8 @@ main_menu() {
             install_beautify
             ;;
           bbr)
-          clear
-          bash <(curl -sL git.io/cg_bbr)
-          echo -e "${curr_date} [INFO] 您设置了BBR加速！" >> /root/install_log.txt
-          ;;
+            check_bbr
+            ;;
           *)
             myexit 0
             ;;
@@ -324,11 +335,11 @@ main_menu() {
           main_menu
           return 0
           ;;
-        
+
         v2ray)
           clear
           bash <(curl -sL git.io/cg_v2ray)
-          echo -e "${curr_date} [INFO] 您搭建了v2ray！" >> /root/install_log.txt
+          echo -e "${info_message} 您搭建了v2ray！" >> /root/install_log.txt
           ;;
         offline)
           clear
@@ -342,12 +353,12 @@ main_menu() {
         auto_mount)
           clear
           bash <(curl -sL git.io/cg_mount.sh)
-          echo -e "${curr_date} [INFO] 您设置了自动网盘挂载！" >> /root/install_log.txt
+          echo -e "${info_message} 您设置了自动网盘挂载！" >> /root/install_log.txt
           ;;
         emby)
           clear
           bash <(curl -sL git.io/cg_emby)
-          echo -e "${curr_date} [INFO] 您安装搭建了EMBY！" >> /root/install_log.txt
+          echo -e "${info_message} 您安装搭建了EMBY！" >> /root/install_log.txt
           ;;
         avdc)
           clear
@@ -355,7 +366,7 @@ main_menu() {
           echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
             这个小脚本不带参数则帮您安装AVDC
             带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-          echo -e "${curr_date} [INFO] 您已安装AVDC！" >> /root/install_log.txt
+          echo -e "${info_message} 您已安装AVDC！" >> /root/install_log.txt
           ;;
         cg_sort)
           clear
@@ -371,7 +382,7 @@ main_menu() {
         baota)
           clear
           bash <(curl -sL git.io/cg_baota)
-          echo -e "${curr_date} [INFO] 您安装了宝塔面板！" >> /root/install_log.txt
+          echo -e "${info_message} 您安装了宝塔面板！" >> /root/install_log.txt
           ;;
         *)
           myexit 0
