@@ -97,6 +97,8 @@ check_rclone() {
       echo > /dev/null
     else
       echo -e "${error_message} 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用" | tee -a /root/install_log.txt
+      TERM=ansi whiptail --title "初始化异常" --infobox "rclone/fclone已安装，但未检测到rclone配置文件，因本脚本很多功能需要rclone，建议配置rclone后再运行本脚本！" --scrolltext 8 65
+      exit 1
     fi
   else
     if grep -q "已检测到rclone配置文件" /root/install_log.txt; then
@@ -259,7 +261,7 @@ check_youtubedl() {
 ################## 退出通知 ##################
 myexit() {
   if [ "$1" == 0 ]; then
-    TERM=ansi whiptail --title "正常退出" --infobox "欢迎使用cgkings（王大锤）系列脚本!\nGoodbye！" --scrolltext 20 68
+    TERM=ansi whiptail --title "正常退出" --infobox "欢迎使用cgkings（王大锤）系列脚本! Goodbye！" --scrolltext 8 68
     #whiptail --msgbox "The Email User list are $(cat /root/install_log.txt)." --scrolltext 20 40
     sleep 1s
     clear

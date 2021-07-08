@@ -178,7 +178,7 @@ EOF
 
 ################## buyvm挂载外挂硬盘 ##################
 mount_disk() {
-  disk_value=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "外挂硬盘容量" --nocancel '注：默认值256，单位GB' 10 68 256 3>&1 1>&2 2>&3)
+  disk_value=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "外挂硬盘容量" --nocancel '注：默认值256，单位GB' 10 68 256 3>&1 1>&2 2>&3)
   disk=$(fdisk -l | grep "$disk_value GiB" | awk -F '[ ;:]' '{print $2}') #获取磁盘名
   mount_status=$(df -h | grep "$disk")
   if [ -z "$disk" ]; then
@@ -227,24 +227,20 @@ check_bbr() {
     kernel_status="BBR"
   else
     kernel_status="noinstall"
-    TERM=ansi whiptail --title "信息框" --infobox "欢迎使用cgkings（王大锤）系列脚本!\nGoodbye！" --scrolltext 20 68
+    bash <(curl -sL git.io/cg_bbr) << EOF
+1
+EOF
   fi
-
-  if [[ ${kernel_status} == "BBR" ]]; then
-    run_status=$(cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}')
-    if [[ ${run_status} == "bbr" ]]; then
-      run_status=$(cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}')
-      if [[ ${run_status} == "bbr" ]]; then
-        run_status="BBR启动成功"
-      else
-        run_status="BBR启动失败"
-      fi
-    else
-      run_status="未安装加速模块"
-    fi
+  #检查bbr是否已启用
+  run_status=$(cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}')
+  if [[ ${run_status} == "bbr" ]]; then
+    run_status="BBR启动成功"
+  else
+    run_status="BBR启动失败"
+    bash <(curl -sL git.io/cg_bbr) << EOF
+11
+EOF
   fi
-
-  bash <(curl -sL git.io/cg_bbr)
   echo -e "${info_message} 您设置了BBR加速！" | tee -a /root/install_log.txt
 }
 
@@ -265,7 +261,6 @@ CPU 频率: $(awk -F: '/cpu MHz/ {freq=$2} END {print freq}' /proc/cpuinfo | sed
 内核    : $(uname -r)
 虚拟架构: $(virt-what)
 本地地址：$(hostname -I | awk '{print $1}')" 20 65
-  clear
 }
 
 io_test() {
@@ -277,14 +272,18 @@ io_test() {
 
 ################## 主    菜    单 ##################
 start_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')\n硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2> /dev/null | grep total | awk '{ print $2 }') / 1024)) GB\n内存容量: $(free -m | awk '/Mem/ {print $2}') MB\n虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB\n当前拥塞控制算法为:$(awk '{print $1}' /proc/sys/net/ipv4/tcp_congestion_control);当前队列算法为:$(awk '{print $1}' /proc/sys/net/core/default_qdisc)\n注：本脚本所有操作日志路径：/root/install_log.txt" 20 80 6 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')\n硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2> /dev/null | grep total | awk '{ print $2 }') / 1024)) GB   内存容量: $(free -m | awk '/Mem/ {print $2}') MB   虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB\n拥塞算法: $(awk '{print $1}' /proc/sys/net/ipv4/tcp_congestion_control)   队列算法: $(awk '{print $1}' /proc/sys/net/core/default_qdisc)\n注：本脚本所有操作日志路径：/root/install_log.txt" 20 62 9 \
     "Install_standard" "系统设置(swap/语言/开发环境/zsh)" \
-    "Install_extend" "扩展安装(fq/离线下载三件套/网络工具/emby/挂载)" \
+    "Install_extend" "扩展安装(v2ray/qbittorrent/aria2)" \
     "Benchmark" "效能测试" \
+    "auto_swap" "swap工具" \
+    "auto_mount" "挂载工具" \
+    "auto_emby" "emby工具" \
+    "auto_sort" "网盘整理" \
     "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Install_standard)
-      whiptail --clear --ok-button "安装完成后请手动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "系统设置模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件，ESC退出脚本" 20 55 12 \
+      whiptail --clear --ok-button "安装完成将自动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "系统设置模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件，ESC退出脚本" 19 53 11 \
         "back" "返回上级菜单" off \
         "mountdisk" "挂载外挂硬盘" off \
         "languge_cn" "设置系统语言（中文）" off \
@@ -338,105 +337,78 @@ start_menu() {
         esac
       done < results
       rm results
+      reboot
       ;;
     Install_extend)
-      extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 14 \
+      extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 55 10 \
         "Back" "返回上级菜单(Back to main menu)" \
-        "v2ray" "一键搭建V2ray[转自233boy]" \
-        "offline" "离线下载3件套[aria2/rsshub/flexget]" \
-        "auto_mount" "自动网盘挂载脚本[支持命令参数模式]" \
-        "emby" "EMBY一键安装搭建脚本" \
-        "avdc" "安装配置AVDC刮削工具[转自yoshiko2]" \
-        "cg_sort" "网盘文件整理" \
-        "gd_bot" "搭建gd转存bot[未完成]" \
-        "lnmp" "LNMP 一键脚本" \
-        "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 3>&1 1>&2 2>&3)
+        "v2ray" "搭建V2ray[无需域名] by 223boy" \
+        "xv2ray" "搭建Xv2ray[需域名] by xxxxxx" \
+        "aria2" "搭建aria2 by P3TERX" \
+        "qbt" "搭建qbittorrent" \
+        "Exit" "退出" 3>&1 1>&2 2>&3)
       case $extend_menu in
         Back)
           start_menu
           return 0
           ;;
-
         v2ray)
-          clear
           bash <(curl -sL git.io/cg_v2ray)
-          echo -e "${info_message} 您搭建了v2ray！" >> /root/install_log.txt
           ;;
-        offline)
-          clear
-          bash <(curl -sL git.io/cg_dl)
-          install_aria2
-          install_rsshub
-          run_rsshub
-          install_flexget
-          config_flexget
+        xv2ray)
+          bash <(curl -sL git.io/cg_v2ray)
           ;;
-        auto_mount)
-          clear
+        aria2)
           bash <(curl -sL git.io/cg_mount.sh)
-          echo -e "${info_message} 您设置了自动网盘挂载！" >> /root/install_log.txt
           ;;
-        emby)
-          clear
-          bash <(curl -sL git.io/cg_emby)
-          echo -e "${info_message} 您安装搭建了EMBY！" >> /root/install_log.txt
+        qbt)
+          bash <(curl -sL git.io/cg_qbt.sh)
           ;;
-        avdc)
-          clear
-          bash <(curl -sL git.io/cg_avdc)
-          echo "说明：即将为您安装AV_Data_Capture-CLI-4.3.2
-            这个小脚本不带参数则帮您安装AVDC
-            带参数，就tmux开一个后台窗口刮削指定目录，如bash <(curl -sL git.io/cg_avdc) /home/gd，也可用本脚本的一键别名，将bash <(curl -sL git.io/cg_avdc) /home/gd设置别名为avdc，你只要输入avdc，它就开始后台刮削了"
-          echo -e "${info_message} 您已安装AVDC！" >> /root/install_log.txt
-          ;;
-        cg_sort)
-          clear
-          bash <(curl -sL git.io/cg_sort.sh)
-          ;;
-        gd_bot)
-          bash <(curl -sL git.io/cg_gdbot)
-          ;;
-        lnmp)
-          clear
-          install_LNMP
-          ;;
-        baota)
-          clear
-          bash <(curl -sL git.io/cg_baota)
-          echo -e "${info_message} 您安装了宝塔面板！" >> /root/install_log.txt
-          ;;
-        *)
+        Exit | *)
           myexit 0
           ;;
       esac
       ;;
     Benchmark)
-      Benchmark_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "测试模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
+      Benchmark_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "测试模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 22 65 10 \
         "Back" "返回上级菜单(Back to main menu)" \
         "1" "设备基础配置" \
         "2" "硬盘I/O测试" \
-        "3" "网络测试" 3>&1 1>&2 2>&3)
+        "3" "网络测试" 
+        "4" "退出" 3>&1 1>&2 2>&3)
       case $Benchmark_menu in
         Back)
-          main_menu
+          start_menu
           return 0
           ;;
         1)
           VPS_INFO
-          main_menu
+          start_menu
           ;;
         2)
           io_test
-          main_menu
+          start_menu
           ;;
         3)
           curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s fast
           ;;
-        *)
+        4 | *)
           exit 0
           ;;
       esac
       ;;
+    auto_swap)
+      bash <(curl -sL git.io/cg_swap)
+      ;;
+    auto_mount)
+      bash <(curl -sL git.io/cg_mount.sh)
+      ;;
+    auto_emby)
+      bash <(curl -sL git.io/cg_emby)
+      ;;
+    auto_sort)
+      bash <(curl -sL git.io/cg_sort.sh)
+      ;;    
     Exit | *)
       myexit 0
       ;;
@@ -444,5 +416,5 @@ start_menu() {
 }
 
 ################## 执  行  命  令 ##################
-initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
+initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
 start_menu
