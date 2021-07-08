@@ -329,6 +329,7 @@ start_menu() {
             ;;
           bbr)
             check_bbr
+            reboot
             ;;
           *)
             myexit 0
@@ -336,7 +337,6 @@ start_menu() {
         esac
       done < results
       rm results
-      reboot
       ;;
     Install_extend)
       extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 55 10 \
