@@ -16,14 +16,9 @@ apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 > 注: 仅推荐 **Debian** **Ubuntu**系统。
 
 <center><img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_startmenu.jpg" width=900 alt="主菜单" /></center>
-
-<center>
-
-<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_standard.jpg" width=230px height=300 />     <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_extend.jpg" width=230px height=300 />     <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_benchmark.jpg" width=230px height=300 />
-
-</center>
-
-
+<p align="center">
+<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_standard.jpg" width=255px height=320 />     <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_extend.jpg" width=255px height=320 />     <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_benchmark.jpg" width=255px height=320 />
+</p>
 [说明]()
 ### BBR加速一键脚本【转自HJM】
 ```
