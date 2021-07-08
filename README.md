@@ -1,10 +1,10 @@
-<center><img src="https://github.com/cgkings/script-store/raw/master/logo.jpg" width="100" /><br/>
+<center><img src="https://github.com/cgkings/script-store/raw/master/logo.jpg" height="120" width="120"/><br/>
 <a href="https://git.io/cg_toolbox" title="GitHub All Releases"><img alt="Releases" src="https://img.shields.io/github/downloads/ronggang/PT-Plugin-Plus/total.svg?label=Downloads"></a>
 <a href="https://github.com/cgkings/script-store/raw/master/LICENSE" title="GitHub license"><img src="https://img.shields.io/github/license/ronggang/PT-Plugin-Plus.svg?label=License" alt="GitHub license"/></a>
 <a href="https://t.me/Curly_Mouse"><img src="https://img.shields.io/badge/Telegram-Chat-blue.svg?logo=telegram" alt="Telegram"/></a></center>
 
 
-## 脚本合集
+# 脚本合集
 
 综合性一键脚本，整合了Linux装机软件、系统设置、v2ray、离线下载、网盘应用、私人影院，没错，娱乐为主
 
