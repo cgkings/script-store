@@ -118,8 +118,10 @@ revert_emby() {
 check_caddy() {
   if [ -z "$(command -v caddy)" ]; then
     echo -e "${debug_message} ${yellow}${jiacu}caddy${normal} 不存在.正在为您安装，请稍后..." | tee -a /root/install_log.txt
-    wget -qN https://github.com/caddyserver/caddy/releases/download/v2.4.3/caddy_2.4.3_linux_amd64.deb
-    dpkg -i caddy_2.4.3_linux_amd64.deb && rm -f caddy_2.4.3_linux_amd64.deb
+    echo "deb [trusted=yes] https://apt.fury.io/caddy/ /" \
+    | sudo tee -a /etc/apt/sources.list.d/caddy-fury.list
+    sudo apt update
+    sudo apt install caddy
   fi
 }
 
