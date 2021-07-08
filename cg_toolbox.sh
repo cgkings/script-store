@@ -373,7 +373,8 @@ start_menu() {
         "Back" "返回上级菜单(Back to main menu)" \
         "1" "设备基础配置" \
         "2" "硬盘I/O测试" \
-        "3" "网络测试" 3>&1 1>&2 2>&3)
+        "3" "网络测试" \
+        "4" "退出" 3>&1 1>&2 2>&3)
       case $Benchmark_menu in
         Back)
           start_menu
@@ -390,7 +391,7 @@ start_menu() {
         3)
           curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s fast
           ;;
-        *)
+        4 | *)
           myexit 0
           ;;
       esac
