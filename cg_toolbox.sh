@@ -282,7 +282,7 @@ start_menu() {
     "Exit" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Install_standard)
-      whiptail --clear --ok-button "安装完成将自动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "系统设置模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件，ESC退出脚本" 19 53 11 \
+      whiptail --clear --ok-button "安装完成请手动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "系统设置模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件，ESC退出脚本" 19 53 11 \
         "back" "返回上级菜单" off \
         "mountdisk" "挂载外挂硬盘" off \
         "languge_cn" "设置系统语言（中文）" off \
@@ -329,7 +329,6 @@ start_menu() {
             ;;
           bbr)
             check_bbr
-            reboot
             ;;
           *)
             myexit 0
