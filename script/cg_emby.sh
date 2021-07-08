@@ -115,6 +115,20 @@ revert_emby() {
 }
 
 ################## 卸载emby ##################
+check_caddy() {
+  if [ -z "$(command -v caddy)" ]; then
+    echo -e "${debug_message} ${yellow}${jiacu}caddy${normal} 不存在.正在为您安装，请稍后..." | tee -a /root/install_log.txt
+    wget -qN https://github.com/caddyserver/caddy/releases/download/v2.4.3/caddy_2.4.3_linux_amd64.deb
+    dpkg -i caddy_2.4.3_linux_amd64.deb && rm -f caddy_2.4.3_linux_amd64.deb
+  fi
+}
+
+
+
+
+
+
+################## 卸载emby ##################
 del_emby() {
   systemctl stop emby-server #结束 emby 进程
   dpkg --purge emby-server
