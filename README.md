@@ -17,13 +17,7 @@ apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 
 <center><img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_startmenu.jpg" width=900 alt="主菜单" /></center>
 
-<center>
-<figure>
-<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_standard.jpg" width=200 height=256 />
-<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_extend.jpg" width=200 height=256 />
-<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_benchmark.jpg" width=200 height=256 />
-</figure>
-</center>
+<center><img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_standard.jpg" width=200 height=256 /><img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_extend.jpg" width=200 height=256 /><img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_benchmark.jpg" width=200 height=256 /></center>
 
 
 [说明]()
