@@ -36,8 +36,7 @@ initialization() {
   check_command jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu
   sleep 0.5s
   echo 70
-  #echo -e "${info_message} 静默检查并安装youtubedl,rclone/fclone"
-  check_rclone
+  #echo -e "${info_message} 静默检查并安装youtubedl"
   check_youtubedl
   sleep 0.5s
   echo 90
@@ -417,4 +416,5 @@ start_menu() {
 
 ################## 执  行  命  令 ##################
 initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
+check_rclone
 start_menu
