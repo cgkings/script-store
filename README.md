@@ -1,8 +1,12 @@
-# ![script-store](logo.jpg)
+# 
+<p align="center">
+<img src="https://github.com/cgkings/script-store/raw/master/logo.jpg" height="270" width="270"/> 
+
+
 # 实用脚本合集
 [TG 群组](https://t.me/vpstoolbox_chat)
 
-综合性一键脚本，整合了Linux装机软件、系统设置、v2ray、离线下载、网盘应用、私人影院
+综合性一键脚本，整合了Linux装机软件、系统设置、v2ray、离线下载、网盘应用、私人影院，没错，娱乐为主
 
 ## cg_toolbox脚本 运行命令
 ```
@@ -10,6 +14,7 @@ apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 ```
 > 注: 仅推荐 **Debian** **Ubuntu**系统。
 
+## 使用要点
 
 
 
