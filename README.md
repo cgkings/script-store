@@ -19,9 +19,9 @@ apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 
 <center>
 <figure>
-<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_standard.jpg" width=220 height=256 />
-<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_extend.jpg" width=220 height=256 />
-<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_benchmark.jpg" width=220 height=256 />
+<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_standard.jpg" width=200 height=256 />
+<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_extend.jpg" width=200 height=256 />
+<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_benchmark.jpg" width=200 height=256 />
 </figure>
 </center>
 
