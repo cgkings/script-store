@@ -6,8 +6,7 @@
 <a href="https://t.me/Curly_Mouse"><img src="https://img.shields.io/badge/Telegram-Chat-blue.svg?logo=telegram" alt="Telegram"/></a>
 </p>
 
-# 实用脚本合集
-[TG 群组](https://t.me/vpstoolbox_chat)
+# 脚本合集
 
 综合性一键脚本，整合了Linux装机软件、系统设置、v2ray、离线下载、网盘应用、私人影院，没错，娱乐为主
 
@@ -17,7 +16,7 @@ apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 ```
 > 注: 仅推荐 **Debian** **Ubuntu**系统。
 
-## 使用要点
+<img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_startmenu.jpg" height="250" width="800"/>
 
 
 
