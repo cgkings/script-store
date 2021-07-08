@@ -5,11 +5,10 @@
 <a href="https://t.me/Curly_Mouse"><img src="https://img.shields.io/badge/Telegram-Chat-blue.svg?logo=telegram" alt="Telegram"/></a>
 </p>
 
-# 脚本合集
-
+## cg_toolbox
 综合性一键脚本，整合了Linux装机软件、系统设置、v2ray、离线下载、网盘应用、私人影院，没错，娱乐为主
 
-## cg_toolbox脚本 运行命令
+### 脚本运行命令
 ```
 apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 ```
@@ -20,11 +19,7 @@ apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_standard.jpg" width=270px height=300 />     <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_extend.jpg" width=270px height=300 />     <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_benchmark.jpg" width=270px height=300 />
 </p>
 
-[说明]()
-### BBR加速一键脚本【转自HJM】
-```
-bash <(curl -sL git.io/cg_bbr)
-```
+## 功能性小脚本
 
 ### swap一键脚本
 ```

@@ -22,23 +22,18 @@ setcolor
 ################## 系统初始化设置【常用工具、时区】 ##################
 initialization() {
   check_sys
-  sleep 0.5s
   echo 10
   #echo -e "${info_message} 静默升级系统软件源"
   apt-get update --fix-missing > /dev/null
-  sleep 0.5s
   echo 30
   #echo -e "${info_message} 静默检查并安装常用软件1"
   check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file virt-what
-  sleep 0.5s
   echo 50
   #echo -e "${info_message} 静默检查并安装常用软件2"
   check_command jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu
-  sleep 0.5s
   echo 70
   #echo -e "${info_message} 静默检查并安装youtubedl"
   check_youtubedl
-  sleep 0.5s
   echo 90
   #设置中国时区
   if timedatectl | grep -q Asia/Shanghai; then
@@ -50,7 +45,6 @@ initialization() {
     #  echo "Asia/Shanghai" > /etc/timezone
     echo -e "${info_message} 设置时区为Asia/Shanghai,done!" | tee -a /root/install_log.txt
   fi
-  sleep 0.5s
   echo 100
 }
 
