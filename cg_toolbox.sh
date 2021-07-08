@@ -335,7 +335,7 @@ start_menu() {
             myexit 0
             ;;
         esac
-      done! < results
+      done < results
       rm results
       reboot
       ;;
