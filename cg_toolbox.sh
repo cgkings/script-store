@@ -33,7 +33,7 @@ initialization() {
   sleep 0.5s
   echo 50
   #echo -e "${info_message} 静默检查并安装常用软件2"
-  check_command jq expect ca-certificates findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu
+  check_command jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu
   sleep 0.5s
   echo 70
   #echo -e "${info_message} 静默检查并安装youtubedl,rclone/fclone"
@@ -106,7 +106,7 @@ EOF
 }
 
 ################## 批量别名 ##################
-my_alias() {
+set_alias() {
   if grep -q "alias c='clear'" /root/.bashrc; then
     echo > /dev/null
   else
@@ -137,12 +137,12 @@ alias cgqbt='bash <(curl -sL git.io/cg_qbt.sh)'
 alias yd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1849n4MVDof3ei8UYW3j430N1QPG_J2de} -vP'"
 alias nano="nano -m"
 EOF
-    echo -e "${info_message} 设置my_alias别名，done！" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置alias别名，done！" | tee -a /root/install_log.txt
   fi
 }
 
 ################## 安装装逼神器 oh my zsh & on my tmux ##################待完善
-install_beautify() {
+check_beautify() {
   ####设置颜色###
   if [ -z "$(grep -s "export TERM=xterm-256color" ~/.bashrc)" ]; then
     cat >> ~/.bashrc << EOF
@@ -217,12 +217,33 @@ EOF
 }
 
 check_bbr() {
+  kernel_version=$(uname -r | awk -F "-" '{print $1}')
+  kernel_version_full=$(uname -r)
+  net_congestion_control=$(cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}')
+  net_qdisc=$(cat /proc/sys/net/core/default_qdisc | awk '{print $1}')
+  kernel_version_r=$(uname -r | awk '{print $1}')
+  #检查是否系统自带bbr已安装
+  if [[ $(uname -r | awk -F'.' '{print $1}') == "4" ]] && [[ $(uname -r | awk -F'.' '{print $2}') -ge 9 ]] || [[ $(uname -r | awk -F'.' '{print $1}') == "5" ]]; then
+    kernel_status="BBR"
+  else
+    kernel_status="noinstall"
+    TERM=ansi whiptail --title "信息框" --infobox "欢迎使用cgkings（王大锤）系列脚本!\nGoodbye！" --scrolltext 20 68
+  fi
 
+  if [[ ${kernel_status} == "BBR" ]]; then
+    run_status=$(cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}')
+    if [[ ${run_status} == "bbr" ]]; then
+      run_status=$(cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}')
+      if [[ ${run_status} == "bbr" ]]; then
+        run_status="BBR启动成功"
+      else
+        run_status="BBR启动失败"
+      fi
+    else
+      run_status="未安装加速模块"
+    fi
+  fi
 
-
-
-
-  
   bash <(curl -sL git.io/cg_bbr)
   echo -e "${info_message} 您设置了BBR加速！" | tee -a /root/install_log.txt
 }
@@ -255,7 +276,7 @@ io_test() {
 }
 
 ################## 主    菜    单 ##################
-main_menu() {
+start_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')\n硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2> /dev/null | grep total | awk '{ print $2 }') / 1024)) GB\n内存容量: $(free -m | awk '/Mem/ {print $2}') MB\n虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB\n当前拥塞控制算法为:$(awk '{print $1}' /proc/sys/net/ipv4/tcp_congestion_control);当前队列算法为:$(awk '{print $1}' /proc/sys/net/core/default_qdisc)\n注：本脚本所有操作日志路径：/root/install_log.txt" 20 80 6 \
     "Install_standard" "系统设置(swap/语言/开发环境/zsh)" \
     "Install_extend" "扩展安装(fq/离线下载三件套/网络工具/emby/挂载)" \
@@ -278,7 +299,7 @@ main_menu() {
       while read -r choice; do
         case $choice in
           back)
-            main_menu
+            start_menu
             break
             ;;
           mountdisk)
@@ -303,10 +324,10 @@ main_menu() {
             check_go
             ;;
           myalias)
-            my_alias
+            set_alias
             ;;
           zsh)
-            install_beautify
+            check_beautify
             ;;
           bbr)
             check_bbr
@@ -332,7 +353,7 @@ main_menu() {
         "baota" "宝塔面板一键脚本[转自-laowangblog.com]" 3>&1 1>&2 2>&3)
       case $extend_menu in
         Back)
-          main_menu
+          start_menu
           return 0
           ;;
 
@@ -424,4 +445,4 @@ main_menu() {
 
 ################## 执  行  命  令 ##################
 initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
-main_menu
+start_menu
