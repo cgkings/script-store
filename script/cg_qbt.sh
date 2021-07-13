@@ -18,7 +18,6 @@ content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
 #torrent_size=$4 #%Z
 file_hash=$5 #%I
 file_category=$6 #%L：分类
-qb_install_choose="1"  #值为1，则安装原版4.3.5，值为2，则安装增强版4.3.5.10
 qb_username="cgking"
 qb_password="340622"
 qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
@@ -29,14 +28,7 @@ check_qbt() {
   if [ -z "$(command -v qbittorrent-nox)" ]; then
     clear
     apt-get remove qbittorrent-nox -y && rm -f /usr/bin/qbittorrent-nox
-    if [ "${qb_install_choose}" == "1" ]; then
-      wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
-    elif [ "${qb_install_choose}" == "2" ]; then
-      wget -qN https://github.com/c0re100/qBittorrent-Enhanced-Edition/releases/download/release-4.3.5.10/qbittorrent-nox_x86_64-linux-musl_static.zip && unzip -o qbittorrent*.zip && rm -f qbittorrent*.zip && mv -f qbittorrent-nox /usr/bin/ && chmod +x /usr/bin/qbittorrent-nox
-    else
-      echo 配置出错
-      return 1
-    fi
+    wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
     #还原qbt配置：
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
@@ -68,7 +60,7 @@ EOF
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
 程序名称：qBittorrent
-版本名称：4.3.5.10
+版本名称：4.3.6
 程序目录：/usr/bin/qbittorrent-nox
 服务地址：/etc/systemd/system/qbt.service
 -----------------------------------------------------------------------------
