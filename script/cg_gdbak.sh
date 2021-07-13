@@ -1,11 +1,11 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
-# bash <(curl -sL git.io/cg_toolbox)
-# File Name: cg_toolbox.sh
+# bash <(curl -sL git.io/cg_gdbak)
+# File Name: cg_gdbak.sh
 # Author: cgkings
 # Created Time : 2020.1.7
-# Description:vps装机一键脚本
+# Description:gd备份
 # System Required: Debian/Ubuntu
 # Version: 1.0
 #=============================================================
@@ -41,10 +41,7 @@ fclone sync frreq:{0AM2AXmxuonynUk9PVA} frreq:{0AL1vRw5scrxmUk9PVA} --drive-serv
 check_run
 
 #gd to od
-echo -e "$curr_date [gd to od]:personal 1 to personal bak" | tee -a /root/gdbak_log.txt
-fclone sync frreq:{0AOoUhVD6ULIfUk9PVA} [p#3 od_remote]:[p#4 od目录] --fast-list --drive-use-trash=false --stats=5s --stats-one-line --transfers=8 -vP --bwlimit 120M --max-size 100G --ignore-existing --ignore-checksum --ignore-size --ignore-errors --onedrive-chunk-size 187.5M --check-first
-check_run
-
+echo -e "$curr_date [gd to od]:personal to odjav bak" | tee -a /root/gdbak_log.txt
 fclone sync frreq:{1qitlvImjpef9NMQ1vV8Z2Qf0vLQc-3jL} odjav: --fast-list --drive-use-trash=false --stats=5s --stats-one-line -vvP --cache-chunk-size 128M --bwlimit 120M --max-size 100G --ignore-existing --ignore-checksum --ignore-size --ignore-errors --check-first
 check_run
 
