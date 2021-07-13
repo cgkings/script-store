@@ -338,7 +338,7 @@ start_menu() {
         "xv2ray" "搭建Xv2ray[需域名] by xxxxxx" \
         "aria2" "搭建aria2 by P3TERX" \
         "qbt" "搭建qbittorrent" \
-        "dd" "一键dd[转自cxt]"
+        "dd" "一键dd[转自cxt]" \
         "Exit" "退出" 3>&1 1>&2 2>&3)
       case $extend_menu in
         Back)
