@@ -67,7 +67,7 @@ EOF
 -----------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
-程序名称：qBittorrent-Enhanced-Edition
+程序名称：qBittorrent
 版本名称：4.3.5.10
 程序目录：/usr/bin/qbittorrent-nox
 服务地址：/etc/systemd/system/qbt.service
