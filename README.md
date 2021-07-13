@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/cgkings/script-store/raw/master/logo.jpg" height="120" width="120"/><br/>
+<img src="https://github.com/cgkings/script-store/raw/master/logo.jpg" /><br/>
 <a href="https://git.io/cg_toolbox" title="GitHub All Releases"><img alt="Releases" src="https://img.shields.io/github/downloads/ronggang/PT-Plugin-Plus/total.svg?label=Downloads"></a>
 <a href="https://github.com/cgkings/script-store/raw/master/LICENSE" title="GitHub license"><img src="https://img.shields.io/github/license/ronggang/PT-Plugin-Plus.svg?label=License" alt="GitHub license"/></a>
 <a href="https://t.me/Curly_Mouse"><img src="https://img.shields.io/badge/Telegram-Chat-blue.svg?logo=telegram" alt="Telegram"/></a>
