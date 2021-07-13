@@ -1,6 +1,6 @@
 #!/bin/bash
 #=============================================================
-# https://github.com/cgkings/cg_shellbot
+# https://github.com/cgkings/script-store
 # bash <(curl -sL git.io/cg_toolbox)
 # File Name: cg_toolbox.sh
 # Author: cgkings
@@ -358,7 +358,7 @@ start_menu() {
           bash <(curl -sL git.io/cg_qbt.sh)
           ;;
         dd)
-          bash <(curl -sL git.io/cg_qbt.sh)
+          bash <(curl -sL git.io/cg_dd) -UI_Options
           ;;
         Exit | *)
           myexit 0

@@ -11,6 +11,7 @@
 ## Default root password: cxthhhhh.com
 ## WebSite: https://www.cxthhhhh.com
 ## Written By CXT (CXTHHHHH.com)
+# bash <(curl -sL git.io/cg_dd)
 
 ## Original version author:
 ## Blog: https://moeclub.org

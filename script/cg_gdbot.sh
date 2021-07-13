@@ -1,6 +1,6 @@
 #!/bin/bash
 #=============================================================
-# https://github.com/cgkings/cg_shellbot
+# https://github.com/cgkings/script-store
 # bash <(curl -sL git.io/cg_gdbot)
 # File Name: cg_gdbox.sh
 # Author: cgkings
