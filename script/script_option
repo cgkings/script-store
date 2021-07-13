@@ -247,7 +247,7 @@ check_nodejs() {
 ################## 检查youtube-dl ##################
 check_youtubedl() {
   if [ -z "$(command -v youtube-dl)" ]; then
-    echo -e "${debug_message} ${yellow}${jiacu}youtube-dl${normal} 不存在.正在为您安装，请稍后..." | tee -a /root/install_log.txt
+    echo -e "${debug_message} ${yellow}${jiacu}youtube-dl${normal} 不存在.正在为您安装，请稍后..."
     sudo curl -sL https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
     sudo chmod a+rx /usr/local/bin/youtube-dl
     echo -e "${info_message} youtube-dl已安装" | tee -a /root/install_log.txt
