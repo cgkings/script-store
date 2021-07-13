@@ -1,7 +1,7 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
-# bash <(curl -sL git.io/cg_mount.sh)
+# bash <(curl -sL git.io/cg_mount)
 # File Name: automount
 # Author: cgkings
 # Created Time : 2020.12.25

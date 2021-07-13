@@ -352,7 +352,7 @@ start_menu() {
           bash <(curl -sL git.io/cg_v2ray)
           ;;
         aria2)
-          bash <(curl -sL git.io/cg_mount.sh)
+          bash <(curl -sL git.io/cg_mount)
           ;;
         qbt)
           bash <(curl -sL git.io/cg_qbt.sh)
