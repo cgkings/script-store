@@ -267,7 +267,7 @@ io_test() {
 start_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')\n硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2> /dev/null | grep total | awk '{ print $2 }') / 1024)) GB   内存容量: $(free -m | awk '/Mem/ {print $2}') MB   虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB\n拥塞算法: $(awk '{print $1}' /proc/sys/net/ipv4/tcp_congestion_control)   队列算法: $(awk '{print $1}' /proc/sys/net/core/default_qdisc)\n注：本脚本所有操作日志路径：/root/install_log.txt" 20 62 9 \
     "Install_standard" "系统设置(swap/语言/开发环境/zsh)" \
-    "Install_extend" "扩展安装(v2ray/qbittorrent/aria2)" \
+    "Install_extend" "扩展安装(v2ray/qbittorrent/aria2/dd)" \
     "Benchmark" "效能测试" \
     "auto_swap" "swap工具" \
     "auto_mount" "挂载工具" \
@@ -338,6 +338,7 @@ start_menu() {
         "xv2ray" "搭建Xv2ray[需域名] by xxxxxx" \
         "aria2" "搭建aria2 by P3TERX" \
         "qbt" "搭建qbittorrent" \
+        "dd" "一键dd[转自cxt]"
         "Exit" "退出" 3>&1 1>&2 2>&3)
       case $extend_menu in
         Back)
@@ -354,6 +355,9 @@ start_menu() {
           bash <(curl -sL git.io/cg_mount.sh)
           ;;
         qbt)
+          bash <(curl -sL git.io/cg_qbt.sh)
+          ;;
+        dd)
           bash <(curl -sL git.io/cg_qbt.sh)
           ;;
         Exit | *)
