@@ -63,6 +63,7 @@ bash <(curl -sL git.io/cg_emby)
 ```
 bash <(curl -sL git.io/cg_sort.sh)
 ```
+<center><img src="https://github.com/cgkings/script-store/raw/master/image/sort_menu.jpg" alt="emby菜单" /></center>
 
 ### 转存备份一键脚本【 google drive & 6pan 】【未完成】
 ```

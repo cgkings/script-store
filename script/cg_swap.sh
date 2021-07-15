@@ -110,7 +110,7 @@ EOF
 ################## 开  始  菜  单 ##################
 swap_menu() {
   clear
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_swap。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "当前SWAP：$totalswap MB" --menu --nocancel "注：h参数查看参数模式帮助，ESC退出脚本" 14 55 6 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_swap。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "当前SWAP：$totalswap MB" --menu --nocancel "注：h参数查看参数模式帮助，ESC退出脚本" 16 43 8 \
     "1" "全自动添加swap(内存*2，最小设置2G)" \
     "2" "自定义添加swap" \
     "3" "删除swap" \
