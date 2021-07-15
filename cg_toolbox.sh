@@ -15,7 +15,6 @@
 #exec &> /tmp/log.txt   ##脚本执行的过程和结果导入/tmp/log.txt文件中
 ################## 前置变量 ##################
 # shellcheck source=/dev/null
-# shellcheck disable=code[,code...]
 source <(curl -sL git.io/cg_script_option)
 setcolor
 

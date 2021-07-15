@@ -16,7 +16,7 @@ apt-get install curl -y && bash <(curl -sL git.io/cg_toolbox)
 ```
 > 注: 仅推荐 **Debian** **Ubuntu**系统。
 
-<center><img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_startmenu.jpg" width=900 alt="主菜单" /></center>
+<center><img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_startmenu.jpg" alt="主菜单" /></center>
 <p align="center">
 <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_standard.jpg" />     <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_extend.jpg" />     <img src="https://github.com/cgkings/script-store/raw/master/image/toolbox_benchmark.jpg" />
 </p>
