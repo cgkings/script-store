@@ -7,6 +7,7 @@
 
 ## cg_toolbox
 综合性一键脚本，整合了Linux装机软件、系统设置、v2ray、离线下载、网盘应用、私人影院，没错，娱乐为主
+
 [个人教程合集](https://cgking.gitbook.io/linux/)
 
 ### 脚本运行命令
