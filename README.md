@@ -56,6 +56,7 @@ bash <(curl -sL git.io/cg_mount)
 ```
 bash <(curl -sL git.io/cg_emby)
 ```
+<center><img src="https://github.com/cgkings/script-store/raw/master/image/emby_menu.jpg" alt="emby菜单" /></center>
 ### 影片整理一键脚本【 rclone & fclone 】
 ```
 bash <(curl -sL git.io/cg_sort.sh)
