@@ -34,6 +34,7 @@ bash <(curl -sL git.io/cg_swap) [参数]
 *`d` 删除现有swap*<br>
 *`h` 脚本参数帮助*<br>
 [说明](github.com/cgkings/script-store/blob/master/Instruction/swap.md)
+<center><img src="https://github.com/cgkings/script-store/raw/master/image/swap_menu.jpg" alt="swap菜单" /></center>
 
 ### v2ray一键脚本【转自boy233】
 ```
@@ -51,7 +52,7 @@ bash <(curl -sL git.io/cg_toolbox)
 ```
 bash <(curl -sL git.io/cg_mount)
 ```
-<center><img src="https://github.com/cgkings/script-store/raw/master/image/mount_menu.jpg" alt="emby菜单" /></center>
+<center><img src="https://github.com/cgkings/script-store/raw/master/image/mount_menu.jpg" alt="mount菜单" /></center>
 
 ### 影片媒体库脚本【刮削、EMBY】
 ```
@@ -63,7 +64,7 @@ bash <(curl -sL git.io/cg_emby)
 ```
 bash <(curl -sL git.io/cg_sort.sh)
 ```
-<center><img src="https://github.com/cgkings/script-store/raw/master/image/sort_menu.jpg" alt="emby菜单" /></center>
+<center><img src="https://github.com/cgkings/script-store/raw/master/image/sort_menu.jpg" alt="sort菜单" /></center>
 
 ### 转存备份一键脚本【 google drive & 6pan 】【未完成】
 ```
