@@ -51,16 +51,19 @@ bash <(curl -sL git.io/cg_toolbox)
 ```
 bash <(curl -sL git.io/cg_mount)
 ```
+<center><img src="https://github.com/cgkings/script-store/raw/master/image/mount_menu.jpg" alt="emby菜单" /></center>
 
 ### 影片媒体库脚本【刮削、EMBY】
 ```
 bash <(curl -sL git.io/cg_emby)
 ```
 <center><img src="https://github.com/cgkings/script-store/raw/master/image/emby_menu.jpg" alt="emby菜单" /></center>
+
 ### 影片整理一键脚本【 rclone & fclone 】
 ```
 bash <(curl -sL git.io/cg_sort.sh)
 ```
+
 ### 转存备份一键脚本【 google drive & 6pan 】【未完成】
 ```
 bash <(curl -sL git.io/cg_fqcopy)

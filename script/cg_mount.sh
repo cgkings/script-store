@@ -150,7 +150,7 @@ choose_mount_tag() {
 ################## 开  始  菜  单 ##################
 mount_menu() {
   clear
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "注：ESC退出脚本" 14 55 6 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "注：ESC退出脚本" 15 45 6 \
     "1" "临时挂载" \
     "2" "服务挂载" \
     "3" "删除挂载" \
