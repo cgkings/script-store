@@ -147,6 +147,19 @@ choose_mount_tag() {
   esac
 }
 
+################## 自 定 义 挂 载 列 表 ##################
+my_mountlist() {
+   if [ -d /home/mountlist.json ]; then
+   TERM=ansi whiptail --title "异常退出" --infobox "未检测到/home/mountlist.json配置文件，无法实现切换！" 8 68
+   echo 
+   myexit 1
+   fi
+   mountlistmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "切换挂载模式" --menu --nocancel "注：ESC退出脚本" 15 45 6 \
+    "1" "kws_jav_uncensor" \
+    "2" "kws_jav_censor" \
+    "3" "kws_cav_uncensor" 3>&1 1>&2 2>&3)
+}
+
 ################## 开  始  菜  单 ##################
 mount_menu() {
   clear
@@ -154,7 +167,8 @@ mount_menu() {
     "1" "临时挂载" \
     "2" "服务挂载" \
     "3" "删除挂载" \
-    "4" "退出" 3>&1 1>&2 2>&3)
+    "4" "切换挂载" \
+    "5" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     1)
       echo
@@ -175,7 +189,11 @@ mount_menu() {
       dir_choose
       mount_del
       ;;
-    4 | *)
+    4)
+      echo
+      my_mountlist
+      ;;
+    5 | *)
       myexit 0
       ;;
   esac

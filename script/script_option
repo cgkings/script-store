@@ -263,7 +263,7 @@ myexit() {
     clear
     exit 0
   elif [ "$1" == 1 ]; then
-    TERM=ansi whiptail --title "异常退出" --infobox "异常退出，请查找原因!" 8 68
+    TERM=ansi whiptail --title "异常退出" --infobox "异常退出，请按错误提示改善后运行脚本!" 8 68
     exit 1
   fi
 }
