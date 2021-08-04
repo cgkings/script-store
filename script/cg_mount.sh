@@ -163,12 +163,28 @@ my_mountlist() {
 ################## 开  始  菜  单 ##################
 mount_menu() {
   clear
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "注：ESC退出脚本" 15 45 6 \
+  if systemctl | grep "rclone"; then
+    curr_mount_status="服务挂载模式"
+  elif ps -eo cmd|grep "fclone mount"|grep -v grep; then
+    curr_mount_status="临时挂载模式"
+  else
+    curr_mount_status="未挂载"
+  fi
+  curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
+  if [ -n "$curr_mount_tag" ]; then
+    if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
+      curr_mount_tag_status="扫库参数"
+    elif echo "$curr_mount_tag"|grep "buffer-size"; then
+      curr_mount_tag_status="观看参数"
+    fi
+  fi
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "注：ESC退出脚本\n挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status" 15 45 6 \
     "1" "临时挂载" \
     "2" "服务挂载" \
     "3" "删除挂载" \
     "4" "切换挂载" \
-    "5" "退出" 3>&1 1>&2 2>&3)
+    "5" "切换参数" \
+    "6" "退出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     1)
       echo
@@ -193,7 +209,11 @@ mount_menu() {
       echo
       my_mountlist
       ;;
-    5 | *)
+    5)
+      echo
+      my_mountlist
+      ;;
+    6 | *)
       myexit 0
       ;;
   esac
