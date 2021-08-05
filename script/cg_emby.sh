@@ -7,7 +7,6 @@
 # Created Time : 2021.3.4
 # Description:swap一键脚本
 # System Required: Debian/Ubuntu
-# 感谢wuhuai2020、moerats、github众多作者，我只是整合代码
 # Version: 1.0
 #=============================================================
 

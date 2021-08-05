@@ -136,6 +136,7 @@ else
   if [ -z "${file_category}" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
     rclone_upload
+    qb_del
   elif [ "${file_category}" == "chs" ]; then
     rclone_dest="{1hzETacfMuAIBAsHqKIys-98glIMRb-iv}"
     rclone_upload
@@ -152,7 +153,7 @@ else
     rclone_dest="{1S-b-47Pe54j6wh6ph5t6eY5ZjZqnacqw}"
     rclone_upload
     qb_del
-  else
+  elif [ "${file_category}" == "0_pt" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
     rclone_upload
   fi

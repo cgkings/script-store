@@ -7,7 +7,6 @@
 # Created Time : 2020.12.25
 # Description:flexget
 # System Required: Debian/Ubuntu
-# 感谢wuhuai2020、moerats、github众多作者，我只是整合代码
 # Version: 1.0
 #=============================================================
 
