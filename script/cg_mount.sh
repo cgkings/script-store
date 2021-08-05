@@ -184,11 +184,11 @@ mount_menu() {
       curr_mount_tag_status="观看参数"
     fi
   fi
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：ESC退出脚本" 16 50 6 \
-    "start_mount" "开始挂载" \
-    "delete_mount" "删除挂载" \
-    "switch_mount" "切换挂载" \
-    "switch_tag" "切换参数" 3>&1 1>&2 2>&3)
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：ESC退出脚本" 16 55 6 \
+    "start_mount" "   开始挂载" \
+    "delete_mount" "   删除挂载" \
+    "switch_mount" "   切换挂载" \
+    "switch_tag" "   切换参数" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     start_mount)
       echo
