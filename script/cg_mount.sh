@@ -162,13 +162,13 @@ my_mountlist() {
 ################## 开  始  菜  单 ##################
 mount_menu() {
   clear
-  curr_mount_id=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')
   if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
     if systemctl | grep "rclone"; then
-      curr_mount_status="已挂载，挂载盘ID为$curr_mount_id"
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
     else
       systemctl daemon-reload && systemctl restart rclone-mntgd.service
-      curr_mount_status="已挂载，挂载盘ID为$curr_mount_id"
+      sleep 2s
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
     fi
   else
     curr_mount_status="未挂载"
