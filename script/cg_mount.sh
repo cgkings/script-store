@@ -162,57 +162,66 @@ my_mountlist() {
 ################## 开  始  菜  单 ##################
 mount_menu() {
   clear
+  curr_mount_id=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')
   if systemctl | grep "rclone"; then
-    curr_mount_status="服务挂载模式"
-  elif ps -eo cmd|grep "fclone mount"|grep -v grep; then
-    curr_mount_status="临时挂载模式"
+    curr_mount_status="已挂载，挂载盘ID为$curr_mount_id"
   else
     curr_mount_status="未挂载"
   fi
   curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
   if [ -n "$curr_mount_tag" ]; then
+    mount_server_name=$(systemctl|grep "rclone"|awk '{print $1}')
+    
+
     if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
       curr_mount_tag_status="扫库参数"
     elif echo "$curr_mount_tag"|grep "buffer-size"; then
       curr_mount_tag_status="观看参数"
     fi
   fi
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "注：ESC退出脚本\n挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status" 15 45 6 \
-    "1" "临时挂载" \
-    "2" "服务挂载" \
-    "3" "删除挂载" \
-    "4" "切换挂载" \
-    "5" "切换参数" \
-    "6" "退出" 3>&1 1>&2 2>&3)
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "一键挂载 菜单模式" --menu --nocancel "挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：ESC退出脚本" 16 50 6 \
+    "start_mount" "开始挂载" \
+    "delete_mount" "删除挂载" \
+    "switch_mount" "切换挂载" \
+    "switch_tag" "切换参数" 3>&1 1>&2 2>&3)
   case $Mainmenu in
-    1)
-      echo
-      remote_choose
-      td_id_choose
-      dir_choose
-      mount_creat
-      ;;
-    2)
+    start_mount)
       echo
       remote_choose
       td_id_choose
       dir_choose
       mount_server_creat
       ;;
-    3)
+    delete_mount)
       echo
       dir_choose
       mount_del
       ;;
-    4)
+    switch_mount)
       echo
-      my_mountlist
+      dir_choose
+      mount_del
+      remote_choose
+      td_id_choose
+      dir_choose
+      mount_server_creat
       ;;
-    5)
+    switch_tag)
       echo
-      my_mountlist
+      if [ -z "${curr_mount_tag_status}" ]; then
+        TERM=ansi whiptail --title "警告" --infobox "还没挂载，切换个锤子的挂载参数" 8 68
+        mount_menu
+      elif [ "${curr_mount_tag_status}" == "扫库参数" ]; then
+        systemctl stop "$mount_server_name"
+        sed -i 's/--vfs-read-chunk-size 1M/--buffer-size 128M --vfs-read-ahead 2G/g' /lib/systemd/system/"$mount_server_name"
+        systemctl daemon-reload && systemctl restart "$mount_server_name"
+      elif [ "${curr_mount_tag_status}" == "观看参数" ]; then
+        systemctl stop "$mount_server_name"
+        sed -i 's/--buffer-size 128M --vfs-read-ahead 2G/--vfs-read-chunk-size 1M/g' /lib/systemd/system/"$mount_server_name"
+        systemctl daemon-reload && systemctl restart "$mount_server_name"
+      fi
       ;;
-    6 | *)
+    *)
       myexit 0
       ;;
   esac
