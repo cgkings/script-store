@@ -163,8 +163,12 @@ my_mountlist() {
 mount_menu() {
   clear
   curr_mount_id=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')
-  if systemctl | grep "rclone"; then
-    curr_mount_status="已挂载，挂载盘ID为$curr_mount_id"
+  if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
+    if systemctl | grep "rclone"; then
+      curr_mount_status="已挂载，服务已启动，挂载盘ID为$curr_mount_id"
+    else
+      curr_mount_status="已挂载，服务未启动"
+    fi
   else
     curr_mount_status="未挂载"
   fi
