@@ -133,11 +133,11 @@ choose_mount_tag() {
   case $choose_mount_tag_status in
     1)
       echo
-      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 10s --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --vfs-read-chunk-size 1M --no-modtime --log-level INFO --log-file=/mnt/rclone.log"
+      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 20s --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --vfs-read-chunk-size 1M --no-modtime --log-level INFO --log-file=/mnt/rclone.log"
       ;;
     2)
       echo
-      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 10s --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 128M --vfs-read-ahead 2G --no-modtime --log-level INFO --log-file=/mnt/rclone.log"
+      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 20s --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 128M --vfs-read-ahead 2G --no-modtime --log-level INFO --log-file=/mnt/rclone.log"
       #mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size $cache_size --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
       ;;
     3 | *)
