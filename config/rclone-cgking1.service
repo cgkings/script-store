@@ -22,30 +22,28 @@ ExecStart = /usr/bin/rclone mount cgking1: /home/gd \
 --allow-other \
 #允许非空挂载点，即允许在挂载点上与其他项目一起挂载
 --allow-non-empty \
-#轮询更新目录时间(默认 5m0s)，Google云端硬盘支持轮询，可以将该值设置得很高，并且可以通过轮询检测更改。即时刷新使用rclone rc vfs/forget
+#Don't read/write the modification time (can speed things up)
+--no-modtime \
+#取代Go内存分配器，优化内存占用的尝试，由于无法适用所有系统，故未列入默认值
+--use-mmap \
+#缓存更新时间(默认 5m0s)，Google云端硬盘支持轮询，可以将该值设置得很高，并且可以通过轮询检测更改。即时刷新使用rclone rc vfs/forget
 --dir-cache-time 24h \
 #轮询间隔,,必须小于dir-cache-time。设置为0禁用(默认为1m0s)。如果降低到15秒，更改显示得很快，但是API配额非常庞大(s,m,h) 
---poll-interval 1h \
-#rclone响应内核的时间限制。不支持Windows。
---daemon-timeout=10m
-#取代Go内存分配器，优化内存占用的尝试，由于无法适用所有系统，故未列入默认值
---use-mmap
-#用于缓存数据的内存量，注意此为单线程内存缓存消耗
---buffer-size 512M \
+--poll-interval 20s \
 #Cache mode off|minimal|writes|full (默认off)，writes|full模式支持所有正常的文件系统操作，缓存资源使用buffer-size加上vfs-read-ahead，注意full模式不支持FAT/exFAT文件系统，log日志将显示error，rclone效率奇差
 --vfs-cache-mode full \
 #用于缓存的本地磁盘
 --cache-dir=/home/cache \
+#用于缓冲数据的内存量，内存使用为缓冲设置值*文件数 (default 16M)
+--buffer-size 256M \
 #full模式时，对buffer-size的额外补充，buffer-size用内存，vfs-read-ahead用硬盘
---vfs-read-ahead 8G \
+--vfs-read-ahead 500M \
 #Max total size of objects in the cache. (default off),实际使用往往可能大于该值
 --vfs-cache-max-size 8G \
-#读取块大小(默认128M)
+#缓存块大小(默认128M)
 --vfs-read-chunk-size 64M \
-#读取块大小翻倍(*2)极限,不清楚有啥用(如块大小100M,limit设置600M，块缓存将不再均分缓存，而是0-100，100-300，300-700,直到翻倍的结果达到600M，就一直600M一个块缓存)
+#缓存块大小翻倍(*2)极限,即翻倍到limit，就一直以limit作为增长值缓存(default "off")
 --vfs-read-chunk-size-limit 512M \
-#传输的线程数，太大会耗尽资源，太小影响速度(默认 4)
---transfers 4 \
 #设置每个文件的带宽控制，我将其限制为比我想播放的最大比特率大一点
 --bwlimit-file 16M
 #日志级别输出 

@@ -53,15 +53,15 @@ mount_del() {
   if [ -z "$mount_path_name" ]; then
     mount_path_name=$(echo "$mount_path" | sed 's/[/]//g' | sed 's/ //g')
   fi
-  echo -e "$curr_date [Info] 正在执行fusermount -qzu /mnt/gd..."
-  fusermount -qzu /mnt/gd
-  echo -e "$curr_date [Info] fusermount -qzu /mnt/gd [done]"
+  echo -e "$curr_date [Info] 正在执行fusermount -qzu "${mount_path}"..."
+  fusermount -qzu "${mount_path}"
+  echo -e "$curr_date [Info] fusermount -qzu "${mount_path}"[done]"
   echo -e "$curr_date [Info] 正在检查服务是否存在..."
-  if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
-    echo -e "$curr_date [Info] 找到服务 rclone-mntgd.service 正在删除，请稍等..."
-    systemctl stop rclone-mntgd.service
-    systemctl disable rclone-mntgd.service
-    rm /lib/systemd/system/rclone-mntgd.service
+  if [ -f /lib/systemd/system/rclone-${mount_path_name}.service ]; then
+    echo -e "$curr_date [Info] 找到服务 ${red}rclone-${mount_path_name}.service${normal} 正在删除，请稍等..."
+    systemctl stop rclone-${mount_path_name}.service
+    systemctl disable rclone-${mount_path_name}.service
+    rm /lib/systemd/system/rclone-${mount_path_name}.service
     sleep 2s
     echo -e "$curr_date [Info] 删除服务[done]"
   else
@@ -74,9 +74,9 @@ mount_del() {
 mount_creat() {
   choose_mount_tag
   mount_del
-  echo -e "$curr_date [Info] 开始临时挂载到/mnt/gd..."
-  echo -e "$curr_date [Info] 挂载命令：fclone mount ${my_remote}: /mnt/gd --drive-root-folder-id ${td_id} ${mount_tag} &"
-  fclone mount $my_remote: /mnt/gd --drive-root-folder-id ${td_id} $mount_tag &
+  echo -e "$curr_date [Info] 开始临时挂载..."
+  echo -e "$curr_date [Info] 挂载命令：fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag} &"
+  fclone mount $my_remote: $mount_path --drive-root-folder-id ${td_id} $mount_tag &
   sleep 5s
   echo -e "$curr_date [Info] 临时挂载[done]"
   df -h
@@ -86,11 +86,11 @@ mount_creat() {
 mount_server_creat() {
   choose_mount_tag
   mount_del
-  echo -e "$curr_date [Info] 正在创建服务 rclone-mntgd.service 请稍等..."
-  cat > /lib/systemd/system/rclone-mntgd.service << EOF
+  echo -e "$curr_date [Info] 正在创建服务 ${red}rclone-${mount_path_name}.service${normal} 请稍等..."
+  cat > /lib/systemd/system/rclone-${mount_path_name}.service << EOF
 [Unit]
-Description = rclone-mntgd
-AssertPathIsDirectory = /mnt/gd
+Description = rclone-${mount_path_name}
+AssertPathIsDirectory = ${mount_path}
 Wants=network-online.target
 After=network-online.target
 
@@ -98,8 +98,8 @@ After=network-online.target
 Type=notify
 KillMode=none
 User=root
-ExecStart=fclone mount ${my_remote}: /mnt/gd --drive-root-folder-id ${td_id} ${mount_tag}
-ExecStop=fusermount -qzu /mnt/gd
+ExecStart=fclone mount ${my_remote}: ${mount_path} --drive-root-folder-id ${td_id} ${mount_tag}
+ExecStop=fusermount -qzu ${mount_path}
 Restart=always
 RestartSec=2
 
@@ -110,12 +110,12 @@ EOF
   echo -e "$curr_date [Info] 服务创建成功。"
   sleep 2s
   echo -e "$curr_date [Info] 启动服务..."
-  systemctl start rclone-mntgd.service
+  systemctl start rclone-"$mount_path_name".service
   sleep 1s
   echo -e "$curr_date [Info] 添加开机启动..."
-  systemctl enable rclone-mntgd.service
+  systemctl enable rclone-"$mount_path_name".service
   if [[ $? ]]; then
-    echo -e "$curr_date [Info] 创建服务 rclone-mntgd.service.并已添加开机挂载.\n您可以通过 systemctl [start|stop|status] 进行挂载服务管理。"
+    echo -e "$curr_date [Info] 创建服务 ${red}rclone-${mount_path_name}.service${normal}.并已添加开机挂载.\n您可以通过 ${red}systemctl [start|stop|status]${normal} 进行挂载服务管理。"
     sleep 2s
   else
     echo
@@ -126,23 +126,37 @@ EOF
 
 ################## 选择挂载参数 ##################
 choose_mount_tag() {
-  choose_mount_tag_status=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "选择挂载参数" --menu --nocancel "注：默认缓存目录为/home/cache，ESC退出脚本" 12 80 3 \
-    "1" "扫库参数[单文件内存缓冲 16M,缓存块 1M,缓存步进32M ]" \
-    "2" "观看参数[单文件内存缓冲512M,缓存块64M,缓存步进256,硬盘缓冲辅助512M]" \
+  choose_mount_tag_status=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "选择挂载参数" --menu --nocancel "注：默认缓存目录为/home/cache，ESC退出脚本" 12 60 3 \
+    "1" "扫库参数 *内存缓冲 16M，硬盘缓存块1M" \
+    "2" "观看参数 *内存缓冲128M，硬盘缓存块128M，预读2G" \
     "3" "退出脚本" 3>&1 1>&2 2>&3)
   case $choose_mount_tag_status in
     1)
       echo
-      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --no-modtime --dir-cache-time 1000h --poll-interval 20s --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M --log-level DEBUG --log-file=/mnt/rclone.log"
+      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 20s --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --vfs-read-chunk-size 1M --no-modtime --log-level INFO --log-file=/mnt/rclone.log"
       ;;
     2)
       echo
-      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --no-modtime --dir-cache-time 1000h --poll-interval 20s --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 512M --vfs-read-ahead 512M --vfs-read-chunk-size 64M --vfs-read-chunk-size-limit 256M --vfs-cache-max-size 20G --log-level DEBUG --log-file=/mnt/rclone.log"
+      mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 1000h --poll-interval 20s --cache-dir=/home/cache --vfs-cache-mode full --use-mmap --buffer-size 128M --vfs-read-ahead 2G --no-modtime --log-level INFO --log-file=/mnt/rclone.log"
+      #mount_tag="--umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --poll-interval 1h --vfs-cache-mode full --use-mmap --buffer-size 256M --cache-dir=/home/cache --vfs-read-ahead 50G --vfs-cache-max-size $cache_size --vfs-read-chunk-size 256M --vfs-read-chunk-size-limit 1G --log-level INFO --log-file=/mnt/rclone.log"
       ;;
     3 | *)
       myexit 0
       ;;
   esac
+}
+
+################## 自 定 义 挂 载 列 表 ##################
+my_mountlist() {
+   if [ -d /home/mountlist.json ]; then
+   TERM=ansi whiptail --title "异常退出" --infobox "未检测到/home/mountlist.json配置文件，无法实现切换！" 8 68
+   echo 
+   myexit 1
+   fi
+   mountlistmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "切换挂载模式" --menu --nocancel "注：ESC退出脚本" 15 45 6 \
+    "1" "kws_jav_uncensor" \
+    "2" "kws_jav_censor" \
+    "3" "kws_cav_uncensor" 3>&1 1>&2 2>&3)
 }
 
 ################## 开  始  菜  单 ##################
@@ -162,6 +176,8 @@ mount_menu() {
   curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
   if [ -n "$curr_mount_tag" ]; then
     mount_server_name=$(systemctl|grep "rclone"|awk '{print $1}')
+    
+
     if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
       curr_mount_tag_status="扫库参数"
     elif echo "$curr_mount_tag"|grep "buffer-size"; then
@@ -178,17 +194,21 @@ mount_menu() {
       echo
       remote_choose
       td_id_choose
+      dir_choose
       mount_server_creat
       ;;
     delete_mount)
       echo
+      dir_choose
       mount_del
       ;;
     switch_mount)
       echo
+      dir_choose
       mount_del
       remote_choose
       td_id_choose
+      dir_choose
       mount_server_creat
       ;;
     switch_tag)
@@ -198,11 +218,11 @@ mount_menu() {
         mount_menu
       elif [ "${curr_mount_tag_status}" == "扫库参数" ]; then
         systemctl stop "$mount_server_name"
-        sed -i 's/--vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M/--buffer-size 256M --vfs-read-ahead 500M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 2G --vfs-cache-max-size 20G/g' /lib/systemd/system/"$mount_server_name"
+        sed -i 's/--vfs-read-chunk-size 1M/--buffer-size 128M --vfs-read-ahead 2G/g' /lib/systemd/system/"$mount_server_name"
         systemctl daemon-reload && systemctl restart "$mount_server_name"
       elif [ "${curr_mount_tag_status}" == "观看参数" ]; then
         systemctl stop "$mount_server_name"
-        sed -i 's/--buffer-size 256M --vfs-read-ahead 500M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 2G --vfs-cache-max-size 20G/--vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M/g' /lib/systemd/system/"$mount_server_name"
+        sed -i 's/--buffer-size 128M --vfs-read-ahead 2G/--vfs-read-chunk-size 1M/g' /lib/systemd/system/"$mount_server_name"
         systemctl daemon-reload && systemctl restart "$mount_server_name"
       fi
       ;;
