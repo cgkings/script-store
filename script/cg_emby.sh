@@ -244,11 +244,11 @@ check_status() {
   #挂载状态
   if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
     if systemctl | grep -q "rclone"; then
-      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep -q "fclone mount" | grep -v grep | awk '{print $6}')"
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{print $6}')"
     else
       systemctl daemon-reload && systemctl restart rclone-mntgd.service
       sleep 2s
-      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep -q "fclone mount" | grep -v grep | awk '{print $6}')"
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{print $6}')"
     fi
   else
     curr_mount_status="未挂载"
@@ -256,7 +256,7 @@ check_status() {
   #挂载参数状态
   curr_mount_tag=$(ps -eo cmd | grep -q "fclone mount" | grep -v grep | awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
   if [ -n "$curr_mount_tag" ]; then
-    mount_server_name=$(systemctl | grep -q "rclone" | awk '{print $1}')
+    mount_server_name=$(systemctl | grep "rclone" | awk '{print $1}')
     if echo "$curr_mount_tag" | grep -q "vfs-read-chunk-size"; then
       curr_mount_tag_status="扫库参数"
     elif echo "$curr_mount_tag" | grep -q "buffer-size"; then
