@@ -19,6 +19,26 @@ source <(curl -sL git.io/cg_script_option)
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ip_addr=$(hostname -I | awk '{print $1}')
 
+################## 检查emby安装版本及rclone挂载状态 ##################
+check_status() {
+  #emby版本
+  emby_version="4.6.4.0"
+  emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
+  emby_local_version=${emby_local_version:-"未安装"}
+  #挂载状态
+  if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
+    if systemctl | grep "rclone"; then
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
+    else
+      systemctl daemon-reload && systemctl restart rclone-mntgd.service
+      sleep 2s
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
+    fi
+  else
+    curr_mount_status="未挂载"
+  fi
+}
+
 ################## 初始化检查安装emby rclone ##################
 initialization() {
   #step1:系统检查 & rclone检查安装
@@ -34,18 +54,10 @@ initialization() {
     echo
   fi
   echo 40
-  #step3：mount状态检测
-  mount_status=$(pgrep -f "mount" | wc -l)
-  if [ "$mount_status" -gt 0 ]; then
-    mount_info="存在"
-  else
-    mount_info="不存在"
-  fi
+  #step3：状态检测
+  check_status
   echo 60
   #step4:emby检查安装
-  emby_version="4.6.4.0"
-  emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
-  emby_local_version=${emby_local_version:-"未安装"}
   if [ ! -f /usr/lib/systemd/system/emby-server.service ]; then
     echo -e "${curr_date} [INFO] emby $emby_version 不存在.正在为您安装，请稍等..." | tee -a /root/install_log.txt
     wget -vN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
@@ -132,25 +144,125 @@ del_emby() {
   dpkg --purge emby-server
 }
 
+################## 创建开机挂载服务 ##################
+mount_server_creat() {
+  choose_mount_tag
+  if [ ! -d /mnt/gd ]; then
+    echo -e "$curr_date [警告] /mnt/gd 不存在，正在创建..."
+    mkdir -p 755 /mnt/gd
+    sleep 1s
+    echo -e "$curr_date [Info] /mnt/gd 创建完成！"
+  fi
+  echo -e "$curr_date [Info] 正在创建服务 rclone-mntgd.service 请稍等..."
+  cat > /lib/systemd/system/rclone-mntgd.service << EOF
+[Unit]
+Description = rclone-mntgd
+AssertPathIsDirectory = /mnt/gd
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=notify
+KillMode=none
+User=root
+ExecStart=fclone mount ${my_remote}: /mnt/gd --drive-root-folder-id ${td_id} ${mount_tag}
+ExecStop=fusermount -qzu /mnt/gd
+Restart=on-abort
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  sleep 2s
+  echo -e "$curr_date [Info] 服务创建成功。"
+  sleep 2s
+  echo -e "$curr_date [Info] 启动服务..."
+  systemctl start rclone-mntgd.service
+  sleep 1s
+  echo -e "$curr_date [Info] 添加开机启动..."
+  systemctl enable rclone-mntgd.service
+  if [[ $? ]]; then
+    echo -e "$curr_date [Info] 创建服务 rclone-mntgd.service.并已添加开机挂载.\n您可以通过 systemctl [start|stop|status] 进行挂载服务管理。"
+    sleep 2s
+  else
+    echo -e "$curr_date [警告] 未知错误."
+  fi
+  df -h
+}
+
+################## 选择挂载参数 ##################
+choose_mount_tag() {
+  choose_mount_tag_status=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "选择挂载参数" --menu --nocancel "注：默认缓存目录为/home/cache，ESC退出脚本" 12 80 3 \
+    "1" "扫库参数[单文件内存缓冲 16M,缓存块 1M,缓存步进32M ]" \
+    "2" "观看参数[单文件内存缓冲512M,缓存块32M,缓存步进128M,硬盘缓冲辅助512M]" \
+    "3" "退出脚本" 3>&1 1>&2 2>&3)
+  case $choose_mount_tag_status in
+    1)
+      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-chunk-size 1M"
+      ;;
+    2)
+      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 256M --vfs-read-ahead 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G"
+      ;;
+    3 | *)
+      myexit 0
+      ;;
+  esac
+}
+
+################## 切换挂载参数 ##################
+switch_mount_tag() {
+  curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
+  if [ -n "$curr_mount_tag" ]; then
+    mount_server_name=$(systemctl|grep "rclone"|awk '{print $1}')
+    if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
+      curr_mount_tag_status="扫库参数"
+    elif echo "$curr_mount_tag"|grep "buffer-size"; then
+      curr_mount_tag_status="观看参数"
+    fi
+  fi
+  if [ -z "${curr_mount_tag_status}" ]; then
+        TERM=ansi whiptail --title "警告" --infobox "还没挂载，切换个锤子的挂载参数" 8 68
+        mount_menu
+      elif [ "${curr_mount_tag_status}" == "扫库参数" ]; then
+        systemctl stop "$mount_server_name"
+        sed -i 's/--vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M/--buffer-size 256M --vfs-read-ahead 500M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 2G --vfs-cache-max-size 20G/g' /lib/systemd/system/"$mount_server_name"
+        systemctl daemon-reload && systemctl restart "$mount_server_name"
+      elif [ "${curr_mount_tag_status}" == "观看参数" ]; then
+        systemctl stop "$mount_server_name"
+        sed -i 's/--buffer-size 256M --vfs-read-ahead 500M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 2G --vfs-cache-max-size 20G/--vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M/g' /lib/systemd/system/"$mount_server_name"
+        systemctl daemon-reload && systemctl restart "$mount_server_name"
+      fi
+}
+
+################## 删除挂载 ##################
+mount_del() {
+  echo -e "$curr_date [Info] 正在执行fusermount -qzu /mnt/gd..."
+  fusermount -qzu /mnt/gd
+  echo -e "$curr_date [Info] fusermount -qzu /mnt/gd [done]"
+  echo -e "$curr_date [Info] 正在检查服务是否存在..."
+  if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
+    echo -e "$curr_date [Info] 找到服务 rclone-mntgd.service 正在删除，请稍等..."
+    systemctl stop rclone-mntgd.service
+    systemctl disable rclone-mntgd.service
+    rm /lib/systemd/system/rclone-mntgd.service
+    sleep 2s
+    echo -e "$curr_date [Info] 删除服务[done]"
+  else
+    echo -e "$curr_date [Debug] 你没创建过服务!"
+  fi
+  echo -e "$curr_date [Info] 删除挂载[done]"
+}
+
 ################## 主菜单 ##################
 cg_emby_main_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "本机emby版本号:$emby_local_version\n挂载进程:$mount_info\n注：本脚本适配emby$emby_version，ESC退出" 19 50 7 \
     "Bak" "   ==>备 份 emby" \
     "Revert" "   ==>还 原 emby" \
     "Uninstall" "   ==>卸 载 emby" \
-    "start_mount" "   ==>开始挂载" \
-    "switch_mount" "   ==>切换挂载" \
+    "restart_mount" "   ==>重新挂载" \
     "switch_tag" "   ==>切换参数" \
     "Exit" "   ==>退 出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
-    Install)
-      check_emby
-      cg_emby_main_menu
-      ;;
-    Crack)
-      crack_emby
-      cg_emby_main_menu
-      ;;
     Bak)
       bak_emby
       cg_emby_main_menu
@@ -163,40 +275,16 @@ cg_emby_main_menu() {
       del_emby
       cg_emby_main_menu
       ;;
-    Automation)
-      whiptail --clear --ok-button "回车开始执行" --backtitle "Hi,欢迎使用cg_toolbox。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "无人值守模式" --checklist --separate-output --nocancel "请按空格及方向键来多选，ESC退出" 20 54 13 \
-        "Back" "返回上级菜单(Back to main menu)" off \
-        "mount" "挂载gd" off \
-        "swap" "自动设置2倍物理内存的虚拟内存" off \
-        "install" "安装emby" off \
-        "revert" "还原emby" off 2> results
-      while read choice; do
-        case $choice in
-          Back)
-            cg_emby_main_menu
-            break
-            ;;
-          mount)
-            remote_choose
-            td_id_choose
-            dir_choose
-            bash <(curl -sL git.io/cg_mount.sh) s $my_remote $td_id $mount_path
-            ;;
-          swap)
-            bash <(curl -sL git.io/cg_swap) a
-            ;;
-          install)
-            check_emby
-            ;;
-          revert)
-            revert_emby
-            ;;
-          *)
-            myexit 0
-            ;;
-        esac
-      done < results
-      rm results
+    restart_mount)
+      mount_del
+      remote_choose
+      td_id_choose
+      mount_server_creat
+      cg_emby_main_menu
+      ;;
+    switch_tag)
+      switch_mount_tag
+      cg_emby_main_menu
       ;;
     Exit | *)
       myexit 0
