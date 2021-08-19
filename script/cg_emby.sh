@@ -230,6 +230,12 @@ mount_del() {
 
 ################## 检查emby安装版本及rclone挂载状态 ##################
 check_status() {
+  #emby破解状态
+  if grep -s "恭喜您EMBY破解成功" /root/install_log.txt; then
+    emby_crack_status="已破解"
+  else
+    emby_crack_status="未破解"
+  fi
   #挂载状态
   if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
     if systemctl | grep "rclone"; then
@@ -257,11 +263,11 @@ check_status() {
 ################## 主菜单 ##################
 cg_emby_main_menu() {
   check_status
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "emby版本:$emby_local_version   emby破解状态：\n挂载状态：$curr_mount_status    挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 19 80 7 \
-    "Bak" "     ==>备 份 emby" \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "Emby版本:$emby_local_version\nEmby破解：$emby_crack_status\n挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 18 55 6 \
+    "Bak" "      ==>备 份 emby" \
     "Revert" "      ==>还 原 emby" \
-    "Uninstall" "     ==>卸 载 emby" \
-    "restart_mount" "     ==>重新挂载" \
+    "Uninstall" "      ==>卸 载 emby" \
+    "restart_mount" "      ==>重新挂载" \
     "switch_tag" "      ==>切换参数" \
     "Exit" "      ==>退 出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
