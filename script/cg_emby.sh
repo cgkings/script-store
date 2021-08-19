@@ -28,6 +28,7 @@ initialization() {
   #step1:系统检查 & rclone检查安装
   check_sys
   check_rclone
+  sleep 0.5s
   echo 20
   #step2:fuse检查安装
   if [ ! -f /etc/fuse.conf ]; then
@@ -37,9 +38,11 @@ initialization() {
     echo -e "$curr_date fuse安装完成." >> /root/install_log.txt
     echo
   fi
+  sleep 1s
   echo 40
   #step3：状态检测
   check_status
+  sleep 1s
   echo 60
   #step4:emby检查安装
   if [ ! -f "/usr/lib/systemd/system/emby-server.service" ]; then
@@ -50,14 +53,15 @@ initialization() {
     rm -f emby-server-deb_"${emby_version}"_amd64.deb
     echo -e "${curr_date} [INFO] 恭喜您EMBY $emby_version 安装成功，请访问：http://${ip_addr}:8096 进一步配置Emby" | tee -a /root/install_log.txt
   else
-    if [ "$emby_local_version" -ne "$emby_version" ]; then
+    if [[ "$emby_local_version" != "$emby_version" ]]; then
       echo -e "${curr_date} [ERROR] 本机emby版本为 $emby_local_version，本脚本仅支持 $emby_version,请运行命令卸载后重新运行本脚本\nsystemctl stop emby-server && dpkg --purge emby-server" | tee -a /root/install_log.txt
       exit 1
     fi
   fi
+  sleep 1s
   echo 80
   #step5:emby破解检查
-  if grep -s "恭喜您EMBY破解成功" /root/install_log.txt; then
+  if grep -q "恭喜您EMBY破解成功" /root/install_log.txt; then
     echo > /dev/null
   else
     systemctl stop emby-server
@@ -70,6 +74,7 @@ initialization() {
     systemctl daemon-reload && systemctl restart emby-server
     echo -e "${curr_date} [INFO] 恭喜您EMBY破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
   fi
+  sleep 1s
   echo 100
 }
 
@@ -231,30 +236,30 @@ mount_del() {
 ################## 检查emby安装版本及rclone挂载状态 ##################
 check_status() {
   #emby破解状态
-  if grep -s "恭喜您EMBY破解成功" /root/install_log.txt; then
+  if grep -q "恭喜您EMBY破解成功" /root/install_log.txt; then
     emby_crack_status="已破解"
   else
     emby_crack_status="未破解"
   fi
   #挂载状态
   if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
-    if systemctl | grep "rclone"; then
-      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{print $6}')"
+    if systemctl | grep -q "rclone"; then
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep -q "fclone mount" | grep -v grep | awk '{print $6}')"
     else
       systemctl daemon-reload && systemctl restart rclone-mntgd.service
       sleep 2s
-      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{print $6}')"
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep -q "fclone mount" | grep -v grep | awk '{print $6}')"
     fi
   else
     curr_mount_status="未挂载"
   fi
   #挂载参数状态
-  curr_mount_tag=$(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
+  curr_mount_tag=$(ps -eo cmd | grep -q "fclone mount" | grep -v grep | awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
   if [ -n "$curr_mount_tag" ]; then
-    mount_server_name=$(systemctl | grep "rclone" | awk '{print $1}')
-    if echo "$curr_mount_tag" | grep "vfs-read-chunk-size"; then
+    mount_server_name=$(systemctl | grep -q "rclone" | awk '{print $1}')
+    if echo "$curr_mount_tag" | grep -q "vfs-read-chunk-size"; then
       curr_mount_tag_status="扫库参数"
-    elif echo "$curr_mount_tag" | grep "buffer-size"; then
+    elif echo "$curr_mount_tag" | grep -q "buffer-size"; then
       curr_mount_tag_status="观看参数"
     fi
   fi
