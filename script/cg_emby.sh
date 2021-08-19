@@ -37,6 +37,16 @@ check_status() {
   else
     curr_mount_status="未挂载"
   fi
+  #挂载参数状态
+  curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
+  if [ -n "$curr_mount_tag" ]; then
+    mount_server_name=$(systemctl|grep "rclone"|awk '{print $1}')
+    if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
+      curr_mount_tag_status="扫库参数"
+    elif echo "$curr_mount_tag"|grep "buffer-size"; then
+      curr_mount_tag_status="观看参数"
+    fi
+  fi
 }
 
 ################## 初始化检查安装emby rclone ##################
@@ -211,15 +221,6 @@ choose_mount_tag() {
 
 ################## 切换挂载参数 ##################
 switch_mount_tag() {
-  curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
-  if [ -n "$curr_mount_tag" ]; then
-    mount_server_name=$(systemctl|grep "rclone"|awk '{print $1}')
-    if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
-      curr_mount_tag_status="扫库参数"
-    elif echo "$curr_mount_tag"|grep "buffer-size"; then
-      curr_mount_tag_status="观看参数"
-    fi
-  fi
   if [ -z "${curr_mount_tag_status}" ]; then
         TERM=ansi whiptail --title "警告" --infobox "还没挂载，切换个锤子的挂载参数" 8 68
         mount_menu
@@ -255,13 +256,13 @@ mount_del() {
 
 ################## 主菜单 ##################
 cg_emby_main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "本机emby版本号:$emby_local_version\n挂载进程:$mount_info\n注：本脚本适配emby$emby_version，ESC退出" 19 50 7 \
-    "Bak" "   ==>备 份 emby" \
-    "Revert" "   ==>还 原 emby" \
-    "Uninstall" "   ==>卸 载 emby" \
-    "restart_mount" "   ==>重新挂载" \
-    "switch_tag" "   ==>切换参数" \
-    "Exit" "   ==>退 出" 3>&1 1>&2 2>&3)
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "emby版本号:$emby_local_version   emby破解状态：\n挂载状态：$curr_mount_status    挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 19 65 7 \
+    "Bak" "     ==>备 份 emby" \
+    "Revert" "    ==>还 原 emby" \
+    "Uninstall" "     ==>卸 载 emby" \
+    "restart_mount" "     ==>重新挂载" \
+    "switch_tag" "    ==>切换参数" \
+    "Exit" "    ==>退 出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Bak)
       bak_emby
