@@ -38,11 +38,10 @@ initialization() {
     echo -e "$curr_date fuse安装完成." >> /root/install_log.txt
     echo
   fi
-  sleep 1s
+  sleep 0.5s
   echo 40
   #step3：状态检测
-  check_status
-  sleep 1s
+  sleep 0.5s
   echo 60
   #step4:emby检查安装
   if [ ! -f "/usr/lib/systemd/system/emby-server.service" ]; then
@@ -58,7 +57,7 @@ initialization() {
       exit 1
     fi
   fi
-  sleep 1s
+  sleep 0.5s
   echo 80
   #step5:emby破解检查
   if grep -q "恭喜您EMBY破解成功" /root/install_log.txt; then
@@ -74,13 +73,12 @@ initialization() {
     systemctl daemon-reload && systemctl restart emby-server
     echo -e "${curr_date} [INFO] 恭喜您EMBY破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
   fi
-  sleep 1s
+  sleep 0.5s
   echo 100
 }
 
 ################## 备份emby ##################
 bak_emby() {
-  check_emby
   remote_choose
   td_id_choose
   systemctl stop emby-server #结束 emby 进程
@@ -93,7 +91,6 @@ bak_emby() {
 
 ################## 还原emby ##################
 revert_emby() {
-    check_emby
     remote_choose
     td_id_choose
     fclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/    /g' > ~/.config/rclone/bak_list.txt
@@ -129,7 +126,7 @@ check_caddy() {
 ################## 卸载emby ##################
 del_emby() {
   systemctl stop emby-server #结束 emby 进程
-  syctemctl disable emby-server
+  systemctl disable emby-server
   dpkg --purge emby-server
 }
 
@@ -267,6 +264,8 @@ check_status() {
 
 ################## 主菜单 ##################
 cg_emby_main_menu() {
+  emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
+  emby_local_version=${emby_local_version:-"未安装"}
   check_status
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "Emby版本：$emby_local_version\nEmby破解：$emby_crack_status\n挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 18 55 6 \
     "Bak" "      ==>备 份 emby" \
