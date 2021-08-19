@@ -198,15 +198,15 @@ switch_mount_tag() {
   if [ -z "${curr_mount_tag_status}" ]; then
         TERM=ansi whiptail --title "警告" --infobox "还没挂载，切换个锤子的挂载参数" 8 68
         mount_menu
-      elif [ "${curr_mount_tag_status}" == "扫库参数" ]; then
+  elif     [ "${curr_mount_tag_status}" == "扫库参数" ]; then
         systemctl stop "$mount_server_name"
         sed -i 's/--vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M/--buffer-size 256M --vfs-read-ahead 500M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 2G --vfs-cache-max-size 20G/g' /lib/systemd/system/"$mount_server_name"
         systemctl daemon-reload && systemctl restart "$mount_server_name"
-      elif [ "${curr_mount_tag_status}" == "观看参数" ]; then
+  elif     [ "${curr_mount_tag_status}" == "观看参数" ]; then
         systemctl stop "$mount_server_name"
         sed -i 's/--buffer-size 256M --vfs-read-ahead 500M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 2G --vfs-cache-max-size 20G/--vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M/g' /lib/systemd/system/"$mount_server_name"
         systemctl daemon-reload && systemctl restart "$mount_server_name"
-      fi
+  fi
 }
 
 ################## 删除挂载 ##################
@@ -233,22 +233,22 @@ check_status() {
   #挂载状态
   if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
     if systemctl | grep "rclone"; then
-      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{print $6}')"
     else
       systemctl daemon-reload && systemctl restart rclone-mntgd.service
       sleep 2s
-      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{print $6}')"
     fi
   else
     curr_mount_status="未挂载"
   fi
   #挂载参数状态
-  curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
+  curr_mount_tag=$(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
   if [ -n "$curr_mount_tag" ]; then
-    mount_server_name=$(systemctl|grep "rclone"|awk '{print $1}')
-    if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
+    mount_server_name=$(systemctl | grep "rclone" | awk '{print $1}')
+    if echo "$curr_mount_tag" | grep "vfs-read-chunk-size"; then
       curr_mount_tag_status="扫库参数"
-    elif echo "$curr_mount_tag"|grep "buffer-size"; then
+    elif echo "$curr_mount_tag" | grep "buffer-size"; then
       curr_mount_tag_status="观看参数"
     fi
   fi
@@ -256,13 +256,14 @@ check_status() {
 
 ################## 主菜单 ##################
 cg_emby_main_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "emby版本号:$emby_local_version   emby破解状态：\n挂载状态：$curr_mount_status    挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 19 65 7 \
+  check_status
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "emby版本:$emby_local_version   emby破解状态：\n挂载状态：$curr_mount_status    挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 19 80 7 \
     "Bak" "     ==>备 份 emby" \
-    "Revert" "    ==>还 原 emby" \
+    "Revert" "      ==>还 原 emby" \
     "Uninstall" "     ==>卸 载 emby" \
     "restart_mount" "     ==>重新挂载" \
-    "switch_tag" "    ==>切换参数" \
-    "Exit" "    ==>退 出" 3>&1 1>&2 2>&3)
+    "switch_tag" "      ==>切换参数" \
+    "Exit" "      ==>退 出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Bak)
       bak_emby
