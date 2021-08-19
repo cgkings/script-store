@@ -254,7 +254,7 @@ check_status() {
     curr_mount_status="未挂载"
   fi
   #挂载参数状态
-  curr_mount_tag=$(ps -eo cmd | grep -q "fclone mount" | grep -v grep | awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
+  curr_mount_tag=$(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
   if [ -n "$curr_mount_tag" ]; then
     mount_server_name=$(systemctl | grep "rclone" | awk '{print $1}')
     if echo "$curr_mount_tag" | grep -q "vfs-read-chunk-size"; then
