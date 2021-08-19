@@ -18,36 +18,10 @@
 source <(curl -sL git.io/cg_script_option)
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ip_addr=$(hostname -I | awk '{print $1}')
-
-################## 检查emby安装版本及rclone挂载状态 ##################
-check_status() {
-  #emby版本
-  emby_version="4.6.4.0"
-  emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
-  emby_local_version=${emby_local_version:-"未安装"}
-  #挂载状态
-  if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
-    if systemctl | grep "rclone"; then
-      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
-    else
-      systemctl daemon-reload && systemctl restart rclone-mntgd.service
-      sleep 2s
-      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
-    fi
-  else
-    curr_mount_status="未挂载"
-  fi
-  #挂载参数状态
-  curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
-  if [ -n "$curr_mount_tag" ]; then
-    mount_server_name=$(systemctl|grep "rclone"|awk '{print $1}')
-    if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
-      curr_mount_tag_status="扫库参数"
-    elif echo "$curr_mount_tag"|grep "buffer-size"; then
-      curr_mount_tag_status="观看参数"
-    fi
-  fi
-}
+#emby版本
+emby_version="4.6.4.0"
+emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
+emby_local_version=${emby_local_version:-"未安装"}
 
 ################## 初始化检查安装emby rclone ##################
 initialization() {
@@ -68,7 +42,7 @@ initialization() {
   check_status
   echo 60
   #step4:emby检查安装
-  if [ ! -f /usr/lib/systemd/system/emby-server.service ]; then
+  if [ ! -f "/usr/lib/systemd/system/emby-server.service" ]; then
     echo -e "${curr_date} [INFO] emby $emby_version 不存在.正在为您安装，请稍等..." | tee -a /root/install_log.txt
     wget -vN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
     dpkg -i emby-server-deb_"${emby_version}"_amd64.deb
@@ -252,6 +226,32 @@ mount_del() {
     echo -e "$curr_date [Debug] 你没创建过服务!"
   fi
   echo -e "$curr_date [Info] 删除挂载[done]"
+}
+
+################## 检查emby安装版本及rclone挂载状态 ##################
+check_status() {
+  #挂载状态
+  if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
+    if systemctl | grep "rclone"; then
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
+    else
+      systemctl daemon-reload && systemctl restart rclone-mntgd.service
+      sleep 2s
+      curr_mount_status="已挂载，挂载盘ID为 $(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{print $6}')"
+    fi
+  else
+    curr_mount_status="未挂载"
+  fi
+  #挂载参数状态
+  curr_mount_tag=$(ps -eo cmd|grep "fclone mount"|grep -v grep|awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
+  if [ -n "$curr_mount_tag" ]; then
+    mount_server_name=$(systemctl|grep "rclone"|awk '{print $1}')
+    if echo "$curr_mount_tag"|grep "vfs-read-chunk-size"; then
+      curr_mount_tag_status="扫库参数"
+    elif echo "$curr_mount_tag"|grep "buffer-size"; then
+      curr_mount_tag_status="观看参数"
+    fi
+  fi
 }
 
 ################## 主菜单 ##################
