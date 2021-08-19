@@ -18,51 +18,53 @@
 source <(curl -sL git.io/cg_script_option)
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ip_addr=$(hostname -I | awk '{print $1}')
-emby_version="4.6.4.0"
-emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
-emby_local_version=${emby_local_version:-"未安装"}
 
-################## 检查挂载状态 ##################
-check_mount() {
-  mount_status=$(pgrep -f "mount"|wc -l)
-  if [ "$mount_status" -gt 0 ];then
+################## 初始化检查安装emby rclone ##################
+initialization() {
+  #step1:系统检查 & rclone检查安装
+  check_sys
+  check_rclone
+  echo 20
+  #step2:fuse检查安装
+  if [ ! -f /etc/fuse.conf ]; then
+    echo -e "$curr_date 未找到fuse包.正在安装..."
+    sleep 1s
+    sudo apt-get install fuse -y > /dev/null
+    echo -e "$curr_date fuse安装完成." >> /root/install_log.txt
+    echo
+  fi
+  echo 40
+  #step3：mount状态检测
+  mount_status=$(pgrep -f "mount" | wc -l)
+  if [ "$mount_status" -gt 0 ]; then
     mount_info="存在"
   else
     mount_info="不存在"
   fi
-}
-
-################## 安装emby ##################
-check_emby() {
-  #判断emby本地安装状态
-  if [ -f /usr/lib/systemd/system/emby-server.service ]; then
-    if [ "$emby_local_version" = "$emby_version" ]; then
-      echo -e "${curr_date} [INFO] 本机原emby版本为 $emby_local_version,无须重复安装"
-    else
-      echo -e "${curr_date} [INFO] 本机原emby版本为 $emby_local_version，建议安装为 $emby_version"
-    fi
-  else
-    #如未安装，则进行安装
-    echo -e "${curr_date} [INFO] emby $emby_version 不存在.正在为您安装，请稍等..."
+  echo 60
+  #step4:emby检查安装
+  emby_version="4.6.4.0"
+  emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
+  emby_local_version=${emby_local_version:-"未安装"}
+  if [ ! -f /usr/lib/systemd/system/emby-server.service ]; then
+    echo -e "${curr_date} [INFO] emby $emby_version 不存在.正在为您安装，请稍等..." | tee -a /root/install_log.txt
     wget -vN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
     dpkg -i emby-server-deb_"${emby_version}"_amd64.deb
     sleep 1s
     rm -f emby-server-deb_"${emby_version}"_amd64.deb
-    whiptail --title "EMBY安装成功提示！！！" --msgbox "恭喜您EMBY $emby_version 安装成功，请您访问：http://${ip_addr}:8096 进一步配置Emby, 感谢使用~~~" 10 60
-  fi
-}
-
-##################破解emby####################
-crack_emby() {
-  systemctl stop emby-server
-  #修改emby服务,fail自动重启
-  if grep -s "Restart=on-failure" /usr/lib/systemd/system/emby-server.service; then
-    echo -e "${curr_date} [INFO] emby服务已设置fail自动重启,无需重复设置."
+    echo -e "${curr_date} [INFO] 恭喜您EMBY $emby_version 安装成功，请访问：http://${ip_addr}:8096 进一步配置Emby" | tee -a /root/install_log.txt
   else
-    sed -i '/[Service]/a\Restart=on-failure\nRestartSec=2\nStartLimitInterval=0' /usr/lib/systemd/system/emby-server.service
-    echo -e "${curr_date} [INFO] emby服务已设置fail自动重启."
+    if [ "$emby_local_version" -ne "$emby_version" ]; then
+      echo -e "${curr_date} [ERROR] 本机emby版本为 $emby_local_version，本脚本仅支持 $emby_version,请运行命令卸载后重新运行本脚本\nsystemctl stop emby-server && dpkg --purge emby-server" | tee -a /root/install_log.txt
+      exit 1
+    fi
   fi
-  if [ "$emby_local_version" = "$emby_version" ]; then
+  echo 80
+  #step5:emby破解检查
+  if grep -s "恭喜您EMBY破解成功" /root/install_log.txt; then
+    echo > /dev/null
+  else
+    systemctl stop emby-server
     #破解emby
     rm -rf /opt/emby-server/system/System.Net.Http.dll /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js /opt/emby-server/system/Emby.Web.dll
     wget -q https://github.com/cgkings/script-store/raw/master/config/emby/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll --no-check-certificate
@@ -70,11 +72,9 @@ crack_emby() {
     wget -q https://github.com/cgkings/script-store/raw/master/config/emby/464crack/Emby.Web.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
     sleep 3s
     systemctl daemon-reload && systemctl restart emby-server
-    whiptail --title "EMBY破解成功提示！！！" --msgbox "恭喜您EMBY $emby_version 破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员, 感谢使用~~~" 10 60
-  else
-    echo -e "${curr_date} [ERROR] 您的emby版本为 $emby_local_version，本脚本破解功能仅支持 $emby_version"
-    exit 0
+    echo -e "${curr_date} [INFO] 恭喜您EMBY破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
   fi
+  echo 100
 }
 
 ################## 备份emby ##################
@@ -117,34 +117,31 @@ revert_emby() {
 check_caddy() {
   if [ -z "$(command -v caddy)" ]; then
     echo -e "${debug_message} ${yellow}${jiacu}caddy${normal} 不存在.正在为您安装，请稍后..." | tee -a /root/install_log.txt
-    echo "deb [trusted=yes] https://apt.fury.io/caddy/ /" \
-    | sudo tee -a /etc/apt/sources.list.d/caddy-fury.list
+    sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
     sudo apt update
     sudo apt install caddy
   fi
 }
 
-
-
-
-
-
 ################## 卸载emby ##################
 del_emby() {
   systemctl stop emby-server #结束 emby 进程
+  syctemctl disable emby-server
   dpkg --purge emby-server
 }
 
 ################## 主菜单 ##################
 cg_emby_main_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "本机emby版本号:$emby_local_version\n挂载进程:$mount_info\n注：本脚本适配emby$emby_version，ESC退出" 19 50 7 \
-    "Install" "==>安 装 emby" \
-    "Crack" "==>破 解 emby" \
-    "Bak" "==>备 份 emby" \
-    "Revert" "==>还 原 emby" \
-    "Uninstall" "==>卸 载 emby" \
-    "Automation" "自用无人值守" \
-    "Exit" "退 出" 3>&1 1>&2 2>&3)
+    "Bak" "   ==>备 份 emby" \
+    "Revert" "   ==>还 原 emby" \
+    "Uninstall" "   ==>卸 载 emby" \
+    "start_mount" "   ==>开始挂载" \
+    "switch_mount" "   ==>切换挂载" \
+    "switch_tag" "   ==>切换参数" \
+    "Exit" "   ==>退 出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Install)
       check_emby
@@ -208,7 +205,5 @@ cg_emby_main_menu() {
 }
 
 ################## 执行命令 ##################
-check_sys
-check_rclone
-check_mount
+initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
 cg_emby_main_menu
