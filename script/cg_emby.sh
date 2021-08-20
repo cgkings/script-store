@@ -40,17 +40,25 @@ initialization() {
   fi
   sleep 0.5s
   echo 40
-  #step3：状态检测
+  #step3：caddy2检测安装
+  if [ -z "$(command -v caddy)" ]; then
+    echo -e "${curr_date} [INFO] caddy2 不存在.正在为您安装，请稍后..." | tee -a /root/install_log.txt
+    sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https > /dev/null
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+    sudo apt update
+    sudo apt-get install -y caddy > /dev/null
+  fi
   sleep 0.5s
   echo 60
   #step4:emby检查安装
   if [ ! -f "/usr/lib/systemd/system/emby-server.service" ]; then
     echo -e "${curr_date} [INFO] emby $emby_version 不存在.正在为您安装，请稍等..." | tee -a /root/install_log.txt
-    wget -vN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
-    dpkg -i emby-server-deb_"${emby_version}"_amd64.deb
+    wget -qN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
+    dpkg -i emby-server-deb_"${emby_version}"_amd64.deb > /dev/null
     sleep 1s
     rm -f emby-server-deb_"${emby_version}"_amd64.deb
-    echo -e "${curr_date} [INFO] 恭喜您EMBY $emby_version 安装成功，请访问：http://${ip_addr}:8096 进一步配置Emby" | tee -a /root/install_log.txt
+    echo -e "${curr_date} [INFO] 恭喜您emby $emby_version 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
   else
     if [[ "$emby_local_version" != "$emby_version" ]]; then
       echo -e "${curr_date} [ERROR] 本机emby版本为 $emby_local_version，本脚本仅支持 $emby_version,请运行命令卸载后重新运行本脚本\nsystemctl stop emby-server && dpkg --purge emby-server" | tee -a /root/install_log.txt
@@ -60,7 +68,7 @@ initialization() {
   sleep 0.5s
   echo 80
   #step5:emby破解检查
-  if grep -q "恭喜您EMBY破解成功" /root/install_log.txt; then
+  if grep -q "破解成功" /root/install_log.txt; then
     echo > /dev/null
   else
     systemctl stop emby-server
@@ -71,7 +79,7 @@ initialization() {
     wget -q https://github.com/cgkings/script-store/raw/master/config/emby/464crack/Emby.Web.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
     sleep 3s
     systemctl daemon-reload && systemctl restart emby-server
-    echo -e "${curr_date} [INFO] 恭喜您EMBY破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
+    echo -e "${curr_date} [INFO] 恭喜您emby破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
   fi
   sleep 0.5s
   echo 100
@@ -112,22 +120,11 @@ revert_emby() {
 }
 
 ################## 卸载emby ##################
-check_caddy() {
-  if [ -z "$(command -v caddy)" ]; then
-    echo -e "${debug_message} ${yellow}${jiacu}caddy${normal} 不存在.正在为您安装，请稍后..." | tee -a /root/install_log.txt
-    sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-    sudo apt update
-    sudo apt install caddy
-  fi
-}
-
-################## 卸载emby ##################
 del_emby() {
   systemctl stop emby-server #结束 emby 进程
   systemctl disable emby-server
   dpkg --purge emby-server
+  sed -i '/emby/d' /root/install_log.txt
 }
 
 ################## 创建开机挂载服务 ##################
