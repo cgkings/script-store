@@ -231,7 +231,7 @@ mount_del() {
 ################## 检查emby安装版本及rclone挂载状态 ##################
 check_status() {
   #emby破解状态
-  if grep -q "恭喜您EMBY破解成功" /root/install_log.txt; then
+  if grep -q "破解成功" /root/install_log.txt; then
     emby_crack_status="已破解"
   else
     emby_crack_status="未破解"
