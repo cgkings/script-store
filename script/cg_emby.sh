@@ -48,6 +48,7 @@ initialization() {
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
     sudo apt update
     sudo apt-get install -y caddy > /dev/null
+    systemctl enable caddy.service
   fi
   sleep 0.5s
   echo 60
