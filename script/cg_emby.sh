@@ -251,7 +251,6 @@ check_status() {
   #挂载参数状态
   curr_mount_tag=$(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
   if [ -n "$curr_mount_tag" ]; then
-    mount_server_name=$(systemctl | grep "rclone" | awk '{print $1}')
     if echo "$curr_mount_tag" | grep -q "1M"; then
       curr_mount_tag_status="扫库参数"
     elif echo "$curr_mount_tag" | grep -q "buffer-size"; then
