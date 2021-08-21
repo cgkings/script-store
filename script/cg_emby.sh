@@ -196,17 +196,17 @@ choose_mount_tag() {
 ################## 切换挂载参数 ##################
 switch_mount_tag() {
   if [ -z "${curr_mount_tag_status}" ]; then
-        TERM=ansi whiptail --title "警告" --infobox "还没挂载，切换个锤子的挂载参数" 8 68
-        mount_menu
-  elif     [ "${curr_mount_tag_status}" == "扫库参数" ]; then
-        systemctl stop "$mount_server_name"
-        sed -i 's/--vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M/--buffer-size 256M --vfs-read-ahead 500M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 2G --vfs-cache-max-size 20G/g' /lib/systemd/system/"$mount_server_name"
-        systemctl daemon-reload && systemctl restart "$mount_server_name"
-  elif     [ "${curr_mount_tag_status}" == "观看参数" ]; then
-        systemctl stop "$mount_server_name"
-        sed -i 's/--buffer-size 256M --vfs-read-ahead 500M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 2G --vfs-cache-max-size 20G/--vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M/g' /lib/systemd/system/"$mount_server_name"
-        systemctl daemon-reload && systemctl restart "$mount_server_name"
+    TERM=ansi whiptail --title "警告" --infobox "还没挂载，切换个锤子的挂载参数" 8 68
+  elif [ "${curr_mount_tag_status}" == "扫库参数" ]; then
+    systemctl stop rclone-mntgd.service
+    sed -i 's/--vfs-read-chunk-size 1M/--buffer-size 256M --vfs-read-ahead 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G/g' /lib/systemd/system/rclone-mntgd.service
+    systemctl daemon-reload && systemctl restart rclone-mntgd.service
+  elif [ "${curr_mount_tag_status}" == "观看参数" ]; then
+    systemctl stop rclone-mntgd.service
+    sed -i 's/--buffer-size 256M --vfs-read-ahead 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G/--vfs-read-chunk-size 1M/g' /lib/systemd/system/rclone-mntgd.service
+    systemctl daemon-reload && systemctl restart rclone-mntgd.service
   fi
+  sleep 3s
 }
 
 ################## 删除挂载 ##################
@@ -252,7 +252,7 @@ check_status() {
   curr_mount_tag=$(ps -eo cmd | grep "fclone mount" | grep -v grep | awk '{for (i=7;i<=NF;i++)printf("%s ", $i);print ""}')
   if [ -n "$curr_mount_tag" ]; then
     mount_server_name=$(systemctl | grep "rclone" | awk '{print $1}')
-    if echo "$curr_mount_tag" | grep -q "vfs-read-chunk-size"; then
+    if echo "$curr_mount_tag" | grep -q "1M"; then
       curr_mount_tag_status="扫库参数"
     elif echo "$curr_mount_tag" | grep -q "buffer-size"; then
       curr_mount_tag_status="观看参数"
