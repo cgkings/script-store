@@ -32,23 +32,24 @@ initialization() {
   echo 20
   #step2:fuse检查安装
   if [ ! -f /etc/fuse.conf ]; then
-    echo -e "$curr_date 未找到fuse包.正在安装..."
+    echo -e "${curr_date} [DEBUG] 未找到fuse包.正在安装..."
     sleep 1s
     sudo apt-get install fuse -y > /dev/null
-    echo -e "$curr_date fuse安装完成." >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] fuse 安装完成!" >> /root/install_log.txt
     echo
   fi
   sleep 0.5s
   echo 40
   #step3：caddy2检测安装
   if [ -z "$(command -v caddy)" ]; then
-    echo -e "${curr_date} [INFO] caddy2 不存在.正在为您安装，请稍后..." | tee -a /root/install_log.txt
+    echo -e "${curr_date} [DEBUG] caddy2 不存在.正在为您安装，请稍后..."
     sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https > /dev/null
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
     sudo apt update
     sudo apt-get install -y caddy > /dev/null
     systemctl enable caddy.service
+    echo -e "${curr_date} [INFO] caddy2 安装完成!" | tee -a /root/install_log.txt
   fi
   sleep 0.5s
   echo 60
