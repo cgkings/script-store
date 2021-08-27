@@ -1,11 +1,11 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
-# bash <(curl -sL git.io/cg_emby)
-# File Name: cg_emby.sh
+# bash <(curl -sL git.io/cg_jellyfin)
+# File Name: cg_jellyfin.sh
 # Author: cgkings
 # Created Time : 2021.3.4
-# Description:emby一键脚本
+# Description:jellyfin一键脚本
 # System Required: Debian/Ubuntu
 # Version: 1.0
 #=============================================================
@@ -53,14 +53,16 @@ initialization() {
   fi
   sleep 0.5s
   echo 60
-  #step4:emby检查安装
+  #step4:jellyfin检查安装
   if [ ! -f "/usr/lib/systemd/system/emby-server.service" ]; then
-    echo -e "${curr_date} [INFO] emby $emby_version 不存在.正在为您安装，请稍等..."
-    wget -qN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
-    dpkg -i emby-server-deb_"${emby_version}"_amd64.deb > /dev/null
+    echo -e "${curr_date} [INFO] jellyfin 不存在.正在为您安装，请稍等..."
+    sudo apt install apt-transport-https
+    wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | sudo apt-key add -
+    echo "deb [arch=$( dpkg --print-architecture )] https://repo.jellyfin.org/$( awk -F'=' '/^ID=/{ print $NF }' /etc/os-release ) $( awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release ) main" | sudo tee /etc/apt/sources.list.d/jellyfin.list
+    sudo apt update
+    sudo apt install -y jellyfin
     sleep 1s
-    rm -f emby-server-deb_"${emby_version}"_amd64.deb
-    echo -e "${curr_date} [INFO] 恭喜您emby $emby_version 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
+    echo -e "${curr_date} [INFO] jellyfin 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
   else
     if [[ "$emby_local_version" != "$emby_version" ]]; then
       echo -e "${curr_date} [ERROR] 本机emby版本为 $emby_local_version，本脚本仅支持 $emby_version,请运行命令卸载后重新运行本脚本\nsystemctl stop emby-server && dpkg --purge emby-server" | tee -a /root/install_log.txt
