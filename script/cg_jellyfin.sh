@@ -96,6 +96,7 @@ revert_jellyfin() {
     fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
     rm -rf /var/lib/jellyfin
     tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
+    sudo chown -R jellyfin:jellyfin /var/lib/jellyfin
     sudo service jellyfin start
     rm -rf ~/.config/rclone/bak_list.txt
     echo -e "${curr_date} [INFO] jellyfin还原完毕." | tee -a /root/install_log.txt
@@ -106,7 +107,7 @@ revert_jellyfin() {
 del_jellyfin() {
   sudo service jellyfin stop #结束 jellyfin 进程
   systemctl disable jellyfin
-  dpkg --purge jellyfin
+  sudo apt-get remove --purge jellyfin
   sed -i '/jellyfin/d' /root/install_log.txt
 }
 
