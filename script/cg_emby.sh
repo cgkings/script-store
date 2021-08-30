@@ -122,6 +122,7 @@ revert_emby() {
       systemctl start emby-server
       rm -rf ~/.config/rclone/bak_list.txt
       echo -e "${curr_date} [INFO] emby还原完毕." | tee -a /root/install_log.txt
+      sed -i '/破解成功/d' /root/install_log.txt
       crack_emby
   fi
 }
