@@ -18,12 +18,10 @@
 source <(curl -sL git.io/cg_script_option)
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ip_addr=$(hostname -I | awk '{print $1}')
-#emby版本
-emby_version="4.6.4.0"
-emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
-emby_local_version=${emby_local_version:-"未安装"}
+jellyfin_local_version=$(dpkg -l jellyfin | grep -Eo "[0-9.]+\.[0-9]+")
+jellyfin_local_version=${jellyfin_local_version:-"未安装"}
 
-################## 初始化检查安装emby rclone ##################
+################## 初始化检查安装jellyfin rclone ##################
 initialization() {
   #step1:系统检查 & rclone检查安装
   check_sys
@@ -54,81 +52,62 @@ initialization() {
   sleep 0.5s
   echo 60
   #step4:jellyfin检查安装
-  if [ ! -f "/usr/lib/systemd/system/emby-server.service" ]; then
+  if [ ! -f "/lib/systemd/system/jellyfin.service" ]; then
     echo -e "${curr_date} [INFO] jellyfin 不存在.正在为您安装，请稍等..."
     sudo apt install apt-transport-https
     wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | sudo apt-key add -
-    echo "deb [arch=$( dpkg --print-architecture )] https://repo.jellyfin.org/$( awk -F'=' '/^ID=/{ print $NF }' /etc/os-release ) $( awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release ) main" | sudo tee /etc/apt/sources.list.d/jellyfin.list
+    echo "deb [arch=$( dpkg --print-architecture)] https://repo.jellyfin.org/$(  awk -F'=' '/^ID=/{ print $NF }' /etc/os-release) $(  awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release) main"  | sudo tee /etc/apt/sources.list.d/jellyfin.list
     sudo apt update
     sudo apt install -y jellyfin
     sleep 1s
     echo -e "${curr_date} [INFO] jellyfin 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
-  else
-    if [[ "$emby_local_version" != "$emby_version" ]]; then
-      echo -e "${curr_date} [ERROR] 本机emby版本为 $emby_local_version，本脚本仅支持 $emby_version,请运行命令卸载后重新运行本脚本\nsystemctl stop emby-server && dpkg --purge emby-server" | tee -a /root/install_log.txt
-      exit 1
-    fi
   fi
   sleep 0.5s
   echo 80
-  #step5:emby破解检查
-  if grep -q "破解成功" /root/install_log.txt; then
-    echo > /dev/null
-  else
-    systemctl stop emby-server
-    #破解emby
-    rm -rf /opt/emby-server/system/System.Net.Http.dll /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js /opt/emby-server/system/Emby.Web.dll
-    wget -q https://github.com/cgkings/script-store/raw/master/config/emby/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll --no-check-certificate
-    wget -q https://raw.githubusercontent.com/cgkings/script-store/master/config/emby/464crack/embypremiere.js -O /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js --no-check-certificate
-    wget -q https://github.com/cgkings/script-store/raw/master/config/emby/464crack/Emby.Web.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
-    sleep 3s
-    systemctl daemon-reload && systemctl restart emby-server
-    echo -e "${curr_date} [INFO] 恭喜您emby破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
-  fi
   sleep 0.5s
   echo 100
 }
 
-################## 备份emby ##################
-bak_emby() {
+################## 备份jellyfin ##################
+bak_jellyfin() {
   remote_choose
   td_id_choose
-  systemctl stop emby-server #结束 emby 进程
-  #rm -rf /var/lib/emby/cache/* #清空cache
-  cd /var/lib && tar -cvf emby_bak_"$(date "+%Y-%m-%d")".tar emby #打包/var/lib/emby
-  fclone move emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
-  systemctl start emby-server
-  echo -e "${curr_date} [INFO] emby备份完毕."
+  sudo service jellyfin stop #结束 jellyfin 进程
+  #rm -rf /var/lib/jellyfin/cache/* #清空cache
+  cd /var/lib && tar -cvf jellyfin_bak_"$(date "+%Y-%m-%d")".tar jellyfin #打包/var/lib/jellyfin
+  fclone move jellyfin_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
+  sudo service jellyfin start
+  echo -e "${curr_date} [INFO] jellyfin备份完毕." | tee -a /root/install_log.txt
 }
 
-################## 还原emby ##################
-revert_emby() {
-    remote_choose
-    td_id_choose
-    fclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/    /g' > ~/.config/rclone/bak_list.txt
-    bak_list=($(cat ~/.config/rclone/bak_list.txt))
-    bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
+################## 还原jellyfin ##################
+revert_jellyfin() {
+  remote_choose
+  td_id_choose
+  fclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'jellyfin_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/    /g' > ~/.config/rclone/bak_list.txt
+  bak_list=($(cat ~/.config/rclone/bak_list.txt))
+  bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
     "${bak_list[@]}" 3>&1 1>&2 2>&3)
-    if [ -z "$bak_name" ]; then
-      rm -f ~/.config/rclone/bak_list.txt
-      myexit 0
+  if [ -z "$bak_name" ]; then
+    rm -f ~/.config/rclone/bak_list.txt
+    myexit 0
   else
-      systemctl stop emby-server #结束 emby 进程
-      fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
-      rm -rf /var/lib/emby
-      tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
-      systemctl start emby-server
-      rm -rf ~/.config/rclone/bak_list.txt
-      echo -e "${curr_date} [INFO] emby还原完毕."
+    sudo service jellyfin stop #结束 jellyfin 进程
+    fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
+    rm -rf /var/lib/jellyfin
+    tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
+    sudo service jellyfin start
+    rm -rf ~/.config/rclone/bak_list.txt
+    echo -e "${curr_date} [INFO] jellyfin还原完毕." | tee -a /root/install_log.txt
   fi
 }
 
-################## 卸载emby ##################
-del_emby() {
-  systemctl stop emby-server #结束 emby 进程
-  systemctl disable emby-server
-  dpkg --purge emby-server
-  sed -i '/emby/d' /root/install_log.txt
+################## 卸载jellyfin ##################
+del_jellyfin() {
+  sudo service jellyfin stop #结束 jellyfin 进程
+  systemctl disable jellyfin
+  dpkg --purge jellyfin
+  sed -i '/jellyfin/d' /root/install_log.txt
 }
 
 ################## 创建开机挂载服务 ##################
@@ -231,14 +210,8 @@ mount_del() {
   echo -e "$curr_date [Info] 删除挂载[done]"
 }
 
-################## 检查emby安装版本及rclone挂载状态 ##################
+################## 检查jellyfin安装版本及rclone挂载状态 ##################
 check_status() {
-  #emby破解状态
-  if grep -q "破解成功" /root/install_log.txt; then
-    emby_crack_status="已破解"
-  else
-    emby_crack_status="未破解"
-  fi
   #挂载状态
   if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
     if systemctl | grep -q "rclone"; then
@@ -263,40 +236,40 @@ check_status() {
 }
 
 ################## 主菜单 ##################
-cg_emby_main_menu() {
-  emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
-  emby_local_version=${emby_local_version:-"未安装"}
+cg_jellyfin_main_menu() {
+  jellyfin_local_version=$(dpkg -l jellyfin | grep -Eo "[0-9.]+\.[0-9]+")
+  jellyfin_local_version=${jellyfin_local_version:-"未安装"}
   check_status
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "Emby版本：$emby_local_version\nEmby破解：$emby_crack_status\n挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 18 55 6 \
-    "Bak" "      ==>备 份 emby" \
-    "Revert" "      ==>还 原 emby" \
-    "Uninstall" "      ==>卸 载 emby" \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_jellyfin。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_jellyfin 主菜单" --menu --nocancel "jellyfin版本：$jellyfin_local_version\n挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：默认挂载/mnt/gd，ESC退出" 18 55 6 \
+    "Bak" "      ==>备 份 jellyfin" \
+    "Revert" "      ==>还 原 jellyfin" \
+    "Uninstall" "      ==>卸 载 jellyfin" \
     "restart_mount" "      ==>重新挂载" \
     "switch_tag" "      ==>切换参数" \
     "Exit" "      ==>退 出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Bak)
-      bak_emby
-      cg_emby_main_menu
+      bak_jellyfin
+      cg_jellyfin_main_menu
       ;;
     Revert)
-      revert_emby
-      cg_emby_main_menu
+      revert_jellyfin
+      cg_jellyfin_main_menu
       ;;
     Uninstall)
-      del_emby
-      cg_emby_main_menu
+      del_jellyfin
+      cg_jellyfin_main_menu
       ;;
     restart_mount)
       mount_del
       remote_choose
       td_id_choose
       mount_server_creat
-      cg_emby_main_menu
+      cg_jellyfin_main_menu
       ;;
     switch_tag)
       switch_mount_tag
-      cg_emby_main_menu
+      cg_jellyfin_main_menu
       ;;
     Exit | *)
       myexit 0
@@ -306,4 +279,4 @@ cg_emby_main_menu() {
 
 ################## 执行命令 ##################
 initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
-cg_emby_main_menu
+cg_jellyfin_main_menu
