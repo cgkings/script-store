@@ -70,6 +70,12 @@ initialization() {
   sleep 0.5s
   echo 80
   #step5:emby破解检查
+  crack_emby
+  sleep 0.5s
+  echo 100
+}
+
+crack_emby() {
   if grep -q "破解成功" /root/install_log.txt; then
     echo > /dev/null
   else
@@ -83,8 +89,6 @@ initialization() {
     systemctl daemon-reload && systemctl restart emby-server
     echo -e "${curr_date} [INFO] 恭喜您emby破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
   fi
-  sleep 0.5s
-  echo 100
 }
 
 ################## 备份emby ##################
@@ -96,20 +100,20 @@ bak_emby() {
   cd /var/lib && tar -cvf emby_bak_"$(date "+%Y-%m-%d")".tar emby #打包/var/lib/emby
   fclone move emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
   systemctl start emby-server
-  echo -e "${curr_date} [INFO] emby备份完毕."
+  echo -e "${curr_date} [INFO] emby $(date "+%Y-%m-%d") 备份完毕." | tee -a /root/install_log.txt
 }
 
 ################## 还原emby ##################
 revert_emby() {
-    remote_choose
-    td_id_choose
-    fclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/    /g' > ~/.config/rclone/bak_list.txt
-    bak_list=($(cat ~/.config/rclone/bak_list.txt))
-    bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
+  remote_choose
+  td_id_choose
+  fclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/    /g' > ~/.config/rclone/bak_list.txt
+  bak_list=($(cat ~/.config/rclone/bak_list.txt))
+  bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
     "${bak_list[@]}" 3>&1 1>&2 2>&3)
-    if [ -z "$bak_name" ]; then
-      rm -f ~/.config/rclone/bak_list.txt
-      myexit 0
+  if [ -z "$bak_name" ]; then
+    rm -f ~/.config/rclone/bak_list.txt
+    myexit 0
   else
       systemctl stop emby-server #结束 emby 进程
       fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
@@ -117,7 +121,8 @@ revert_emby() {
       tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
       systemctl start emby-server
       rm -rf ~/.config/rclone/bak_list.txt
-      echo -e "${curr_date} [INFO] emby还原完毕."
+      echo -e "${curr_date} [INFO] emby还原完毕." | tee -a /root/install_log.txt
+      crack_emby
   fi
 }
 
