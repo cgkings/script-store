@@ -274,10 +274,10 @@ cg_emby_main_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "Emby版本：$emby_local_version\nEmby破解：$emby_crack_status\n挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 18 55 7 \
     "Bak" "      ==>备 份 emby" \
     "Revert" "      ==>还 原 emby" \
-    "Crack" "      ==>破解 emby" \
+    "Crack" "      ==>破 解 emby" \
     "Uninstall" "      ==>卸 载 emby" \
-    "restart_mount" "      ==>重新挂载" \
-    "switch_tag" "      ==>切换参数" \
+    "restart_mount" "      ==>重 新 挂 载" \
+    "switch_tag" "      ==>切 换 参 数" \
     "Exit" "      ==>退 出" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Bak)
