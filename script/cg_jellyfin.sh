@@ -108,6 +108,7 @@ del_jellyfin() {
   service jellyfin stop #结束 jellyfin 进程
   systemctl disable jellyfin
   apt-get purge -y jellyfin
+  apt-get autoremove -y jellyfin
   rm -f /lib/systemd/system/jellyfin.service /etc/apt/sources.list.d/jellyfin.list
   sed -i '/jellyfin/d' /root/install_log.txt
 }
