@@ -44,8 +44,8 @@ initialization() {
     sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https > /dev/null
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-    sudo apt update
-    sudo apt-get install -y caddy > /dev/null
+    apt-get update > /dev/null
+    apt-get install -y caddy > /dev/null
     systemctl enable caddy.service
     echo -e "${curr_date} [INFO] caddy2 安装完成!" | tee -a /root/install_log.txt
   fi
@@ -57,8 +57,8 @@ initialization() {
     sudo apt install apt-transport-https
     wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | sudo apt-key add -
     echo "deb [arch=$( dpkg --print-architecture)] https://repo.jellyfin.org/$(  awk -F'=' '/^ID=/{ print $NF }' /etc/os-release) $(  awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release) main"  | sudo tee /etc/apt/sources.list.d/jellyfin.list
-    sudo apt update
-    sudo apt install -y jellyfin > /dev/null
+    apt-get update > /dev/null
+    apt-get install -y jellyfin > /dev/null
     sleep 1s
     echo -e "${curr_date} [INFO] jellyfin 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
   fi
@@ -72,7 +72,7 @@ initialization() {
 bak_jellyfin() {
   remote_choose
   td_id_choose
-  sudo service jellyfin stop #结束 jellyfin 进程
+  service jellyfin stop #结束 jellyfin 进程
   #rm -rf /var/lib/jellyfin/cache/* #清空cache
   cd /var/lib && tar -cvf jellyfin_bak_"$(date "+%Y-%m-%d")".tar jellyfin #打包/var/lib/jellyfin
   fclone move jellyfin_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
@@ -92,7 +92,7 @@ revert_jellyfin() {
     rm -f ~/.config/rclone/bak_list.txt
     myexit 0
   else
-    systemctl daemon-reload && sudo service jellyfin stop #结束 jellyfin 进程
+    service jellyfin stop #结束 jellyfin 进程
     fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
     rm -rf /var/lib/jellyfin
     tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
@@ -107,7 +107,7 @@ revert_jellyfin() {
 del_jellyfin() {
   service jellyfin stop #结束 jellyfin 进程
   systemctl disable jellyfin
-  apt-get purge jellyfin
+  apt-get purge -y jellyfin
   rm -f /lib/systemd/system/jellyfin.service /etc/apt/sources.list.d/jellyfin.list
   sed -i '/jellyfin/d' /root/install_log.txt
 }
