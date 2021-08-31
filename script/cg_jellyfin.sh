@@ -105,9 +105,10 @@ revert_jellyfin() {
 
 ################## 卸载jellyfin ##################
 del_jellyfin() {
-  sudo service jellyfin stop #结束 jellyfin 进程
+  service jellyfin stop #结束 jellyfin 进程
   systemctl disable jellyfin
-  sudo apt-get remove --purge jellyfin
+  apt-get purge jellyfin
+  rm -f /lib/systemd/system/jellyfin.service
   sed -i '/jellyfin/d' /root/install_log.txt
 }
 
