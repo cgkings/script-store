@@ -52,9 +52,9 @@ initialization() {
   sleep 0.5s
   echo 60
   #step4:jellyfin检查安装
-  if [ ! -f "/lib/systemd/system/jellyfin.service" ]; then
+  if [ -z "$(command -v jellyfin)" ]; then
     echo -e "${curr_date} [INFO] jellyfin 不存在.正在为您安装，请稍等..."
-    sudo apt install apt-transport-https
+    apt-get install -y apt-transport-https > /dev/null
     wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | sudo apt-key add -
     echo "deb [arch=$( dpkg --print-architecture)] https://repo.jellyfin.org/$(  awk -F'=' '/^ID=/{ print $NF }' /etc/os-release) $(  awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release) main"  | sudo tee /etc/apt/sources.list.d/jellyfin.list
     apt-get update > /dev/null
