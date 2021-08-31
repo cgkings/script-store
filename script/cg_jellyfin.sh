@@ -92,7 +92,7 @@ revert_jellyfin() {
     rm -f ~/.config/rclone/bak_list.txt
     myexit 0
   else
-    sudo service jellyfin stop #结束 jellyfin 进程
+    systemctl daemon-reload && sudo service jellyfin stop #结束 jellyfin 进程
     fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
     rm -rf /var/lib/jellyfin
     tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
@@ -108,7 +108,7 @@ del_jellyfin() {
   service jellyfin stop #结束 jellyfin 进程
   systemctl disable jellyfin
   apt-get purge jellyfin
-  rm -f /lib/systemd/system/jellyfin.service
+  rm -f /lib/systemd/system/jellyfin.service /etc/apt/sources.list.d/jellyfin.list
   sed -i '/jellyfin/d' /root/install_log.txt
 }
 
