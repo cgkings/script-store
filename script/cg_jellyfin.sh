@@ -73,7 +73,7 @@ bak_jellyfin() {
   remote_choose
   td_id_choose
   service jellyfin stop #结束 jellyfin 进程
-  #rm -rf /var/lib/jellyfin/cache/* #清空cache
+  #rm -rf /var/cache/jellyfin/* #清空cache
   cd /var/lib && tar -cvf jellyfin_bak_"$(date "+%Y-%m-%d")".tar jellyfin #打包/var/lib/jellyfin
   fclone move jellyfin_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
   sudo service jellyfin start
