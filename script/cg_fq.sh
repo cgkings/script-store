@@ -1,5 +1,5 @@
 #!/bin/bash
-# bash <(curl -sL git.io/cg_v2ray)
+# bash <(curl -sL git.io/cg_fq)
 
 red='\e[91m'
 green='\e[92m'
@@ -115,10 +115,6 @@ transport=(
 )
 
 ciphers=(
-	aes-128-cfb
-	aes-256-cfb
-	chacha20
-	chacha20-ietf
 	aes-128-gcm
 	aes-256-gcm
 	chacha20-ietf-poly1305
@@ -655,10 +651,10 @@ shadowsocks_ciphers_config() {
 			echo -e "$yellow $i. $none${ciphers_show}"
 		done
 		echo
-		read -p "$(echo -e "(默认加密协议: ${cyan}${ciphers[6]}$none)"):" ssciphers_opt
-		[ -z "$ssciphers_opt" ] && ssciphers_opt=7
+		read -p "$(echo -e "(默认加密协议: ${cyan}${ciphers[1]}$none)"):" ssciphers_opt
+		[ -z "$ssciphers_opt" ] && ssciphers_opt=2
 		case $ssciphers_opt in
-		[1-7])
+		[1-3])
 			ssciphers=${ciphers[$ssciphers_opt - 1]}
 			echo
 			echo
@@ -858,7 +854,7 @@ config() {
 	# 	# 	systemctl start iptables
 	# 	# 	systemctl start ip6tables
 	# fi
-
+	
 	# systemctl restart v2ray
 	do_service restart v2ray
 	backup_config
@@ -1045,3 +1041,4 @@ while :; do
 		;;
 	esac
 done
+SAVE TO CACHER
