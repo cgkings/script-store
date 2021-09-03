@@ -19,72 +19,11 @@
 source <(curl -sL git.io/cg_script_option)
 setcolor
 
-install() {
-  if [[ -f /usr/bin/v2ray/v2ray && -f /etc/v2ray/config.json ]] && [[ -f $backup && -d /etc/v2ray/233boy/v2ray ]]; then
-    echo
-    echo " 大佬...你已经安装 V2Ray 啦...无需重新安装"
-    echo
-    echo -e " $yellow输入 ${cyan}v2ray${none} $yellow即可管理 V2Ray${none}"
-    echo
-    exit 1
-  elif [[ -f /usr/bin/v2ray/v2ray && -f /etc/v2ray/config.json ]] && [[ -f /etc/v2ray/233blog_v2ray_backup.txt && -d /etc/v2ray/233boy/v2ray ]]; then
-    echo
-    echo "  如果你需要继续安装.. 请先卸载旧版本"
-    echo
-    echo -e " $yellow输入 ${cyan}v2ray uninstall${none} $yellow即可卸载${none}"
-    echo
-    exit 1
-  fi
-  v2ray_config
-  blocked_hosts
-  shadowsocks_config
-  install_info
-  # [[ $caddy ]] && domain_check
-  install_v2ray
-  if [[ $caddy || $v2ray_port == "80" ]]; then
-    if [[ $cmd == "yum" ]]; then
-      [[ $(pgrep "httpd") ]] && systemctl stop httpd
-      [[ $(command -v httpd) ]] && yum remove httpd -y
-    else
-      [[ $(pgrep "apache2") ]] && service apache2 stop
-      [[ $(command -v apache2) ]] && apt-get remove apache2* -y
-    fi
-  fi
-  [[ $caddy ]] && install_caddy
 
-  ## bbr
-  _load bbr.sh
-  _try_enable_bbr
 
-  get_ip
-  config
-  show_config_info
-}
 
-################## 卸载v2ray ##################
-uninstall() {
-  if [[ -f /usr/bin/v2ray/v2ray && -f /etc/v2ray/config.json ]] && [[ -f $backup && -d /etc/v2ray/233boy/v2ray ]]; then
-    . $backup
-    if [[ $mark ]]; then
-      _load uninstall.sh
-    else
-      echo
-      echo -e " $yellow输入 ${cyan}v2ray uninstall${none} $yellow即可卸载${none}"
-      echo
-    fi
 
-  elif [[ -f /usr/bin/v2ray/v2ray && -f /etc/v2ray/config.json ]] && [[ -f /etc/v2ray/233blog_v2ray_backup.txt && -d /etc/v2ray/233boy/v2ray ]]; then
-    echo
-    echo -e " $yellow输入 ${cyan}v2ray uninstall${none} $yellow即可卸载${none}"
-    echo
-  else
-    echo -e "
-		$red 大胸弟...你貌似毛有安装 V2Ray ....卸载个鸡鸡哦...$none
 
-		备注...仅支持卸载使用我 (233v2.com) 提供的 V2Ray 一键安装脚本
-		" && exit 1
-  fi
-}
 
 ################## 运行命令 ##################
 clear
