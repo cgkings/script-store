@@ -1,5 +1,25 @@
 #!/bin/bash
+#=============================================================
+# https://github.com/cgkings/script-store
 # bash <(curl -sL git.io/cg_fq)
+# File Name: cg_fq.sh
+# Author: cgkings
+# Created Time : 2020.12.16
+# Description:v2ray一键脚本
+# System Required: Debian/Ubuntu
+# Version: 1.0
+#=============================================================
+
+#set -e #异常则退出整个脚本，避免错误累加
+#set -x #脚本调试，逐行执行并输出执行的脚本命令行
+
+################## 前置变量 ##################
+# shellcheck source=/dev/null
+source <(curl -sL git.io/cg_script_option)
+setcolor
+#random_uid=$(cat /proc/sys/kernel/random/uuid)
+
+################## 安装v2ray ##################
 v2ray_install() {
   #启动v2ray官方安装脚本
   #bash <(curl -sL https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) -h
@@ -11,6 +31,12 @@ v2ray_install() {
   systemctl enable v2ray && systemctl start v2ray
 }
 
+#sudo apt-get install -y socat
+#curl  https://get.acme.sh | sh
+#~/.acme.sh/acme.sh --issue -d virmach.cgking.top --standalone --keylength ec-256 --force
+
+
+################## 卸载v2ray ##################
 v2ray_uninstall() {
   bash <(curl -sL https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove
 }
