@@ -209,31 +209,20 @@ EOF
 }
 
 check_bbr() {
-  kernel_version=$(uname -r | awk -F "-" '{print $1}')
-  kernel_version_full=$(uname -r)
-  net_congestion_control=$(cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}')
-  net_qdisc=$(cat /proc/sys/net/core/default_qdisc | awk '{print $1}')
-  kernel_version_r=$(uname -r | awk '{print $1}')
   #检查是否系统自带bbr已安装
   if [[ $(uname -r | awk -F'.' '{print $1}') == "4" ]] && [[ $(uname -r | awk -F'.' '{print $2}') -ge 9 ]] || [[ $(uname -r | awk -F'.' '{print $1}') == "5" ]]; then
-    kernel_status="BBR"
+    #检查bbr是否已启用
+    if lsmod | grep -q bbr ;then
+      echo
+    else
+      echo net.core.default_qdisc=fq >> /etc/sysctl.conf
+      echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
+      sysctl -p
+      echo -e "${info_message} BBR加速已启用！" | tee -a /root/install_log.txt
+    fi
   else
-    kernel_status="noinstall"
-    bash <(curl -sL git.io/cg_bbr) << EOF
-1
-EOF
+    echo -e "${info_message} debian9以上版本自带bbr,您的系统内核未包含bbr，！" | tee -a /root/install_log.txt
   fi
-  #检查bbr是否已启用
-  run_status=$(cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}')
-  if [[ ${run_status} == "bbr" ]]; then
-    run_status="BBR启动成功"
-  else
-    run_status="BBR启动失败"
-    bash <(curl -sL git.io/cg_bbr) << EOF
-11
-EOF
-  fi
-  echo -e "${info_message} 您设置了BBR加速！" | tee -a /root/install_log.txt
 }
 
 ################## 效率检测 ##################
@@ -333,8 +322,8 @@ start_menu() {
     Install_extend)
       extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 55 10 \
         "Back" "返回上级菜单(Back to main menu)" \
-        "v2ray" "搭建V2ray[无需域名] by 223boy" \
-        "xv2ray" "搭建Xv2ray[需域名] by xxxxxx" \
+        "my_v2ray" "搭建V2ray[无需域名]" \
+        "v2ray" "搭建v2ray[需域名] by 233boy" \
         "aria2" "搭建aria2 by P3TERX" \
         "qbt" "搭建qbittorrent" \
         "dd" "一键dd[转自cxt]" \
@@ -344,10 +333,10 @@ start_menu() {
           start_menu
           return 0
           ;;
-        v2ray)
-          bash <(curl -sL git.io/cg_v2ray)
+        my_v2ray)
+          bash <(curl -sL git.io/cg_fq)
           ;;
-        xv2ray)
+        v2ray)
           bash <(curl -sL git.io/cg_v2ray)
           ;;
         aria2)
