@@ -70,7 +70,6 @@ initialization() {
   sleep 0.5s
   echo 80
   #step5:emby破解检查
-  crack_emby
   sleep 0.5s
   echo 100
 }
@@ -122,8 +121,6 @@ revert_emby() {
       systemctl start emby-server
       rm -rf ~/.config/rclone/bak_list.txt
       echo -e "${curr_date} [INFO] emby还原完毕." | tee -a /root/install_log.txt
-      sed -i '/破解成功/d' /root/install_log.txt
-      crack_emby
   fi
 }
 
@@ -192,7 +189,7 @@ choose_mount_tag() {
       mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-chunk-size 1M"
       ;;
     2)
-      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 256M --vfs-read-ahead 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G"
+      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G"
       ;;
     3 | *)
       myexit 0
@@ -206,11 +203,11 @@ switch_mount_tag() {
     TERM=ansi whiptail --title "警告" --infobox "还没挂载，切换个锤子的挂载参数" 8 68
   elif [ "${curr_mount_tag_status}" == "扫库参数" ]; then
     systemctl stop rclone-mntgd.service
-    sed -i 's/--vfs-read-chunk-size 1M/--buffer-size 256M --vfs-read-ahead 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G/g' /lib/systemd/system/rclone-mntgd.service
+    sed -i 's/--vfs-read-chunk-size 1M/--buffer-size 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G/g' /lib/systemd/system/rclone-mntgd.service
     systemctl daemon-reload && systemctl restart rclone-mntgd.service
   elif [ "${curr_mount_tag_status}" == "观看参数" ]; then
     systemctl stop rclone-mntgd.service
-    sed -i 's/--buffer-size 256M --vfs-read-ahead 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G/--vfs-read-chunk-size 1M/g' /lib/systemd/system/rclone-mntgd.service
+    sed -i 's/--buffer-size 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G/--vfs-read-chunk-size 1M/g' /lib/systemd/system/rclone-mntgd.service
     systemctl daemon-reload && systemctl restart rclone-mntgd.service
   fi
   sleep 3s
@@ -290,7 +287,6 @@ cg_emby_main_menu() {
       ;;
     Crack)
       sed -i '/破解成功/d' /root/install_log.txt
-      crack_emby
       cg_emby_main_menu
       ;;
     Uninstall)
