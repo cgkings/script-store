@@ -19,7 +19,7 @@ content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
 file_hash=$5 #%I
 file_category=$6 #%L：分类
 qb_username="cgking"
-qb_password="340622"
+qb_password="123456"
 qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
 rclone_remote="upsa"
 
