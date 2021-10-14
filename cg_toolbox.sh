@@ -26,7 +26,7 @@ initialization() {
   apt-get update --fix-missing > /dev/null
   echo 30
   #echo -e "${info_message} 静默检查并安装常用软件1"
-  check_command sudo git make wget tree vim nano tmux htop parted nethogs screen ntpdate manpages-zh screenfetch file virt-what
+  check_command sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what
   echo 50
   #echo -e "${info_message} 静默检查并安装常用软件2"
   check_command jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu
