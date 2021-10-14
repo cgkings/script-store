@@ -63,9 +63,9 @@ initialization() {
       rm -f emby-server-deb_"${emby_version}"_amd64.deb
     elif [[ $(uname -m 2> /dev/null) = aarch64 ]]; then
       wget -qN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_arm64.deb
-      dpkg -i emby-server-deb_"${emby_version}"_amd64.deb > /dev/null
+      dpkg -i emby-server-deb_"${emby_version}"_arm64.deb > /dev/null
       sleep 1s
-      rm -f emby-server-deb_"${emby_version}"_amd64.deb
+      rm -f emby-server-deb_"${emby_version}"_arm64.deb
     fi
     echo -e "${curr_date} [INFO] 恭喜您emby $emby_version 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
   else
