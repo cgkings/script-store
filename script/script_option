@@ -48,11 +48,6 @@ check_sys() {
     echo -e "${error_message} 请使用root或者sudo用户运行,Please run this script as root or sudoer!" | tee -a /root/install_log.txt
     exit 1
   fi
-  if [[ $(uname -m 2> /dev/null) != x86_64 ]]; then
-    whiptail --title "hardware not supported(硬件不支持)" --msgbox "本脚本仅适用于x86_64机器,Please run this script on x86_64 machine." 8 68
-    echo -e "${error_message} 本脚本仅适用于x86_64机器,Please run this script on x86_64 machine!" | tee -a /root/install_log.txt
-    exit 1
-  fi
   if [[ -d "/proc/vz" ]]; then
     whiptail --title "Virtualization technology not supported(虚拟化架构不支持)" --msgbox "本脚本暂时不支持openVZ架构,Please run this script on KVM." 8 68
     echo -e "${error_message} 本脚本暂时不支持openVZ架构!" | tee -a /root/install_log.txt
