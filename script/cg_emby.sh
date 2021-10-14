@@ -70,25 +70,26 @@ initialization() {
   sleep 0.5s
   echo 80
   #step5:emby破解检查
+  #crack_emby
   sleep 0.5s
   echo 100
 }
 
-crack_emby() {
-  if grep -q "破解成功" /root/install_log.txt; then
-    echo > /dev/null
-  else
-    systemctl stop emby-server
-    #破解emby
-    rm -rf /opt/emby-server/system/System.Net.Http.dll /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js /opt/emby-server/system/Emby.Web.dll
-    wget -q https://github.com/cgkings/script-store/raw/master/config/emby/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll --no-check-certificate
-    wget -q https://raw.githubusercontent.com/cgkings/script-store/master/config/emby/464crack/embypremiere.js -O /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js --no-check-certificate
-    wget -q https://github.com/cgkings/script-store/raw/master/config/emby/464crack/Emby.Web.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
-    sleep 3s
-    systemctl daemon-reload && systemctl restart emby-server
-    echo -e "${curr_date} [INFO] 恭喜您emby破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
-  fi
-}
+# crack_emby() {
+#   if grep -q "破解成功" /root/install_log.txt; then
+#     echo > /dev/null
+#   else
+#     systemctl stop emby-server
+#     #破解emby
+#     rm -rf /opt/emby-server/system/System.Net.Http.dll /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js /opt/emby-server/system/Emby.Web.dll
+#     wget -q https://github.com/cgkings/script-store/raw/master/config/emby/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll --no-check-certificate
+#     wget -q https://raw.githubusercontent.com/cgkings/script-store/master/config/emby/464crack/embypremiere.js -O /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js --no-check-certificate
+#     wget -q https://github.com/cgkings/script-store/raw/master/config/emby/464crack/Emby.Web.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
+#     sleep 3s
+#     systemctl daemon-reload && systemctl restart emby-server
+#     echo -e "${curr_date} [INFO] 恭喜您emby破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
+#   fi
+# }
 
 ################## 备份emby ##################
 bak_emby() {
@@ -234,12 +235,12 @@ mount_del() {
 
 ################## 检查emby安装版本及rclone挂载状态 ##################
 check_status() {
-  #emby破解状态
-  if grep -q "破解成功" /root/install_log.txt; then
-    emby_crack_status="已破解"
-  else
-    emby_crack_status="未破解"
-  fi
+  # #emby破解状态
+  # if grep -q "破解成功" /root/install_log.txt; then
+  #   emby_crack_status="已破解"
+  # else
+  #   emby_crack_status="未破解"
+  # fi
   #挂载状态
   if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
     if systemctl | grep -q "rclone"; then
@@ -271,7 +272,7 @@ cg_emby_main_menu() {
   Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_emby 主菜单" --menu --nocancel "Emby版本：$emby_local_version\n挂载状态：$curr_mount_status\n挂载参数：$curr_mount_tag_status\n注：本脚本适配emby$emby_version，默认挂载/mnt/gd，ESC退出" 18 55 7 \
     "Bak" "      ==>备 份 emby" \
     "Revert" "      ==>还 原 emby" \
-    "Crack" "      ==>破 解 emby" \
+    # "Crack" "      ==>破 解 emby" \
     "Uninstall" "      ==>卸 载 emby" \
     "restart_mount" "      ==>重 新 挂 载" \
     "switch_tag" "      ==>切 换 参 数" \
@@ -285,10 +286,10 @@ cg_emby_main_menu() {
       revert_emby
       cg_emby_main_menu
       ;;
-    Crack)
-      sed -i '/破解成功/d' /root/install_log.txt
-      cg_emby_main_menu
-      ;;
+    # Crack)
+    #   sed -i '/破解成功/d' /root/install_log.txt
+    #   cg_emby_main_menu
+    #   ;;
     Uninstall)
       del_emby
       cg_emby_main_menu
