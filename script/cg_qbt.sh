@@ -134,22 +134,22 @@ check_rclone
 check_qbt
 mkdir -p /home/qbt
 if [ -z "$content_dir" ]; then
-  echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行"                         >> /home/qbt/qb.log
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行" >> /home/qbt/qb.log
   exit 0
 else
   if [ -z "${file_category}" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
     rclone_upload
     qb_del
-  elif [ "${file_category}" == "chs" ]; then
+  elif [ "${file_category}" == "rss-chs" ]; then
     rclone_dest="{1hzETacfMuAIBAsHqKIys-98glIMRb-iv}"
     rclone_upload
     qb_del
-  elif [ "${file_category}" == "fc2" ]; then
+  elif [ "${file_category}" == "rss-fc2" ]; then
     rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
     rclone_upload
     qb_del
-  elif [ "${file_category}" == "suren" ]; then
+  elif [ "${file_category}" == "rss-suren" ]; then
     rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
     rclone_upload
     qb_del
@@ -157,9 +157,11 @@ else
     rclone_dest="{1S-b-47Pe54j6wh6ph5t6eY5ZjZqnacqw}"
     rclone_upload
     qb_del
-  elif [ "${file_category}" == "0_pt" ]; then
+  elif [ "${file_category}" == "00pt-for-down" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
     rclone_upload
+  elif [ "${file_category}" == "00pt-for-up" ]; then
+    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   fi
 fi
 #获取特定种子的分享率命令：curl -s "http://205.185.127.160:8070/api/v2/torrents/properties?hash=d24f98e3b90560629456424fa63833126396ff3a" --cookie "SID=h31J/C2MEOOzu0b3hd/URtmKi7AwIJcI" | jq .share_ratio
