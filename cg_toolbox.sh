@@ -275,6 +275,7 @@ start_menu() {
         "develop3" "安装go开发环境" off \
         "myalias" "自定义别名(alias命令查看)" on \
         "zsh" "安装oh my zsh &tmux" on \
+        "caddy" "安装caddy" on \
         "bbr" "检查安装并启用bbr" on 2> results
       while read -r choice; do
         case $choice in
@@ -308,6 +309,9 @@ start_menu() {
             ;;
           zsh)
             check_beautify
+            ;;
+          caddy)
+            check_caddy
             ;;
           bbr)
             check_bbr
