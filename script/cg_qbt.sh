@@ -35,7 +35,7 @@ check_qbt() {
     fi
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
     #还原qbt配置：
-    #wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
+    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
     #建立qbt服务
     cat > '/etc/systemd/system/qbt.service' << EOF
 [Unit]
