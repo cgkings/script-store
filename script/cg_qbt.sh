@@ -19,7 +19,7 @@ content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
 file_hash=$5 #%I
 file_category=$6 #%L：分类
 qb_username="admin"
-qb_password="admin"
+qb_password="adminadmin"
 qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
 rclone_remote="upsa"
 
