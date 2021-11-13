@@ -18,8 +18,8 @@ content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
 #torrent_size=$4 #%Z
 file_hash=$5 #%I
 file_category=$6 #%L：分类
-qb_username="cgking"
-qb_password="123456"
+qb_username="admin"
+qb_password="admin"
 qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
 rclone_remote="upsa"
 
@@ -35,7 +35,7 @@ check_qbt() {
     fi
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
     #还原qbt配置：
-    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
+    #wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
     #建立qbt服务
     cat > '/etc/systemd/system/qbt.service' << EOF
 [Unit]
