@@ -231,8 +231,8 @@ check_nodejs() {
     if [ -e /usr/local/lib/nodejs ]; then
       rm -rf /usr/local/lib/nodejs
     fi
-    bash <(curl -sL deb.nodesource.com/setup_15.x)
-    check_command nodejs
+    curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
+    apt-get install -y nodejs
     npm install npm -g
     echo -e "${info_message} nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" | tee -a /root/install_log.txt
   fi
