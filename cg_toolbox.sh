@@ -34,6 +34,7 @@ initialization() {
   #echo -e "${info_message} 静默检查并安装youtubedl"
   check_youtubedl
   echo 90
+  setlanguage_us
   #设置中国时区
   if timedatectl | grep -q Asia/Shanghai; then
     echo > /dev/null
