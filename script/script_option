@@ -92,9 +92,8 @@ check_rclone() {
   fi
   #检查rclone的conf文件是否存在，不存在就要求你退出脚本自行配置
   if [ ! -f /root/.config/rclone/rclone.conf ]; then
-      echo -e "${error_message} 未检测到rclone配置文件.即rclone无remote,将影响rclone/fclone的使用" | tee -a /root/install_log.txt
-      TERM=ansi whiptail --title "初始化异常" --infobox "rclone/fclone已安装，但未检测到/root/.config/rclone/rclone.conf，请rclone配置完毕后重新运行本脚本" --scrolltext 8 68
-      exit 1
+      mkdir -p /root/.config/rclone
+      touch /root/.config/rclone/rclone.conf
   else
     if grep -q "已检测到rclone配置文件" /root/install_log.txt; then
       echo > /dev/null
