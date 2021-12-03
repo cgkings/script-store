@@ -1,7 +1,6 @@
 #!/bin/bash
 apt update && apt-get upgrade
-apt-get install -y nodejs npm
-npm install -g yarn
+
 cd /root && git clone https://github.com/CareyWang/sub-web.git && cd sub-web && yarn install
 yarn config set ignore-engines true
 yarn build

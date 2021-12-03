@@ -230,14 +230,11 @@ check_nodejs() {
     if [ -e /usr/local/lib/nodejs ]; then
       rm -rf /usr/local/lib/nodejs
     fi
-    curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
-    apt-get install -y nodejs
-    npm install npm -g
+    apt-get install -y nodejs npm
     echo -e "${info_message} nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" | tee -a /root/install_log.txt
   fi
   if [ -z "$(command -v yarn)" ]; then
-    npm install -g yarn n --force
-    yarn set version latest
+    npm install -g yarn
     echo -e "${info_message} yarn&n已安装" | tee -a /root/install_log.txt
   fi
 }
