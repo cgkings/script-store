@@ -26,7 +26,7 @@ initialization() {
   #step1:系统检查 & rclone检查安装
   check_sys
   check_rclone
-  check_command fonts-noto-cjk-extra
+  apt install fonts-noto-cjk-extra
   sleep 0.5s
   echo 20
   #step2:fuse检查安装
