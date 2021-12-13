@@ -72,6 +72,12 @@ EOF
   fi
 }
 
+Uninstall_qbt() {
+  systemctl stop qbt
+  rm -f /etc/systemd/system/qbt.service
+  rm -f /usr/bin/qbittorrent-nox
+}
+
 check_mktorrent() {
   if [ -z "$(command -v mktorrent)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到mktorrent包.正在安装..."
