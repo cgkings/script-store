@@ -255,30 +255,26 @@ io_test() {
 
 ################## 主    菜    单 ##################
 start_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')\n硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2> /dev/null | grep total | awk '{ print $2 }') / 1024)) GB   内存容量: $(free -m | awk '/Mem/ {print $2}') MB   虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB\n拥塞算法: $(awk '{print $1}' /proc/sys/net/ipv4/tcp_congestion_control)   队列算法: $(awk '{print $1}' /proc/sys/net/core/default_qdisc)\n注：本脚本所有操作日志路径：/root/install_log.txt" 20 62 9 \
-    "Install_standard" "系统设置(swap/语言/开发环境/zsh)" \
-    "Install_extend" "扩展安装(v2ray/qbittorrent/aria2/dd)" \
-    "Benchmark" "效能测试" \
-    "auto_swap" "swap工具" \
-    "auto_mount" "挂载工具" \
-    "auto_emby" "emby工具" \
-    "auto_sort" "网盘整理" \
-    "Exit" "退出" 3>&1 1>&2 2>&3)
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')\n硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2> /dev/null | grep total | awk '{ print $2 }') / 1024)) GB   内存容量: $(free -m | awk '/Mem/ {print $2}') MB   虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB\n拥塞算法: $(awk '{print $1}' /proc/sys/net/ipv4/tcp_congestion_control)     队列算法: $(awk '{print $1}' /proc/sys/net/core/default_qdisc)\n注：本脚本所有操作日志路径：/root/install_log.txt" 17 60 5 \
+    "Install_standard" "=>>  基 础 安 装" \
+    "Install_extend" "=>>  扩 展 安 装" \
+    "Benchmark" "=>>  效 能 测 试" \
+    "Onekey_dd" "=>>  重 装 系 统" \
+    "Exit" "=>>  退 出 脚 本" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Install_standard)
-      whiptail --clear --ok-button "安装完成请手动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "系统设置模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件，ESC退出脚本" 20 53 12 \
-        "back" "返回上级菜单" off \
-        "mountdisk" "挂载外挂硬盘" off \
-        "languge_cn" "设置系统语言（中文）" off \
-        "languge_us" "设置系统语言（英文）" off \
-        "swap" "设置虚拟内存（2倍物理内存）" off \
-        "develop1" "安装python开发环境" on \
-        "develop2" "安装nodejs开发环境" on \
-        "develop3" "安装go开发环境" off \
-        "myalias" "自定义别名(alias命令查看)" on \
-        "zsh" "安装oh my zsh &tmux" on \
-        "caddy" "安装caddy" on \
-        "bbr" "检查安装并启用bbr" on 2> results
+      whiptail --clear --ok-button "安装完成请手动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "系统设置模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件，ESC退出脚本" 18 57 11 \
+        "back" " == 返回上级菜单" off \
+        "mountdisk" " == 挂载外挂硬盘" off \
+        "languge_cn" " == 设置系统语言（中文）" off \
+        "languge_us" " == 设置系统语言（英文）" off \
+        "swap" " == 设置虚拟内存（2倍物理内存）" off \
+        "develop1" " == 安装python开发环境" on \
+        "develop2" " == 安装nodejs开发环境" on \
+        "develop3" " == 安装go开发环境" off \
+        "myalias" " == 自定义别名(alias命令查看)" on \
+        "zsh" " == 安装oh my zsh &tmux" on \
+        "bbr" " == 检查安装并启用bbr" on 2> results
       while read -r choice; do
         case $choice in
           back)
@@ -312,9 +308,6 @@ start_menu() {
           zsh)
             check_beautify
             ;;
-          caddy)
-            check_caddy
-            ;;
           bbr)
             check_bbr
             ;;
@@ -324,35 +317,61 @@ start_menu() {
         esac
       done < results
       rm results
+      reboot
       ;;
     Install_extend)
       extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 55 10 \
-        "Back" "返回上级菜单(Back to main menu)" \
-        "my_v2ray" "搭建V2ray[无需域名]" \
-        "v2ray" "搭建v2ray[需域名] by 233boy" \
-        "aria2" "搭建aria2 by P3TERX" \
-        "qbt" "搭建qbittorrent" \
-        "dd" "一键dd[转自cxt]" \
-        "Exit" "退出" 3>&1 1>&2 2>&3)
+        "Back_menu" " ==>> 返回上级菜单" \
+        "Install_x-ui" " ==>> 搭建x-ui" \
+        "Install_prober" " ==>> 搭建哪吒探针" \
+        "Install_qbt" " ==>> 搭建qbittorrent" \
+        "Auto_swap" " ==>> swap工具" \
+        "Auto_mount" " ==>> 挂载工具" \
+        "Install_emby" " ==>> 安装EMBY" \
+        "Install_jellyfin" " ==>> 安装jellyfin" \
+        "Auto_sort" " ==>> gd网盘整理" \
+        "Auto_caddy2" " ==>> 安装配置caddy2" \
+        "Exit" " ==>> 退出" 3>&1 1>&2 2>&3)
       case $extend_menu in
-        Back)
+        Back_menu)
           start_menu
           return 0
           ;;
-        my_v2ray)
-          bash <(curl -sL git.io/cg_fq)
+        Install_x-ui)
+          bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+          start_menu
           ;;
-        v2ray)
-          bash <(curl -sL git.io/cg_v2ray)
+        Install_prober)
+          bash <(curl -Lso- https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh)
+          start_menu
           ;;
-        aria2)
+        Install_qbt)
+          bash <(curl -sL git.io/cg_qbt)
+          start_menu
+          ;;
+        Auto_swap)
+          bash <(curl -sL git.io/cg_swap)
+          start_menu
+          ;;
+        Auto_mount)
           bash <(curl -sL git.io/cg_mount)
+          start_menu
           ;;
-        qbt)
-          bash <(curl -sL git.io/cg_qbt.sh)
+        Install_emby)
+          bash <(curl -sL git.io/cg_emby)
+          start_menu
           ;;
-        dd)
-          bash <(curl -sL git.io/cg_dd) -UI_Options
+        Install_jellyfin)
+          bash <(curl -sL git.io/cg_jellyfin)
+          start_menu
+          ;;
+        Auto_sort)
+          bash <(curl -sL git.io/cg_sort)
+          start_menu
+          ;;
+        Auto_caddy2)
+          bash <(curl -sL git.io/cg_caddy2)
+          start_menu
           ;;
         Exit | *)
           myexit 0
@@ -362,10 +381,13 @@ start_menu() {
     Benchmark)
       Benchmark_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "测试模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 53 8 \
         "Back" "返回上级菜单" \
-        "1" "设备基础配置" \
-        "2" "硬盘I/O测试" \
-        "3" "网络测试" \
-        "4" "退出" 3>&1 1>&2 2>&3)
+        "1" "  设备基础配置(快速)" \
+        "2" "  yabs性能测试" \
+        "3" "  bench测试" \
+        "4" "  流媒体解锁测试" \
+        "5" "  三网网速测试" \
+        "6" "  回程测试" \
+        "7" "  退出" 3>&1 1>&2 2>&3)
       case $Benchmark_menu in
         Back)
           start_menu
@@ -376,29 +398,34 @@ start_menu() {
           start_menu
           ;;
         2)
-          io_test
+          bash <(curl -L -s yabs.sh)
           start_menu
           ;;
         3)
-          curl -fsL https://ilemonra.in/LemonBenchIntl | bash -s fast
+          bash <(curl -sL bench.sh)
+          start_menu
           ;;
-        4 | *)
+        4)
+          bash <(curl -L -s https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/check.sh)
+          start_menu
+          ;;
+        5)
+          bash <(curl -Lso- http://yun.789888.xyz/speedtest.sh)
+          start_menu
+          ;;
+        6)
+          bash <(curl -Lso- git.io/besttrace)
+          start_menu
+          ;;
+        7 | *)
           myexit 0
           ;;
       esac
       ;;
-    auto_swap)
-      bash <(curl -sL git.io/cg_swap)
+    Onekey_dd)
+      dd_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "设置debian11密码" --nocancel '注：回车继续，ESC表示root密码为空' 10 68 123456789 3>&1 1>&2 2>&3)
+      bash <(wget --no-check-certificate -qO- 'https://moeclub.org/attachment/LinuxShell/InstallNET.sh') -d 11 -v 64 -a -firmware -p "$dd_passwd"
       ;;
-    auto_mount)
-      bash <(curl -sL git.io/cg_mount.sh)
-      ;;
-    auto_emby)
-      bash <(curl -sL git.io/cg_emby)
-      ;;
-    auto_sort)
-      bash <(curl -sL git.io/cg_sort.sh)
-      ;;    
     Exit | *)
       myexit 0
       ;;

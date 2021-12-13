@@ -72,6 +72,16 @@ EOF
   fi
 }
 
+check_mktorrent() {
+  if [ -z "$(command -v mktorrent)" ]; then
+    echo -e "${curr_date} [DEBUG] 未找到mktorrent包.正在安装..."
+    sleep 1s
+    git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
+    echo -e "${curr_date} [INFO] mktorrent 安装完成!" >> /root/install_log.txt
+    echo
+  fi
+}
+
 ################## qbt删除种子 ##################
 qb_del() {
   cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qb_username}&password=${qb_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
@@ -131,6 +141,7 @@ EOF
 
 ################## 主执行模块 ##################
 check_rclone
+check_mktorrent
 check_qbt
 mkdir -p /home/qbt
 if [ -z "$content_dir" ]; then
