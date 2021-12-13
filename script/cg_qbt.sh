@@ -1,7 +1,7 @@
 #!/bin/bash
 #=============================================================
 # https://github.com/cgkings/script-store
-# bash <(curl -sL git.io/cg_qbt.sh)
+# bash <(curl -sL git.io/cg_qbt)
 # File Name: cg_qbt.sh
 # Author: cgking
 # Created Time : 2021.6.21
