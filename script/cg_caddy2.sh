@@ -52,23 +52,16 @@ caddy_menu() {
     "Exit" "      ==>退 出 脚本" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Preset_reverse)
-      bak_emby
-      cg_emby_main_menu
+      exit
       ;;
     Custom_reverse)
-      revert_emby
-      cg_emby_main_menu
+      exit
       ;;
     Custom_webset)
-      del_emby
-      cg_emby_main_menu
+      exit
       ;;
     Uninstall_caddy)
-      mount_del
-      remote_choose
-      td_id_choose
-      mount_server_creat
-      cg_emby_main_menu
+      exit
       ;;
     Exit | *)
       myexit 0
