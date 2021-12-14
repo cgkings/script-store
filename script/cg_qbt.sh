@@ -73,9 +73,7 @@ EOF
 }
 
 Uninstall_qbt() {
-  systemctl stop qbt
-  rm -f /etc/systemd/system/qbt.service
-  rm -f /usr/bin/qbittorrent-nox
+  systemctl stop qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
 }
 
 check_mktorrent() {
