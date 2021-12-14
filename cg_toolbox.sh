@@ -172,16 +172,16 @@ EOF
 
 ################## buyvm挂载外挂硬盘 ##################
 mount_disk() {
-  disk_value=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "外挂硬盘容量" --nocancel '注：默认值256，单位GB' 10 68 256 3>&1 1>&2 2>&3)
-  disk=$(fdisk -l | grep "$disk_value GiB" | awk -F '[ ;:]' '{print $2}') #获取磁盘名
-  mount_status=$(df -h | grep "$disk")
-  if [ -z "$disk" ]; then
-    echo -e "${error_message} 未找到外挂磁盘，请到控制台先加卷后再运行本脚本" | tee -a /root/install_log.txt
+  disk_value=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "外挂硬盘名称" --nocancel '注：默认值/dev/sda，可自行fdisk -l查看名称' 10 68 /dev/sda 3>&1 1>&2 2>&3)
+  disk_status=$(fdisk -l | grep "$disk_value")
+  mount_status=$(df -h | grep "$disk_value")
+  if [ -z "$disk_status" ]; then
+    echo -e "${error_message} 未找到外挂磁盘名称，请到控制台先加卷后再运行本脚本" | tee -a /root/install_log.txt
     exit
   else
     if [ -z "$mount_status" ]; then
       #使用fdisk创建分区
-      fdisk "$disk" << EOF
+      fdisk "$disk_value" << EOF
 n
 p
 1
@@ -191,21 +191,21 @@ wq
 EOF
       partprobe                                            #不重启重新读取分区信息
       #格式化ext4分区
-      mkfs -t ext4 "$disk" << EOF
+      mkfs -t ext4 "$disk_value" << EOF
 y
 EOF
       mkdir -p 755 /home                                   #确保/home目录存在
-      mount "$disk" /home                                 #将256G硬盘挂载到系统/home文件夹
-      echo "${disk} /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
+      mount "$disk_value" /home                                 #将256G硬盘挂载到系统/home文件夹
+      echo "${disk_value} /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
     else
-      echo -e "${info_message} $disk_value GiB磁盘已挂载，无须重复操作" | tee -a /root/install_log.txt
+      echo -e "${info_message} $disk_value 磁盘已挂载，无须重复操作" | tee -a /root/install_log.txt
     fi
   fi
-  mount_status_update=$(df -h | grep "$disk")
+  mount_status_update=$(df -h | grep "$disk_value")
   if [ -z "$mount_status_update" ]; then
-    echo -e "${error_message} $disk_value GiB硬盘尚未挂载到/home" | tee -a /root/install_log.txt
+    echo -e "${error_message} $disk_value 硬盘尚未挂载到/home" | tee -a /root/install_log.txt
   else
-    echo -e "${info_message} $disk_value GiB硬盘成功挂载到/home" | tee -a /root/install_log.txt
+    echo -e "${info_message} $disk_value 硬盘成功挂载到/home" | tee -a /root/install_log.txt
     df -Th
   fi
 }
