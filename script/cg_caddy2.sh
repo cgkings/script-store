@@ -52,7 +52,76 @@ caddy_menu() {
     "Exit" "      ==>退 出 脚本" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Preset_reverse)
-      exit
+      whiptail --clear --ok-button "安装完成请手动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "预置反代设置" --checklist --separate-output --nocancel "请按空格及方向键来选择需要设置的反代，ESC退出脚本" 14 61 6 \
+        "back_menu" " == 返回上级菜单" off \
+        "rever_prober" " == [8008 ] 反代本地哪吒探针" off \
+        "rever_xui" " == [54321] 反代本地x-ui " on \
+        "rever_rsshub" " == [1200 ] 反代本地Rsshub" off \
+        "rever_emby" " == [8096 ] 反代本地emby&jellyfin" on \
+        "rever_qbt" " == [8070 ] 反代本地qbittorrent" on 2> results
+      while read -r choice; do
+        case $choice in
+          back_menu)
+            caddy_menu
+            break
+            ;;
+          rever_prober)
+            prober_domin=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "反代域名" --nocancel '注：请填写要反代本地端口的域名' 10 68 3>&1 1>&2 2>&3)
+            cat >> /etc/caddy/Caddyfile << EOF
+
+${prober_domin} {
+	file_server
+	reverse_proxy localhost:8008
+}
+EOF
+            ;;
+          rever_xui)
+            xui_domin=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "反代域名" --nocancel '注：请填写要反代本地端口的域名' 10 68 3>&1 1>&2 2>&3)
+            cat >> /etc/caddy/Caddyfile << EOF
+
+${xui_domin} {
+	file_server
+	reverse_proxy localhost:54321
+}
+EOF
+            ;;
+          rever_rsshub)
+            rsshub_domin=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "反代域名" --nocancel '注：请填写要反代本地端口的域名' 10 68 3>&1 1>&2 2>&3)
+            cat >> /etc/caddy/Caddyfile << EOF
+
+${rsshub_domin} {
+	file_server
+	reverse_proxy localhost:1200
+}
+EOF
+            ;;
+          rever_emby)
+            emby_domin=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "反代域名" --nocancel '注：请填写要反代本地端口的域名' 10 68 3>&1 1>&2 2>&3)
+            cat >> /etc/caddy/Caddyfile << EOF
+
+${emby_domin} {
+	file_server
+	reverse_proxy localhost:8096
+}
+EOF
+            ;;
+          rever_qbt)
+            qbt_domin=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "反代域名" --nocancel '注：请填写要反代本地端口的域名' 10 68 3>&1 1>&2 2>&3)
+            cat >> /etc/caddy/Caddyfile << EOF
+
+${qbt_domin} {
+	file_server
+	reverse_proxy localhost:8070
+}
+EOF
+            ;;
+          *)
+            myexit 0
+            ;;
+        esac
+      done < results
+      rm results
+      systemctl restart caddy
       ;;
     Custom_reverse)
       exit
