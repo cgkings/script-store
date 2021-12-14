@@ -44,7 +44,7 @@ check_caddy() {
 
 ################## 配置caddy2 ##################
 caddy_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_caddy2 主菜单" --menu --nocancel "注：本脚本适配caddy2，ESC退出" 18 55 7 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_emby。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "cg_caddy2 主菜单" --menu --nocancel "注：本脚本适配caddy2，ESC退出" 14 55 6 \
     "Preset_reverse" "      ==>预置反代设置" \
     "Custom_reverse" "      ==>自定义反代" \
     "Custom_webset" "      ==>自定义网站发布" \
