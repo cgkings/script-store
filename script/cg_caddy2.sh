@@ -42,9 +42,9 @@ check_caddy() {
   echo 100
 }
 
-################## 初始化检查安装caddy2 ##################
+################## 输入反代域名 ##################
 input_domin() {
-  reverse_domin=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "反代域名" --nocancel '注：请填写要反代本地端口的域名,esc推出脚本' 10 68 3>&1 1>&2 2>&3)
+  reverse_domin=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "输入$rever_domin_name反代域名" --nocancel '注：请填写要反代本地端口的域名,esc推出脚本' 10 68 3>&1 1>&2 2>&3)
   if [ -z "$reverse_domin" ]; then
     myexit 0
   fi
@@ -74,51 +74,51 @@ caddy_menu() {
             break
             ;;
           rever_prober)
+            rever_domin_name="探针"
             input_domin
             cat >> /etc/caddy/Caddyfile << EOF
 
 ${reverse_domin} {
-	file_server
 	reverse_proxy localhost:8008
 }
 EOF
             ;;
           rever_xui)
+            rever_domin_name="xui"
             input_domin
             cat >> /etc/caddy/Caddyfile << EOF
 
 ${reverse_domin} {
-	file_server
 	reverse_proxy localhost:54321
 }
 EOF
             ;;
           rever_rsshub)
+            rever_domin_name="rsshub"
             input_domin
             cat >> /etc/caddy/Caddyfile << EOF
 
 ${reverse_domin} {
-	file_server
 	reverse_proxy localhost:1200
 }
 EOF
             ;;
           rever_emby)
+            rever_domin_name="emby"
             input_domin
             cat >> /etc/caddy/Caddyfile << EOF
 
 ${reverse_domin} {
-	file_server
 	reverse_proxy localhost:8096
 }
 EOF
             ;;
           rever_qbt)
+            rever_domin_name="qbittorrent"
             input_domin
             cat >> /etc/caddy/Caddyfile << EOF
 
 ${reverse_domin} {
-	file_server
 	reverse_proxy localhost:8070
 }
 EOF
