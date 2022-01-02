@@ -183,7 +183,7 @@ check_nodejs() {
     if [ -e /usr/local/lib/nodejs ]; then
       rm -rf /usr/local/lib/nodejs
     fi
-    apt-get install -y nodejs npm
+    apt install -y nodejs npm
     echo -e "${curr_date} nodejs&npm已安装,nodejs路径:/usr/local/lib/nodejs" | tee -a /root/install_log.txt
   fi
   if [ -z "$(command -v yarn)" ]; then
@@ -215,7 +215,7 @@ check_emby() {
 check_jellyfin() {
   if [ -z "$(command -v jellyfin)" ]; then
     echo -e "${curr_date} [INFO] jellyfin 不存在.正在为您安装，请稍等..."
-    apt-get install -y apt-transport-https > /dev/null
+    apt install -y apt-transport-https > /dev/null
     wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | sudo apt-key add -
     echo "deb [arch=$( dpkg --print-architecture)] https://repo.jellyfin.org/$(  awk -F'=' '/^ID=/{ print $NF }' /etc/os-release) $(  awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release) main"  | sudo tee /etc/apt/sources.list.d/jellyfin.list
     apt-get update > /dev/null
@@ -228,7 +228,52 @@ check_jellyfin() {
 ################## 待调用-安装pt套装 ##################
 check_pt() {
   #安装qbt最新版
-  bash <(curl -sL git.io/cg_qbt)
+  if [ -z "$(command -v qbittorrent-nox)" ]; then
+    clear
+    apt remove qbittorrent-nox -y && rm -f /usr/bin/qbittorrent-nox
+    if [[ $(uname -m 2> /dev/null) = x86_64 ]]; then
+      wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
+    elif [[ $(uname -m 2> /dev/null) = aarch64 ]]; then
+      wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/aarch64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
+    fi
+    #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
+    #还原qbt配置：
+    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
+    #建立qbt服务
+    cat > '/etc/systemd/system/qbt.service' << EOF
+[Unit]
+Description=qBittorrent Daemon Service
+Documentation=https://github.com/c0re100/qBittorrent-Enhanced-Edition
+Wants=network-online.target
+After=network-online.target nss-lookup.target
+
+[Service]
+Type=simple
+User=root
+RemainAfterExit=yes
+ExecStart=/usr/bin/qbittorrent-nox --webui-port=8070 --profile=/home/qbt -d
+TimeoutStopSec=infinity
+LimitNOFILE=51200
+LimitNPROC=51200
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl daemon-reload && systemctl enable qbt.service && systemctl restart qbt.service
+    cat >> /root/install_log.txt << EOF
+-----------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+-----------------------------------------------------------------------------
+程序名称：qBittorrent
+版本名称：4.3.9
+程序目录：/usr/bin/qbittorrent-nox
+服务地址：/etc/systemd/system/qbt.service
+-----------------------------------------------------------------------------
+EOF
+  fi
+}
   #安装mktorrent
   git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
 }
@@ -240,8 +285,8 @@ initialization() {
   sys_upgrade=$(apt upgrade -y 2> /dev/null | grep upgraded)
   echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
   #echo -e "${curr_date} 静默检查并安装常用软件"
-  apt install -y --upgrade sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
-  apt install -y --upgrade ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
+  apt install -y sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
+  apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
   echo -e "${curr_date} sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu 已安装" | tee -a /root/install_log.txt
   #echo -e "${curr_date} 静默检查并安装youtubedl"
   if [ -z "$(command -v youtube-dl)" ]; then
@@ -341,27 +386,27 @@ dd_menu() {
           ;;
         Basic_dd)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --basic && reboot" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --basic" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Emby_dd)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --emby && reboot" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --emby" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Jellyfin_dd)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --jellyfin && reboot" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --jellyfin" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Pt_dd)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --pt && reboot" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --pt" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Preload_package)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --package && reboot" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --package" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Exit | *)
@@ -377,23 +422,28 @@ else
   case "$1" in
     --basic)
       initialization
+      reboot
       ;;
     --emby)
       initialization
       check_emby
+      reboot
       ;;
     --jellyfin)
       initialization
       check_jellyfin
+      reboot
       ;;
     --pt)
       initialization
       check_pt
+      reboot
       ;;
     --package)
       initialization
       check_emby
       check_pt
+      reboot
       ;;
     --help | *)
       dd_help
