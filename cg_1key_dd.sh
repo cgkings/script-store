@@ -298,7 +298,6 @@ EOF
   check_beautify
   #bbr
   check_bbr
-  reboot
 }
 
 ################## 命令帮助 ##################
@@ -336,27 +335,27 @@ dd_menu() {
   case $dd_mainmenu in
         Basic_dd)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --basic" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --basic && reboot" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Emby_dd)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --emby" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --emby && reboot" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Jellyfin_dd)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --jellyfin" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --jellyfin && reboot" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Pt_dd)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --pt" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --pt && reboot" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Preload_package)
           dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --package" | base64 | tr -d "\n")
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --package && reboot" | base64 | tr -d "\n")
           bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
           ;;
         Exit | *)
