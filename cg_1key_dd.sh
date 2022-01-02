@@ -151,19 +151,18 @@ EOF
 
 ################## 待调用-安装python环境 ##################
 check_python() {
-  check_command python python3 python3-pip python3-distutils #build-essential libncurses5-dev libpcap-dev libffi-dev
+  apt install -y python python3 python3-pip python3-distutils #build-essential libncurses5-dev libpcap-dev libffi-dev
   if [ -z "$(command -v virtualenv)" ]; then
     pip3 install -U pip > /dev/null
     hash -d pip3
     pip3 install -U wheel requests scrapy Pillow baidu-api cloudscraper fire setuptools virtualenv > /dev/null
-    echo -e "${info_message} pythonh环境已安装" | tee -a /root/install_log.txt
+    echo -e "${curr_date} pythonh环境已安装" | tee -a /root/install_log.txt
   fi
 }
 
 ################## 待调用-安装go环境 ##################
 check_go() {
   if [ -z "$(command -v go)" ]; then
-    echo -e "${debug_message} ${yellow}${jiacu}go${normal} 不存在.正在为您安装，请稍后..."
     if [ -e /home/go ]; then
       rm -rf /home/go
     fi
@@ -175,7 +174,7 @@ export PATH=$PATH:/home/go/bin
 export GOROOT=/home/go
 export GOPATH=/home/go/gopath
 EOF
-    echo -e "${info_message} go1.15.6环境已安装,go库路径：/home/go/gopath" | tee -a /root/install_log.txt
+    echo -e "${curr_date} go1.15.6环境已安装,go库路径:/home/go/gopath" | tee -a /root/install_log.txt
   fi
 }
 
@@ -186,11 +185,11 @@ check_nodejs() {
       rm -rf /usr/local/lib/nodejs
     fi
     apt-get install -y nodejs npm
-    echo -e "${info_message} nodejs&npm已安装,nodejs路径：/usr/local/lib/nodejs" | tee -a /root/install_log.txt
+    echo -e "${curr_date} nodejs&npm已安装,nodejs路径:/usr/local/lib/nodejs" | tee -a /root/install_log.txt
   fi
   if [ -z "$(command -v yarn)" ]; then
     npm install -g yarn
-    echo -e "${info_message} yarn&n已安装" | tee -a /root/install_log.txt
+    echo -e "${curr_date} yarn&n已安装" | tee -a /root/install_log.txt
   fi
 }
 
@@ -242,7 +241,8 @@ initialization() {
   sys_upgrade=$(apt upgrade -y 2> /dev/null | grep upgraded)
   echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
   #echo -e "${curr_date} 静默检查并安装常用软件"
-  apt install sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu zsh fonts-powerline fuse -y --upgrade 2> /dev/null
+  apt install -y --upgrade sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
+  apt install -y --upgrade ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
   echo -e "${curr_date} sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu 已安装" | tee -a /root/install_log.txt
   #echo -e "${curr_date} 静默检查并安装youtubedl"
   if [ -z "$(command -v youtube-dl)" ]; then
