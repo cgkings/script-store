@@ -16,6 +16,7 @@
 ################## 前置变量 ##################
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ip_addr=$(hostname -I | awk '{print $1}')
+bash <(curl -sL git.io/cg_script_option)
 
 ################## 待调用-装逼神器 ##################
 check_beautify() {
