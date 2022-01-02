@@ -325,7 +325,8 @@ dd_input() {
 }
 
 dd_menu() {
-  dd_mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "一键DD debian11 带预装脚本" --menu --nocancel "注:本脚本所有操作日志路径/root/install_log.txt\n基础版DD预装:常用软件、bbr、x-ui、rclone、py/go/node开发环境、docker" 15 78 6 \
+  dd_mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "一键DD debian11 带预装脚本" --menu --nocancel "注:本脚本所有操作日志路径/root/install_log.txt\n基础版DD预装:常用软件、bbr、x-ui、rclone、py/go/node开发环境、docker" 16 78 7 \
+        "Pure_dd" " ==>> 纯净版DD[仅预装curl wget]" \
         "Basic_dd" " ==>> 基础版DD" \
         "Emby_dd" " ==>> 基础版+emby" \
         "Jellyfin_dd" " ==>> 基础版+jellyfin" \
@@ -333,6 +334,11 @@ dd_menu() {
         "Preload_package" " ==>> 基础版+emby+pt套装" \
         "Exit" " ==>> 退出" 3>&1 1>&2 2>&3)
   case $dd_mainmenu in
+        Pure_dd)
+          dd_input
+          cmd_bash64=$(echo "apt install -y curl wget" | base64 | tr -d "\n")
+          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
+          ;;
         Basic_dd)
           dd_input
           cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --basic && reboot" | base64 | tr -d "\n")
