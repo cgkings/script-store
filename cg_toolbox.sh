@@ -23,7 +23,8 @@ initialization() {
   check_sys
   echo 10
   #echo -e "${info_message} 静默升级系统软件源"
-  apt-get update --fix-missing > /dev/null
+  apt update 2>/dev/null | grep packages | cut -d '.' -f 1
+  apt upgrade -y 2>/dev/null | grep upgraded
   echo 30
   #echo -e "${info_message} 静默检查并安装常用软件1"
   check_command sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3
@@ -425,6 +426,7 @@ start_menu() {
     Onekey_dd)
       dd_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "设置debian11密码" --nocancel '注：回车继续，ESC表示root密码为空' 10 68 123456789 3>&1 1>&2 2>&3)
       bash <(wget --no-check-certificate -qO- 'https://moeclub.org/attachment/LinuxShell/InstallNET.sh') -d 11 -v 64 -a -firmware -p "$dd_passwd"
+      
       ;;
     Exit | *)
       myexit 0
