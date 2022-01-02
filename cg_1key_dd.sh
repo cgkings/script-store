@@ -15,6 +15,7 @@
 #exec &> /tmp/log.txt   ##脚本执行的过程和结果导入/tmp/log.txt文件中
 ################## 前置变量 ##################
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
+ip_addr=$(hostname -I | awk '{print $1}')
 
 ################## 待调用-装逼神器 ##################
 check_beautify() {
@@ -26,7 +27,7 @@ if [ "$TERM" != "xterm-256color" ]; then
   export TERM=xterm-256color
 fi
 EOF
-# shellcheck source=/dev/null
+    # shellcheck source=/dev/null
     source /root/.bashrc
     echo -e "${curr_date} 设置256色成功" | tee -a /root/install_log.txt
   fi
@@ -88,14 +89,14 @@ EOF
 ################## 待调用-开启bbr ##################
 check_bbr() {
     #检查bbr是否已启用
-    if lsmod | grep -q bbr ;then
+    if lsmod | grep -q bbr; then
       echo
-    else
+  else
       echo net.core.default_qdisc=fq >> /etc/sysctl.conf
       echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
       sysctl -p
       echo -e "${curr_date} BBR加速已启用" | tee -a /root/install_log.txt
-    fi
+  fi
 }
 
 ################## 待调用-安装rclone ##################
@@ -192,14 +193,55 @@ check_nodejs() {
   fi
 }
 
-################## 主执行程序 ##################
+################## 待调用-安装emby ##################
+check_emby() {
+  emby_version="4.6.7.0"
+  if [ ! -f "/usr/lib/systemd/system/emby-server.service" ]; then
+    if [[ $(uname -m 2> /dev/null) = x86_64 ]]; then
+      wget -qN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb
+      dpkg -i emby-server-deb_"${emby_version}"_amd64.deb > /dev/null
+      sleep 1s
+      rm -f emby-server-deb_"${emby_version}"_amd64.deb
+    elif [[ $(uname -m 2> /dev/null) = aarch64 ]]; then
+      wget -qN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_arm64.deb
+      dpkg -i emby-server-deb_"${emby_version}"_arm64.deb > /dev/null
+      sleep 1s
+      rm -f emby-server-deb_"${emby_version}"_arm64.deb
+    fi
+    echo -e "${curr_date} [INFO] 恭喜您emby $emby_version 安装成功，请访问:http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
+  fi
+}
+
+################## 待调用-安装jellyfin ##################
+check_jellyfin() {
+  if [ -z "$(command -v jellyfin)" ]; then
+    echo -e "${curr_date} [INFO] jellyfin 不存在.正在为您安装，请稍等..."
+    apt-get install -y apt-transport-https > /dev/null
+    wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | sudo apt-key add -
+    echo "deb [arch=$( dpkg --print-architecture)] https://repo.jellyfin.org/$(  awk -F'=' '/^ID=/{ print $NF }' /etc/os-release) $(  awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release) main"  | sudo tee /etc/apt/sources.list.d/jellyfin.list
+    apt-get update > /dev/null
+    apt-get install -y jellyfin > /dev/null
+    sleep 1s
+    echo -e "${curr_date} [INFO] jellyfin 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
+  fi
+}
+
+################## 待调用-安装pt套装 ##################
+check_pt() {
+  #安装qbt最新版
+  bash <(curl -sL git.io/cg_qbt)
+  #安装mktorrent
+  git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
+}
+
+################## 初始安装 ##################
 initialization() {
   #echo -e "${curr_date} 静默升级系统软件源"
-  sys_update=$(apt update --fix-missing 2>/dev/null | grep packages | cut -d '.' -f 1)
-  sys_upgrade=$(apt upgrade -y 2>/dev/null | grep upgraded)
+  sys_update=$(apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1)
+  sys_upgrade=$(apt upgrade -y 2> /dev/null | grep upgraded)
   echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
   #echo -e "${curr_date} 静默检查并安装常用软件"
-  apt install sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu zsh fonts-powerline -y --upgrade 2>/dev/null
+  apt install sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu zsh fonts-powerline fuse -y --upgrade 2> /dev/null
   echo -e "${curr_date} sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu 已安装" | tee -a /root/install_log.txt
   #echo -e "${curr_date} 静默检查并安装youtubedl"
   if [ -z "$(command -v youtube-dl)" ]; then
@@ -238,22 +280,118 @@ EOF
     export LC_ALL="en_US.UTF-8"
     echo -e "${curr_date} 设置语言为英文，done!" | tee -a /root/install_log.txt
   fi
-  check_beautify
+  #预装py/go/node
   check_python
   check_go
   check_nodejs
+  #预装docker
+  bash <(curl -sL https://get.docker.com)
+  #预装docker-compose
+  curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+  #预装rclone
   check_rclone
+  #预装X-UI
+  bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+  #别名设置
   set_alias
+  #预装ohmyzsh和ohmytmux
+  check_beautify
+  #bbr
   check_bbr
   reboot
 }
 
+################## 命令帮助 ##################
+dd_help() {
+    cat << EOF
+用法(Usage):
+  bash <(curl -sL git.io/cg_1key_dd) [flags]
 
-dd_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "设置debian11密码" --nocancel '注:回车继续，不可esc' 10 68 Passwd123. 3>&1 1>&2 2>&3)
-dd_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "设置debian11密码" --nocancel '注:回车继续，不可esc' 10 68 22 3>&1 1>&2 2>&3)
+可用参数(Available flags):
+  --basic    基础版DD[预装常用软件&py/go/node开发环境&docker]
+  --emby     基础版+emby
+  --jellyfin 基础版+jellyfin
+  --pt       基础版+qbt+mktorrent
+  --package  基础版+emby+pt套装
+  --help     命令帮助
+注:无参数则进入主菜单
+例如:bash <(curl -sL git.io/cg_1key_dd) --help
+EOF
+}
 
+################## 主菜单 ##################
+dd_input() {
+  dd_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "设置debian11密码" --nocancel '注:回车继续，不可esc' 10 68 Passwd123. 3>&1 1>&2 2>&3)
+  dd_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "设置debian11 ssh端口" --nocancel '注:回车继续，不可esc' 10 68 22 3>&1 1>&2 2>&3)
+}
 
-echo "[p#1 输入命令]" |base64 |tr -d "\n"
+dd_menu() {
+  dd_mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "一键DD debian11 带预装脚本" --menu --nocancel "注:本脚本所有操作日志路径/root/install_log.txt\n基础版DD预装:常用软件、bbr、x-ui、rclone、py/go/node开发环境、docker" 15 78 6 \
+        "Basic_dd" " ==>> 基础版DD" \
+        "Emby_dd" " ==>> 基础版+emby" \
+        "Jellyfin_dd" " ==>> 基础版+jellyfin" \
+        "Pt_dd" " ==>> 基础版+qbt+mktorrent" \
+        "Preload_package" " ==>> 基础版+emby+pt套装" \
+        "Exit" " ==>> 退出" 3>&1 1>&2 2>&3)
+  case $dd_mainmenu in
+        Basic_dd)
+          dd_input
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --basic" | base64 | tr -d "\n")
+          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
+          ;;
+        Emby_dd)
+          dd_input
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --emby" | base64 | tr -d "\n")
+          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
+          ;;
+        Jellyfin_dd)
+          dd_input
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --jellyfin" | base64 | tr -d "\n")
+          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
+          ;;
+        Pt_dd)
+          dd_input
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --pt" | base64 | tr -d "\n")
+          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
+          ;;
+        Preload_package)
+          dd_input
+          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --package" | base64 | tr -d "\n")
+          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
+          ;;
+        Exit | *)
+          exit 0
+          ;;
+  esac
+}
 
-
-bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}"  -port "${dd_port}" -cmd "[p#3 首次开机执行命令bash64编码]"
+################## 主运行程序 ##################
+if [ -z "$1" ]; then
+  dd_menu
+else
+  case "$1" in
+    --basic)
+      initialization
+      ;;
+    --emby)
+      initialization
+      check_emby
+      ;;
+    --jellyfin)
+      initialization
+      check_jellyfin
+      ;;
+    --pt)
+      initialization
+      check_pt
+      ;;
+    --package)
+      initialization
+      check_emby
+      check_pt
+      ;;
+    --help | *)
+      dd_help
+      ;;
+  esac
+fi
