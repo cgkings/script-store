@@ -273,7 +273,6 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
 EOF
   fi
-}
   #安装mktorrent
   git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
 }
