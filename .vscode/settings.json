@@ -1,4 +1,5 @@
 {
     "shellformat.path": "D:/shfmt_v3.2.1_windows_amd64.exe",
-    "shellformat.flag": "-i=2 -sr -kp -ci"
+    "shellformat.flag": "-i=2 -sr -kp -ci",
+    "editor.accessibilitySupport": "off"
 }
