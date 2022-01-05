@@ -324,6 +324,8 @@ EOF
     export LC_ALL="en_US.UTF-8"
     echo -e "${curr_date} 设置语言为英文，done!" | tee -a /root/install_log.txt
   fi
+  #安装redis
+  sudo apt-get install redis-server -y
   #禁用swap
   echo 'vm.swappiness=0'>> /etc/sysctl.conf
   #预装py/go/node

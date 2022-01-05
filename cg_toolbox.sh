@@ -24,7 +24,6 @@ initialization() {
   echo 10
   #echo -e "${info_message} 静默升级系统软件源"
   apt update 2>/dev/null | grep packages | cut -d '.' -f 1
-  apt upgrade -y 2>/dev/null | grep upgraded
   echo 30
   #echo -e "${info_message} 静默检查并安装常用软件1"
   check_command sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3

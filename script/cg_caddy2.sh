@@ -27,7 +27,7 @@ check_caddy() {
     sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https > /dev/null
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-    sudo apt update
+    sudo apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
     sudo apt-get install -y caddy > /dev/null
     systemctl enable caddy.service
     echo -e "${curr_date} [INFO] caddy2 安装完成!" | tee -a /root/install_log.txt
