@@ -177,6 +177,8 @@ else
     rclone_upload
   elif [ "${file_category}" == "00pt-for-up" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
+  elif [ "${file_category}" == "seed_save" ]; then
+    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   fi
 fi
 #获取特定种子的分享率命令：curl -s "http://205.185.127.160:8070/api/v2/torrents/properties?hash=d24f98e3b90560629456424fa63833126396ff3a" --cookie "SID=h31J/C2MEOOzu0b3hd/URtmKi7AwIJcI" | jq .share_ratio
