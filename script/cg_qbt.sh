@@ -11,6 +11,7 @@
 #=============================================================
 
 ################## 前置变量设置 ##################
+curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 #/home/qbt/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
 torrent_name=$1 # %N：Torrent名称=mide-007-C
 content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
@@ -18,12 +19,13 @@ content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
 #torrent_size=$4 #%Z
 file_hash=$5 #%I
 file_category=$6 #%L：分类
-qb_username="admin"
-qb_password="adminadmin"
+pt_download_dir="/home/downloads"
+pt_username="admin"
+pt_password="admin"
 qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
 rclone_remote="upsa"
 
-################## 检查qbt安装情况 ##################
+################## 检查安装qbt ##################
 check_qbt() {
   if [ -z "$(command -v qbittorrent-nox)" ]; then
     clear
@@ -64,7 +66,7 @@ EOF
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
 程序名称：qBittorrent
-版本名称：4.3.6
+版本名称：4.3.9
 程序目录：/usr/bin/qbittorrent-nox
 服务地址：/etc/systemd/system/qbt.service
 -----------------------------------------------------------------------------
@@ -72,10 +74,20 @@ EOF
   fi
 }
 
-Uninstall_qbt() {
-  systemctl stop qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
+################## 检查安装transmission ##################
+check_transmission(){
+  if [ -z "$(command -v transmission-daemon)" ]; then
+    echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
+    apt install -y transmission-daemon
+    #修改settings.json
+    service transmission-daemon stop
+    sed -i 's/^.*download-dir.*/"download-dir": "'$pt_download_dir'",/' /var/lib/transmission-daemon/info/settings.json
+    sed -i 's/^.*rpc-username.*/"rpc-username": "'$pt_username'",/' /var/lib/transmission-daemon/info/settings.json
+    sed -i 's/^.*rpc-password.*/"rpc-password": "'$pt_username'",/' /var/lib/transmission-daemon/info/settings.json
+  fi
 }
 
+################## 检查安装mktorrent ##################
 check_mktorrent() {
   if [ -z "$(command -v mktorrent)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到mktorrent包.正在安装..."
@@ -86,9 +98,14 @@ check_mktorrent() {
   fi
 }
 
+################## 卸载qbt ##################
+Uninstall_qbt() {
+  systemctl stop qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
+}
+
 ################## qbt删除种子 ##################
 qb_del() {
-  cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qb_username}&password=${qb_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
+  cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${pt_username}&password=${pt_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
   if [ -n "${cookie}" ]; then
     curl -s "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
     cat >> /home/qbt/qb.log << EOF
