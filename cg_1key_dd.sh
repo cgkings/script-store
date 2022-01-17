@@ -275,6 +275,29 @@ EOF
   fi
   #安装mktorrent
   git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
+  #安装tr
+  if [ -z "$(command -v transmission-daemon)" ]; then
+    echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
+    apt install -y transmission-daemon
+    #下载settings.json
+    service transmission-daemon stop
+    rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
+    service transmission-daemon start
+    bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
+1
+EOF
+    cat >> /root/install_log.txt << EOF
+-----------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+-----------------------------------------------------------------------------
+程序名称：transmission-daemon
+版本名称：3.0
+程序目录：/var/lib/transmission-daemon
+下载目录：/home/downloads
+服务地址：/lib/systemd/system/transmission-daemon.service
+-----------------------------------------------------------------------------
+EOF
+  fi
 }
 
 ################## 初始安装 ##################

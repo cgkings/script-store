@@ -46,7 +46,7 @@
     "rpc-authentication-required": true,
     "rpc-bind-address": "0.0.0.0",
     "rpc-enabled": true,
-    "rpc-host-whitelist": "*",
+    "rpc-host-whitelist": "",
     "rpc-host-whitelist-enabled": true,
     "rpc-password": "admin",
     "rpc-port": 9091,
