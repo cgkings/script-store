@@ -84,6 +84,8 @@ check_transmission() {
   if [ -z "$(command -v transmission-daemon)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
     apt install -y transmission-daemon
+    mkdir -p ${pt_download_dir}
+    chmod 777 ${pt_download_dir}
     #下载settings.json
     service transmission-daemon stop
     rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
