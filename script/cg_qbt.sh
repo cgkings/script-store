@@ -13,16 +13,17 @@
 ################## 前置变量设置 ##################
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 #/home/qbt/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
-torrent_name=$1 # %N：Torrent名称=mide-007-C
-content_dir=$2 # %F：内容路径=/home/btzz/mide-007-C
+torrent_name=$1 # %N: Torrent名称=mide-007-C
+content_dir=$2 # %F: 内容路径=/home/btzz/mide-007-C
 #files_num=$3 # %C
 #torrent_size=$4 #%Z
 file_hash=$5 #%I
-file_category=$6 #%L：分类
+file_category=$6 #%L: 分类
 pt_download_dir="/home/downloads"
 pt_username="admin"
-pt_password="admin"
+pt_password="adminadmin"
 qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
+tr_web_url="http://$(hostname -I | awk '{print $1}'):9091"
 rclone_remote="upsa"
 
 ################## 检查安装qbt ##################
@@ -35,8 +36,8 @@ check_qbt() {
     elif [[ $(uname -m 2> /dev/null) = aarch64 ]]; then
       wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/aarch64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
     fi
-    #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
-    #还原qbt配置：
+    #备份配置文件: cd /home && tar -cvf qbt_bat.tar qbt
+    #还原qbt配置: 
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
     #建立qbt服务
     cat > '/etc/systemd/system/qbt.service' << EOF
@@ -65,10 +66,14 @@ EOF
 -----------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
-程序名称：qBittorrent
-版本名称：4.3.9
-程序目录：/usr/bin/qbittorrent-nox
-服务地址：/etc/systemd/system/qbt.service
+程序名称: qBittorrent
+版本名称: 4.3.9
+程序目录: /usr/bin/qbittorrent-nox
+服务地址: /etc/systemd/system/qbt.service
+网页地址: ${qb_web_url}
+默认用户: ${pt_username}
+默认密码: ${pt_password}
+下载目录: ${pt_download_dir}
 -----------------------------------------------------------------------------
 EOF
   fi
@@ -90,11 +95,14 @@ EOF
 -----------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
-程序名称：transmission-daemon
-版本名称：3.0
-程序目录：/var/lib/transmission-daemon
-下载目录：/home/downloads
-服务地址：/lib/systemd/system/transmission-daemon.service
+程序名称: transmission-daemon
+版本名称: 3.0
+程序目录: /var/lib/transmission-daemon
+服务地址: /lib/systemd/system/transmission-daemon.service
+网页地址: ${tr_web_url}
+默认用户: ${pt_username}
+默认密码: ${pt_password}
+下载目录: ${pt_download_dir}
 -----------------------------------------------------------------------------
 EOF
   fi
@@ -129,8 +137,8 @@ EOF
     cat >> /home/qbt/qb_fail.log << EOF
 --------------------------------------------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ 登录删除失败！:
-分类名称：${file_category}
-种子名称：${torrent_name}
+分类名称: ${file_category}
+种子名称: ${torrent_name}
 文件哈希: ${file_hash}
 cookie : ${cookie}
 --------------------------------------------------------------------------------------------------------------
@@ -139,13 +147,13 @@ EOF
   fi
 }
 
-# ################## 检查上传类型：文件or目录 ##################
+# ################## 检查上传类型: 文件or目录 ##################
 # check_content_dir() {
 #   if [ -f "${content_dir}" ]; then
-#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型：文件" >> ${log_dir}/qb.log
+#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型: 文件" >> ${log_dir}/qb.log
 #     type="file"
 #   elif [ -d "${content_dir}" ]; then
-#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型：目录" >> ${log_dir}/qb.log
+#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型: 目录" >> ${log_dir}/qb.log
 #     type="dir"
 #   else
 #     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 未知类型，取消上传" >> ${log_dir}/qb.log
@@ -165,8 +173,8 @@ EOF
     cat >> /home/qbt/qb_fail.log << EOF
 --------------------------------------------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ Upload failed:"$content_dir" "$rclone_remote":"$rclone_dest"
-分类名称：${file_category}
-种子名称：${torrent_name}
+分类名称: ${file_category}
+种子名称: ${torrent_name}
 文件哈希: ${file_hash}
 --------------------------------------------------------------------------------------------------------------
 EOF
@@ -212,7 +220,7 @@ else
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   fi
 fi
-#获取特定种子的分享率命令：curl -s "http://205.185.127.160:8070/api/v2/torrents/properties?hash=d24f98e3b90560629456424fa63833126396ff3a" --cookie "SID=h31J/C2MEOOzu0b3hd/URtmKi7AwIJcI" | jq .share_ratio
+#获取特定种子的分享率命令: curl -s "http://205.185.127.160:8070/api/v2/torrents/properties?hash=d24f98e3b90560629456424fa63833126396ff3a" --cookie "SID=h31J/C2MEOOzu0b3hd/URtmKi7AwIJcI" | jq .share_ratio
 #逐一查看未分类中的已完成种子的分享率 curl -s "http://51.158.153.55:8070/api/v2/torrents/info?filter=completed&category=" --cookie "SID=1Np3WU0feLDOcCtQWBp9cRAqFiQ2vBrj"|jq ".[0]|.ratio"
 
 #fclone move /home/qbt/qBittorrent/downloads/chs/OKSN-339 upsa:{1hzETacfMuAIBAsHqKIys-98glIMRb-iv} --use-mmap --stats=10s --stats-one-line -vP --transfers=1 --min-size 100M --log-file=/home/qbt/bt_upload.log
