@@ -23,7 +23,7 @@ pt_download_dir="/home/downloads"
 pt_username="admin"
 pt_password="adminadmin"
 qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
-tr_web_url="http://$(hostname -I | awk '{print $1}'):9091"
+# tr_web_url="http://$(hostname -I | awk '{print $1}'):9091"
 rclone_remote="upsa"
 
 ################## 检查安装qbt ##################
@@ -80,35 +80,35 @@ EOF
 }
 
 ################## 检查安装transmission ##################
-check_transmission() {
-  if [ -z "$(command -v transmission-daemon)" ]; then
-    echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
-    apt install -y transmission-daemon
-    mkdir -p ${pt_download_dir}
-    chmod 777 ${pt_download_dir}
-    #下载settings.json
-    service transmission-daemon stop
-    rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
-    service transmission-daemon start
-    bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
-1
-EOF
-    cat >> /root/install_log.txt << EOF
------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
------------------------------------------------------------------------------
-程序名称: transmission-daemon
-版本名称: 3.0
-程序目录: /var/lib/transmission-daemon
-服务地址: /lib/systemd/system/transmission-daemon.service
-网页地址: ${tr_web_url}
-默认用户: ${pt_username}
-默认密码: ${pt_password}
-下载目录: ${pt_download_dir}
------------------------------------------------------------------------------
-EOF
-  fi
-}
+# check_transmission() {
+#   if [ -z "$(command -v transmission-daemon)" ]; then
+#     echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
+#     apt install -y transmission-daemon
+#     mkdir -p ${pt_download_dir}
+#     chmod 777 ${pt_download_dir}
+#     #下载settings.json
+#     service transmission-daemon stop
+#     rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
+#     service transmission-daemon start
+#     bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
+# 1
+# EOF
+#     cat >> /root/install_log.txt << EOF
+# -----------------------------------------------------------------------------
+# $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+# -----------------------------------------------------------------------------
+# 程序名称: transmission-daemon
+# 版本名称: 3.0
+# 程序目录: /var/lib/transmission-daemon
+# 服务地址: /lib/systemd/system/transmission-daemon.service
+# 网页地址: ${tr_web_url}
+# 默认用户: ${pt_username}
+# 默认密码: ${pt_password}
+# 下载目录: ${pt_download_dir}
+# -----------------------------------------------------------------------------
+# EOF
+#   fi
+# }
 
 ################## 检查安装mktorrent ##################
 check_mktorrent() {
@@ -126,6 +126,17 @@ Uninstall_qbt() {
   systemctl stop qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
 }
 
+################## 卸载transmission-daemon ##################
+Uninstall_transmission-daemon(){
+  systemctl disable transmission-daemon
+  service transmission-daemon stop
+  bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
+1
+EOF
+  sudo apt remove -y transmission-daemon
+  sudo apt autoremove -y
+  rm -f /lib/systemd/system/transmission-daemon.service
+}
 ################## qbt删除种子 ##################
 qb_del() {
   cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${pt_username}&password=${pt_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
@@ -186,7 +197,7 @@ EOF
 ################## 主执行模块 ##################
 check_rclone
 check_qbt
-check_transmission
+# check_transmission
 check_mktorrent
 mkdir -p /home/qbt
 if [ -z "$content_dir" ]; then

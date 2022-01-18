@@ -227,7 +227,7 @@ check_jellyfin() {
 
 ################## 待调用-安装pt套装 ##################
 check_pt() {
-  #安装qbt最新版
+#安装qbt最新版
   if [ -z "$(command -v qbittorrent-nox)" ]; then
     clear
     apt remove qbittorrent-nox -y && rm -f /usr/bin/qbittorrent-nox
@@ -237,9 +237,9 @@ check_pt() {
       wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/aarch64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
     fi
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
-    #还原qbt配置：
+#还原qbt配置：
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
-    #建立qbt服务
+#建立qbt服务
     cat > '/etc/systemd/system/qbt.service' << EOF
 [Unit]
 Description=qBittorrent Daemon Service
@@ -273,33 +273,33 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
 EOF
   fi
-  #安装mktorrent
+#安装mktorrent
   git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
-  #安装tr
-  if [ -z "$(command -v transmission-daemon)" ]; then
-    echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
-    apt install -y transmission-daemon
-    mkdir -p /home/downloads
-    chmod 777 /home/downloads
-    #下载settings.json
-    service transmission-daemon stop
-    rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
-    service transmission-daemon start
-    bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
-1
-EOF
-    cat >> /root/install_log.txt << EOF
------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
------------------------------------------------------------------------------
-程序名称：transmission-daemon
-版本名称：3.0
-程序目录：/var/lib/transmission-daemon
-下载目录：/home/downloads
-服务地址：/lib/systemd/system/transmission-daemon.service
------------------------------------------------------------------------------
-EOF
-  fi
+#安装tr
+#   if [ -z "$(command -v transmission-daemon)" ]; then
+#     echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
+#     apt install -y transmission-daemon
+#     mkdir -p /home/downloads
+#     chmod 777 /home/downloads
+#     #下载settings.json
+#     service transmission-daemon stop
+#     rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
+#     service transmission-daemon start
+#     bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
+# 1
+# EOF
+#     cat >> /root/install_log.txt << EOF
+# -----------------------------------------------------------------------------
+# $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+# -----------------------------------------------------------------------------
+# 程序名称：transmission-daemon
+# 版本名称：3.0
+# 程序目录：/var/lib/transmission-daemon
+# 下载目录：/home/downloads
+# 服务地址：/lib/systemd/system/transmission-daemon.service
+# -----------------------------------------------------------------------------
+# EOF
+#   fi
 }
 
 ################## 初始安装 ##################
