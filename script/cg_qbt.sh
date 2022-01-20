@@ -224,12 +224,12 @@ else
     rclone_dest="{1S-b-47Pe54j6wh6ph5t6eY5ZjZqnacqw}"
     rclone_upload
     qb_del
-  elif [ "${file_category}" == "00pt-for-down" ]; then
+  elif [ "${file_category}" == "00PT_for_down" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
     rclone_upload
-  elif [ "${file_category}" == "00pt-for-up" ]; then
+  elif [ "${file_category}" == "00PT_for_up" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
-  elif [ "${file_category}" == "seed_save" ]; then
+  elif [ "${file_category}" == "00seed_save" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   fi
 fi
