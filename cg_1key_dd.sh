@@ -159,24 +159,6 @@ check_python() {
   fi
 }
 
-################## 待调用-安装go环境 ##################
-check_go() {
-  if [ -z "$(command -v go)" ]; then
-    if [ -e /home/go ]; then
-      rm -rf /home/go
-    fi
-    wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /root/go.tar.gz
-    tar -zxf /root/go.tar.gz -C /home && rm -f /root/go.tar.gz
-    [ -z "$(grep "export GOROOT=/home/go" /root/.bashrc)" ] && cat >> /root/.bashrc << EOF
-
-export PATH=$PATH:/home/go/bin
-export GOROOT=/home/go
-export GOPATH=/home/go/gopath
-EOF
-    echo -e "${curr_date} go1.15.6环境已安装,go库路径:/home/go/gopath" | tee -a /root/install_log.txt
-  fi
-}
-
 ################## 待调用-安装nodejs环境 ##################
 check_nodejs() {
   if [ -z "$(command -v node)" ]; then
@@ -355,7 +337,6 @@ EOF
   echo 'vm.swappiness=0'>> /etc/sysctl.conf
   #预装py/go/node
   check_python
-  check_go
   check_nodejs
   #预装docker
   bash <(curl -sL https://get.docker.com)
