@@ -175,15 +175,14 @@ check_nodejs() {
 }
 
 ################## 待调用-安装php8.0环境 ##################
-check_nodejs() {
+check_php8.0() {
   if [ -z "$(command -v php)" ]; then
     sudo apt install -y gnupg2 ca-certificates lsb-release apt-transport-https
     sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
     sudo sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
     sudo apt install -y php8.0
-
-    sudo apt install -y php8.0-common php8.0-ldap php8.0-odbc php8.0-xsl php8.0-apcu php8.0-curl php8.0-gmp php8.0-opcache php8.0-pgsql php8.0-imagick php8.0-memcached php8.0-bz2 php8.0-ds php8.0-imap php8.0-cgi php8.0-mysql php8.0-cli php8.0-fpm php8.0-xml php8.0-fileinfo
-    sudo apt install -y php8.0-gd php8.0-exif php8.0-iptcparse php8.0-ZipArchive php8.0-mime_content_type php8.0-finfo_file php8.0-exif_imagetype php8.0-session_start php8.0-ini_get php8.0-ini_set php8.0-exec php8.0-mbstring
+    sudo apt install -y php8.0-common php8.0-ldap php8.0-odbc php8.0-xsl php8.0-apcu php8.0-curl php8.0-gmp php8.0-opcache php8.0-pgsql php8.0-imagick php8.0-memcached php8.0-bz2 php8.0-ds php8.0-imap php8.0-cgi php8.0-mysql php8.0-cli php8.0-fpm php8.0-xml php8.0-fileinfo php8.0-gd php8.0-exif php8.0-mbstring
+    sudo apt install -y   php8.0-iptcparse php8.0-ZipArchive php8.0-mime_content_type php8.0-finfo_file php8.0-exif_imagetype php8.0-session_start php8.0-ini_get php8.0-ini_set php8.0-exec 
   fi
 }
 
