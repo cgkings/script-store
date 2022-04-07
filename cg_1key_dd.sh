@@ -296,6 +296,67 @@ EOF
 #   fi
 }
 
+################## 搭建aria2 ##################
+install_aria2() {
+  cd /root || exit
+  bash <(curl -sL git.io/aria2.sh) << EOF
+1 
+EOF
+  #修改默认本地下载路径为/home/download
+  [ ! -e /home/download ] && mkdir -p 755 /home/download
+  [ -z "$(grep "/home/download" /root/.aria2c/aria2.conf)" ] && sed -i 's/dir=.*$/dir=\/home\/download/g' /root/.aria2c/aria2.conf
+  #修改完成后执行的脚本为自动上传
+  [ -z "$(grep "upload.sh" /root/.aria2c/aria2.conf)" ] && sed -i 's/clean.sh/upload.sh/g' /root/.aria2c/aria2.conf
+  #修改自动上传的工具，由rclone改为fclone
+  [ -z "$(grep "fclone move" /root/.aria2c/upload.sh)" ] && sed -i 's/rclone move/fclone move/g' /root/.aria2c/upload.sh
+  #选择fclone remote
+  remote_choose
+  #设置自动上传的fclone remote
+  [ -z "$(grep "$my_remote" /root/.aria2c/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$my_remote'/g' /root/.aria2c/script.conf
+  #通知remote选择结果及自动上传目录
+  echo -e "$curr_date [INFO] 您选择的remote为：${my_remote}，自动上传目录为：/Download，如有需要，请bash <(curl -sL git.io/aria2.sh)自行修改" | tee -a /root/install_log.txt
+  service aria2 restart
+  #检查是否安装成功
+  aria2_install_status=$(/root/.aria2c/upload.sh | sed -n '4p')
+  if [ "$aria2_install_status" = success ]; then
+    echo -e "${curr_date} [INFO] aria2自动上传已安装配置成功！本地下载目录为：/home/download,remote为：${my_remote}，自动上传目录为：/Download" | tee -a /root/install_log.txt
+  else
+    echo -e "${curr_date} [ERROR] aria2自动上传安装配置失败！" | tee -a /root/install_log.txt
+  fi
+  bash <(curl -sL git.io/aria2.sh) << EOF
+6 
+EOF
+  docker run -d \
+    --name ariang \
+    --restart unless-stopped \
+    --log-opt max-size=1m \
+    -p 6880:6880 \
+    p3terx/ariang
+  cat >> /root/install_log.txt << EOF
+-----------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+-----------------------------------------------------------------------------
+程序名称：aria2
+aria2地址：http://${ip_addr}:6800
+ariang地址：http://${ip_addr}:6880
+-----------------------------------------------------------------------------
+EOF
+}
+
+################## 搭建RSSHUB ##################
+install_rsshub() {
+  [ -e /home/RSSHub ] && rm -rf /home/RSSHub
+  mkdir -p 755 /home/RSSHub && git clone https://github.com/cgkings/RSSHub /home/RSSHub
+  sleep 5s
+  cd /home/RSSHub || exit
+  npm cache clean --force
+  npm install --production
+  tmux new -s rsshub -d
+  tmux send -t "rsshub" "cd /home/RSSHub && npm start" Enter
+  echo -e "rsshub已完成部署动作，可网页访问你的ip:1200，看下效果吧！"
+}
+
+
 ################## 初始安装 ##################
 initialization() {
   #echo -e "${curr_date} 静默升级系统软件源"
