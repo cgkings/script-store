@@ -186,6 +186,20 @@ check_php8.0() {
   fi
 }
 
+################## 待调用-安装php8.0环境 ##################
+check_caddy() {
+  if [ -z "$(command -v caddy)" ]; then
+    echo -e "${curr_date} [DEBUG] caddy2 不存在.正在为您安装，请稍后..."
+    sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https > /dev/null
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+    sudo apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
+    sudo apt-get install -y caddy > /dev/null
+    systemctl enable caddy.service
+    echo -e "${curr_date} [INFO] caddy2 安装完成!" | tee -a /root/install_log.txt
+  fi
+}
+
 ################## 待调用-安装emby ##################
 check_emby() {
   emby_version="4.6.7.0"
@@ -408,9 +422,10 @@ EOF
   sudo apt-get install redis-server -y
   #禁用swap
   echo 'vm.swappiness=0'>> /etc/sysctl.conf
-  #预装py/go/node
+  #预装py/go/node/php
   check_python
   check_nodejs
+  check_php8.0
   #预装docker
   bash <(curl -sL https://get.docker.com)
   #预装docker-compose
@@ -423,6 +438,8 @@ EOF
   set_alias
   #预装ohmyzsh和ohmytmux
   check_beautify
+  #预装caddy
+  check_caddy
   #bbr
   check_bbr
 }
