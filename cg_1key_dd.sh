@@ -174,19 +174,19 @@ check_nodejs() {
   fi
 }
 
-################## 待调用-安装php8.0环境 ##################
-check_php8.0() {
-  if [ -z "$(command -v php)" ]; then
-    sudo apt install -y gnupg2 lsb-release ca-certificates apt-transport-https software-properties-common
-    echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
-    wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
-    sudo apt update -y
-    sudo apt install -y php8.0
-    sudo apt install -y php8.0-{apcu,bz2,cgi,ds,exif,exec,fileinfo,gd,mysql,pgsql,cli,common,imap,ldap,xml,xsl,fpm,gmp,curl,mbstring,zip,odbc,opcache,memcached,iconv,openssl,imagick,iptcparse,ZipArchive,session_start,ini_get,ini_set}
+################## 待调用-安装php7.4环境 ##################
+check_php7.4() {
+  if [ -z "$(command -v php7.4)" ]; then
+    # sudo apt install -y gnupg2 lsb-release ca-certificates apt-transport-https software-properties-common
+    # echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
+    # wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
+    #sudo apt update -y
+    sudo apt install -y php7.4-cgi php7.4-fpm php7.4-curl php7.4-gd php7.4-mbstring php7.4-xml php7.4-fileinfo php7.4-iconv php7.4-zip php7.4-mysql php7.4-exif php7.4-common php7.4-cli
+    sudo systemctl start php7.4-fpm.service && sudo systemctl enable php7.4-fpm.service
   fi
 }
 
-################## 待调用-安装php8.0环境 ##################
+################## 待调用-安装caddy环境 ##################
 check_caddy() {
   if [ -z "$(command -v caddy)" ]; then
     echo -e "${curr_date} [DEBUG] caddy2 不存在.正在为您安装，请稍后..."
@@ -425,7 +425,7 @@ EOF
   #预装py/go/node/php
   check_python
   check_nodejs
-  check_php8.0
+  check_php7.4
   #预装docker
   bash <(curl -sL https://get.docker.com)
   #预装docker-compose
