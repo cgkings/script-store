@@ -177,11 +177,11 @@ check_nodejs() {
 ################## 待调用-安装php7.4环境 ##################
 check_php7.4() {
   if [ -z "$(command -v php7.4)" ]; then
-    # sudo apt install -y gnupg2 lsb-release ca-certificates apt-transport-https software-properties-common
-    # echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
-    # wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
-    #sudo apt update -y
-    sudo apt install -y php7.4-cgi php7.4-fpm php7.4-curl php7.4-gd php7.4-mbstring php7.4-xml php7.4-fileinfo php7.4-iconv php7.4-zip php7.4-mysql php7.4-exif php7.4-common php7.4-cli
+    sudo apt install -y gnupg2 lsb-release ca-certificates apt-transport-https software-properties-common
+    echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
+    wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
+    sudo apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
+    sudo apt install -y php7.4-cgi php7.4-fpm php7.4-curl php7.4-gd php7.4-mbstring php7.4-xml php7.4-fileinfo php7.4-iconv php7.4-zip php7.4-mysql php7.4-exif php7.4-common php7.4-cli php7.4-sqlite3 sqlite3
     sudo systemctl start php7.4-fpm.service && sudo systemctl enable php7.4-fpm.service
   fi
 }
@@ -190,11 +190,11 @@ check_php7.4() {
 check_caddy() {
   if [ -z "$(command -v caddy)" ]; then
     echo -e "${curr_date} [DEBUG] caddy2 不存在.正在为您安装，请稍后..."
-    sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https > /dev/null
+    sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https > /dev/null
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
     sudo apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
-    sudo apt-get install -y caddy > /dev/null
+    sudo apt install -y caddy > /dev/null
     systemctl enable caddy.service
     echo -e "${curr_date} [INFO] caddy2 安装完成!" | tee -a /root/install_log.txt
   fi
@@ -226,8 +226,8 @@ check_jellyfin() {
     apt install -y apt-transport-https > /dev/null
     wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | sudo apt-key add -
     echo "deb [arch=$( dpkg --print-architecture)] https://repo.jellyfin.org/$(  awk -F'=' '/^ID=/{ print $NF }' /etc/os-release) $(  awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release) main"  | sudo tee /etc/apt/sources.list.d/jellyfin.list
-    apt-get update > /dev/null
-    apt-get install -y jellyfin > /dev/null
+    sudo apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
+    apt install -y jellyfin > /dev/null
     sleep 1s
     echo -e "${curr_date} [INFO] jellyfin 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
   fi
@@ -418,14 +418,15 @@ EOF
     export LC_ALL="en_US.UTF-8"
     echo -e "${curr_date} 设置语言为英文，done!" | tee -a /root/install_log.txt
   fi
-  #安装redis
-  sudo apt-get install redis-server -y
+  #预装建站环境php/sql/redis/caddy2
+  sudo apt install -y redis-server
+  check_php7.4
+  check_caddy
   #禁用swap
   echo 'vm.swappiness=0'>> /etc/sysctl.conf
   #预装py/go/node/php
   check_python
-  check_nodejs
-  check_php7.4
+  check_nodejs  
   #预装docker
   bash <(curl -sL https://get.docker.com)
   #预装docker-compose
@@ -437,9 +438,7 @@ EOF
   #别名设置
   set_alias
   #预装ohmyzsh和ohmytmux
-  check_beautify
-  #预装caddy
-  check_caddy
+  check_beautify  
   #bbr
   check_bbr
 }
