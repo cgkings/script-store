@@ -418,23 +418,15 @@ EOF
     export LC_ALL="en_US.UTF-8"
     echo -e "${curr_date} 设置语言为英文，done!" | tee -a /root/install_log.txt
   fi
-  #预装建站环境php/sql/redis/caddy2
-  sudo apt install -y redis-server
-  check_php7.4
-  check_caddy
-  #禁用swap
-  echo 'vm.swappiness=0'>> /etc/sysctl.conf
   #预装py/go/node/php
   check_python
-  check_nodejs  
+  check_nodejs
   #预装docker
   bash <(curl -sL https://get.docker.com)
   #预装docker-compose
   curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
   #预装rclone
   check_rclone
-  #预装X-UI
-  bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
   #别名设置
   set_alias
   #预装ohmyzsh和ohmytmux
@@ -518,8 +510,20 @@ if [ -z "$1" ]; then
   dd_menu
 else
   case "$1" in
+    --lite)
+      initialization
+      reboot
+      ;;
     --basic)
       initialization
+      #预装建站环境php/sql/redis/caddy2
+      sudo apt install -y redis-server
+      check_php7.4
+      check_caddy
+      #禁用swap
+      echo 'vm.swappiness=0'>> /etc/sysctl.conf
+      #预装X-UI
+      bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
       reboot
       ;;
     --emby)
