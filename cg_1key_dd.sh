@@ -190,12 +190,12 @@ check_php7.4() {
 check_caddy() {
   if [ -z "$(command -v caddy)" ]; then
     echo -e "${curr_date} [DEBUG] caddy2 不存在.正在为您安装，请稍后..."
-    sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https > /dev/null
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
+    sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https 2> /dev/null
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-    sudo apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
-    sudo apt install -y caddy > /dev/null
-    systemctl enable caddy.service
+    sudo apt update 2> /dev/null
+    sudo apt install -y caddy 2> /dev/null
+    systemctl enable caddy
     echo -e "${curr_date} [INFO] caddy2 安装完成!" | tee -a /root/install_log.txt
   fi
 }
