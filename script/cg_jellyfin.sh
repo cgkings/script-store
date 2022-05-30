@@ -55,11 +55,11 @@ initialization() {
   #step4:jellyfin检查安装
   if [ -z "$(command -v jellyfin)" ]; then
     echo -e "${curr_date} [INFO] jellyfin 不存在.正在为您安装，请稍等..."
-    apt-get install -y apt-transport-https > /dev/null
-    wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | sudo apt-key add -
-    echo "deb [arch=$( dpkg --print-architecture)] https://repo.jellyfin.org/$(  awk -F'=' '/^ID=/{ print $NF }' /etc/os-release) $(  awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release) main"  | sudo tee /etc/apt/sources.list.d/jellyfin.list
-    apt-get update > /dev/null
-    apt-get install -y jellyfin > /dev/null
+    sudo apt -y install curl gnupg > /dev/null
+    curl -fsSL https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/jellyfin.gpg
+    echo "deb [arch=$( dpkg --print-architecture )] https://repo.jellyfin.org/$( awk -F'=' '/^ID=/{ print $NF }' /etc/os-release ) $( awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release ) main" | sudo tee /etc/apt/sources.list.d/jellyfin.list
+    sudo apt update > /dev/null
+    sudo apt install -y jellyfin > /dev/null
     sleep 1s
     echo -e "${curr_date} [INFO] jellyfin 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
   fi
