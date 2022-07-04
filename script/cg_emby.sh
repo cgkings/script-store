@@ -183,7 +183,7 @@ choose_mount_tag() {
     "3" "退出脚本" 3>&1 1>&2 2>&3)
   case $choose_mount_tag_status in
     1)
-      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 256M --vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 32M --vfs-cache-max-size 10G"
+      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 512M --vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 16M --vfs-cache-max-size 10G"
       ;;
     2)
       mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 512M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 64M --vfs-cache-max-size 10G"
