@@ -183,10 +183,10 @@ choose_mount_tag() {
     "3" "退出脚本" 3>&1 1>&2 2>&3)
   case $choose_mount_tag_status in
     1)
-      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 512M --vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 16M --vfs-cache-max-size 10G"
+      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 16M --checkers=4 --transfers=1 --vfs-cache-max-size 10G"
       ;;
     2)
-      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 512M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 64M --vfs-cache-max-size 10G"
+      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 512M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 64M --checkers=4 --transfers=1 --vfs-cache-max-size 10G"
       ;;
     3 | *)
       myexit 0
@@ -200,11 +200,11 @@ switch_mount_tag() {
     TERM=ansi whiptail --title "警告" --infobox "还没挂载，切换个锤子的挂载参数" 8 68
   elif [ "${curr_mount_tag_status}" == "扫库参数" ]; then
     systemctl stop rclone-mntgd.service
-    sed -i 's/--vfs-read-chunk-size 1M/--buffer-size 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G/g' /lib/systemd/system/rclone-mntgd.service
+    sed -i 's/--vfs-read-chunk-size 1M/--buffer-size 512M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 64M --vfs-cache-max-size 10G/g' /lib/systemd/system/rclone-mntgd.service
     systemctl daemon-reload && systemctl restart rclone-mntgd.service
   elif [ "${curr_mount_tag_status}" == "观看参数" ]; then
     systemctl stop rclone-mntgd.service
-    sed -i 's/--buffer-size 512M --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 128M --vfs-cache-max-size 20G/--vfs-read-chunk-size 1M/g' /lib/systemd/system/rclone-mntgd.service
+    sed -i 's/--buffer-size 512M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 64M --vfs-cache-max-size 10G/--vfs-read-chunk-size 1M/g' /lib/systemd/system/rclone-mntgd.service
     systemctl daemon-reload && systemctl restart rclone-mntgd.service
   fi
   sleep 3s
