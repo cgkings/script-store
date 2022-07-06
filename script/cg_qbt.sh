@@ -19,96 +19,120 @@ content_dir=$2 # %F: 内容路径=/home/btzz/mide-007-C
 #torrent_size=$4 #%Z
 file_hash=$5 #%I
 file_category=$6 #%L: 分类
-pt_download_dir="/home/downloads"
-pt_username="admin"
-pt_password="adminadmin"
-qb_web_url="http://$(hostname -I | awk '{print $1}'):8070"
-# tr_web_url="http://$(hostname -I | awk '{print $1}'):9091"
+qpt_username="admin"
+qpt_password="adminadmin"
+aria2_rpc_secret="abc12345678"
+ip_addr=$(hostname -I | awk '{print $1}')
+qb_web_url="http://$ip_addr:8070"
+tr_web_url="http://$ip_addr:9070"
 rclone_remote="upsa"
 
 ################## 检查安装qbt ##################
 check_qbt() {
-  if [ -z "$(command -v qbittorrent-nox)" ]; then
+  if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep qbittorrent)" ]; then
     clear
-    apt-get remove qbittorrent-nox -y && rm -f /usr/bin/qbittorrent-nox
-    if [[ $(uname -m 2> /dev/null) = x86_64 ]]; then
-      wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
-    elif [[ $(uname -m 2> /dev/null) = aarch64 ]]; then
-      wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/aarch64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
-    fi
-    #备份配置文件: cd /home && tar -cvf qbt_bat.tar qbt
-    #还原qbt配置: 
-    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
-    #建立qbt服务
-    cat > '/etc/systemd/system/qbt.service' << EOF
-[Unit]
-Description=qBittorrent Daemon Service
-Documentation=https://github.com/c0re100/qBittorrent-Enhanced-Edition
-Wants=network-online.target
-After=network-online.target nss-lookup.target
-
-[Service]
-Type=simple
-User=root
-RemainAfterExit=yes
-ExecStart=/usr/bin/qbittorrent-nox --webui-port=8070 --profile=/home/qbt -d
-TimeoutStopSec=infinity
-LimitNOFILE=51200
-LimitNPROC=51200
-Restart=on-failure
-RestartSec=3s
-
-[Install]
-WantedBy=multi-user.target
-EOF
-    systemctl daemon-reload && systemctl enable qbt.service && systemctl restart qbt.service
+    docker run -d \
+      --name=qbittorrent \
+      -e PUID=$UID \
+      -e PGID=$GID \
+      -e TZ=Asia/Shanghai \
+      -e WEBUI_PORT=8070 \
+      -p 8070:8070 \
+      -p 51414:51414 \
+      -p 51414:51414/udp \
+      -v /home/qbt/config:/config \
+      -v /home/qbt/downloads:/downloads \
+      --restart unless-stopped \
+      lscr.io/linuxserver/qbittorrent:latest
+    #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip qBittorrent
+    #还原qbt配置:
+    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt/config/qBittorrent && unzip -q qbt_bat.zip -d /home/qbt/config && rm -f qbt_bat.zip
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 -----------------------------------------------------------------------------
-程序名称: qBittorrent
-版本名称: 4.3.9
-程序目录: /usr/bin/qbittorrent-nox
-服务地址: /etc/systemd/system/qbt.service
+容器名称: qbittorrent
 网页地址: ${qb_web_url}
-默认用户: ${pt_username}
-默认密码: ${pt_password}
-下载目录: ${pt_download_dir}
+默认用户: admin
+默认密码: adminadmin
+下载目录: /home/qbt/downloads
 -----------------------------------------------------------------------------
 EOF
+    tail -f /root/install_log.txt
   fi
 }
 
 ################## 检查安装transmission ##################
-# check_transmission() {
-#   if [ -z "$(command -v transmission-daemon)" ]; then
-#     echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
-#     apt install -y transmission-daemon
-#     mkdir -p ${pt_download_dir}
-#     chmod 777 ${pt_download_dir}
-#     #下载settings.json
-#     service transmission-daemon stop
-#     rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
-#     service transmission-daemon start
-#     bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
-# 1
-# EOF
-#     cat >> /root/install_log.txt << EOF
-# -----------------------------------------------------------------------------
-# $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
-# -----------------------------------------------------------------------------
-# 程序名称: transmission-daemon
-# 版本名称: 3.0
-# 程序目录: /var/lib/transmission-daemon
-# 服务地址: /lib/systemd/system/transmission-daemon.service
-# 网页地址: ${tr_web_url}
-# 默认用户: ${pt_username}
-# 默认密码: ${pt_password}
-# 下载目录: ${pt_download_dir}
-# -----------------------------------------------------------------------------
-# EOF
-#   fi
-# }
+check_tr() {
+  if [ -z "$(command -v transmission-daemon)" ] && [ -z "$(docker ps -a | grep transmission)" ]; then
+    docker run -d --name="transmission" \
+      -p 51413:51413 \
+      -p 51413:51413/udp \
+      -p 9070:9070 \
+      -e USERNAME=admin \
+      -e PASSWORD=adminadmin \
+      -v /data/downloads:/home/tr/downloads \
+      -v /data/transmission:/home/tr/config \
+      --restart=always \
+      helloz/transmission
+    cat >> /root/install_log.txt << EOF
+-----------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
+-----------------------------------------------------------------------------
+容器名称: transmission
+网页地址: ${tr_web_url}
+默认用户: admin
+默认密码: adminadmin
+下载目录: /home/tr/downloads
+-----------------------------------------------------------------------------
+EOF
+    tail -f /root/install_log.txt
+  fi
+}
+
+################## 检查安装aria2 ##################
+check_aria2() {
+  if [ -z "$(docker ps -a | grep aria2)" ]; then
+    docker run -d \
+      --name aria2-pro \
+      --restart unless-stopped \
+      --log-opt max-size=1m \
+      --network host \
+      -e PUID=$UID \
+      -e PGID=$GID \
+      -e RPC_SECRET=$aria2_rpc_secret \
+      -e RPC_PORT=6800 \
+      -e LISTEN_PORT=6888 \
+      -v /root/aria2:/config \
+      -v /home/dl:/downloads \
+      -v /usr/bin/fclone:/usr/local/bin/rclone \
+      -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
+      -e SPECIAL_MODE=rclone \
+      p3terx/aria2-pro
+    cp ~/.config/rclone/rclone.conf ~/aria2
+    [ -z "$(grep "$rclone_remote" ~/aria2/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$rclone_remote'/g' ~/aria2/script.conf
+    docker run -d \
+      --name ariang \
+      --restart unless-stopped \
+      --log-opt max-size=1m \
+      -p 6880:6880 \
+      p3terx/ariang
+    aria2_rpc_secret_bash64=$(echo $aria2_rpc_secret | base64 | tr -d "\n")
+    cat >> /root/install_log.txt << EOF
+-----------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+-----------------------------------------------------------------------------
+容器名称: aria2-pro & ariang
+网页地址: ${tr_web_url}
+默认用户: admin
+默认密码: adminadmin
+下载目录: /home/tr/downloads
+访问地址: http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
+-----------------------------------------------------------------------------
+EOF
+    tail -f /root/install_log.txt
+  fi
+}
 
 ################## 检查安装mktorrent ##################
 check_mktorrent() {
@@ -127,7 +151,7 @@ Uninstall_qbt() {
 }
 
 ################## 卸载transmission-daemon ##################
-Uninstall_transmission-daemon(){
+Uninstall_transmission-daemon() {
   systemctl disable transmission-daemon
   service transmission-daemon stop
   bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
@@ -139,7 +163,7 @@ EOF
 }
 ################## qbt删除种子 ##################
 qb_del() {
-  cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${pt_username}&password=${pt_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
+  cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qpt_username}&password=${qpt_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
   if [ -n "${cookie}" ]; then
     curl -s "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
     cat >> /home/qbt/qb.log << EOF
@@ -148,13 +172,13 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ delete done ${content_dir}
 EOF
   else
     cat >> /home/qbt/qb_fail.log << EOF
---------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ 登录删除失败！:
 分类名称: ${file_category}
 种子名称: ${torrent_name}
 文件哈希: ${file_hash}
 cookie : ${cookie}
---------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 EOF
     exit 1
   fi
