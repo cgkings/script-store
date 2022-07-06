@@ -58,7 +58,7 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 下载目录: /home/qbt/downloads
 -----------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt
+    tail -f /root/install_log.txt|sed '/.*downloads.*/q'
   fi
 }
 
@@ -76,17 +76,17 @@ check_tr() {
       --restart=always \
       helloz/transmission
     cat >> /root/install_log.txt << EOF
------------------------------------------------------------------------------
+------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
------------------------------------------------------------------------------
+------------------------------------------------------------------------
 容器名称: transmission
 网页地址: ${tr_web_url}
 默认用户: admin
 默认密码: adminadmin
 下载目录: /home/tr/downloads
------------------------------------------------------------------------------
+------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt
+    tail -f /root/install_log.txt|sed '/.*downloads.*/q'
   fi
 }
 
@@ -130,7 +130,7 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 访问地址: http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
 -----------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt
+    tail -f /root/install_log.txt|sed '/.*6880.*/q'
   fi
 }
 
