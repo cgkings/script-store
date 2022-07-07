@@ -50,10 +50,12 @@ check_qbt() {
       lscr.io/linuxserver/qbittorrent:latest
     #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip qBittorrent
     #还原qbt配置:
-    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home/qbt/config && rm -f qbt_bat.zip
+    docker stop qbittorrent
+    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home && rm -f qbt_bat.zip
+    docker restart qbittorrent
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
+${curr_date} [INFO] install done!
 -----------------------------------------------------------------------------
 容器名称: qbittorrent
 网页地址: ${qb_web_url}
@@ -72,7 +74,7 @@ check_mktorrent() {
     echo -e "${curr_date} [DEBUG] 未找到mktorrent包.正在安装..."
     sleep 1s
     git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
-    echo -e "${curr_date} [INFO] mktorrent 安装完成!" >> /root/install_log.txt
+    echo -e "${curr_date} [INFO] mktorrent 安装完成!" | tee -a /root/install_log.txt
     echo
   fi
 }
@@ -114,11 +116,9 @@ my_task:
     # 一个任务块可以包括多个策略块...
 # Part 4: 是否在删除种子的同时也删除数据。如果此字段未指定,则默认值为false
   delete_data: true
-# 该模板策略块1为:对于非下载状态且非TTG的种子,删除900秒未活动的种子,或
+# 该模板策略块1为:对于非下载状态且非TTG的种子,删除900秒未活动的种子,或硬盘小于100G时,尽量删除不活跃种子
 EOF
-
-    echo -e "${curr_date} [INFO] mktorrent 安装完成!" >> /root/install_log.txt
-    echo
+    echo -e "${curr_date} [INFO] mktorrent 安装完成!" | tee -a /root/install_log.txt
   fi
 }
 
