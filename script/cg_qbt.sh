@@ -118,6 +118,10 @@ my_task:
 # 该模板策略块1为:对于非下载状态且非TTG的种子,删除900秒未活动的种子,或硬盘小于100G时,尽量删除不活跃种子
 EOF
     echo -e "${curr_date} [INFO] autoremove-torrents 安装完成!" | tee -a /root/install_log.txt
+    # crontab -l | {
+    #                cat
+    #                     echo "*/15 * * * * /usr/bin/autoremove-torrents --conf=/home/amt/config.yml"
+    # }                                            | crontab -
   fi
 }
 
