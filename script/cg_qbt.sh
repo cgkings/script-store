@@ -10,8 +10,8 @@
 # Version: final
 #=============================================================
 
-#set -e #异常则退出整个脚本，避免错误累加
-#set -x #脚本调试，逐行执行并输出执行的脚本命令行
+#set -e #异常则退出整个脚本,避免错误累加
+#set -x #脚本调试,逐行执行并输出执行的脚本命令行
 
 ################## 前置变量设置 ##################
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
@@ -82,7 +82,41 @@ check_amt() {
   if [ -z "$(command -v autoremove-torrents)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到autoremove-torrents.正在安装..."
     sleep 1s
-    pip install autoremove-torrents && mkdir -p /home/amt && wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /home/amt/config.yml
+    pip install autoremove-torrents && mkdir -p /home/amt
+    cat > /home/amt/config.yml << EOF
+# 任务模板: YAML语法,不能使用tab,要用空格来缩进,每个层级要用两个空格缩进,否则必定报错！
+# Part 1: 任务块名称,左侧不能有空格
+my_task:
+# Part 2: BT客户端登录信息,可以管理其他机的客户端
+  client: qbittorrent
+  host: http://127.0.0.1:8070
+  username: admin
+  password: adminadmin
+# Part 3: 策略块（删除种子的条件）
+  strategies:
+    # Part I: 策略名称
+    strategy1:
+      # Part II: 筛选过滤器,过滤器定义了删除条件应用的范围,多个过滤器是且的关系,顺序执行过滤
+      excluded_status:
+        - Downloading
+      excluded_trackers:
+        - tracker.totheglory.im
+      # Part III: 删除条件,多个删除条件之间是或的关系,顺序应用删除条件
+      last_activity: 900
+      free_space:
+        min: 100
+        path: /home/qbt/downloads
+        action: remove-inactive-seeds
+    strategy2:
+      status: Downloading
+      remove: last_activity > 900 or download_speed < 50
+      #delete_data: true
+    # 一个任务块可以包括多个策略块...
+# Part 4: 是否在删除种子的同时也删除数据。如果此字段未指定,则默认值为false
+  delete_data: true
+# 该模板策略块1为:对于非下载状态且非TTG的种子,删除900秒未活动的种子,或
+EOF
+
     echo -e "${curr_date} [INFO] mktorrent 安装完成!" >> /root/install_log.txt
     echo
   fi
@@ -137,7 +171,7 @@ check_qbt
 check_mktorrent
 check_amt
 if [ -z "${file_hash}" ]; then
-  echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行" >> /home/qbt/qb.log
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息,脚本停止运行" >> /home/qbt/qb.log
   exit 0
 else
   if [ -z "${file_category}" ]; then
