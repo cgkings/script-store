@@ -4,7 +4,7 @@
 # bash <(curl -sL git.io/cg_qbt)
 # File Name: cg_qbt.sh
 # Author: cgking
-# Created Time : 2021.6.21
+# Created Time : 2022.7.7
 # Description:qbittonrrent脚本
 # System Required: Debian/Ubuntu
 # Version: final
