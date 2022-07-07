@@ -48,7 +48,7 @@ check_qbt() {
       -v /home/qbt/downloads:/downloads \
       --restart unless-stopped \
       lscr.io/linuxserver/qbittorrent:latest
-    #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip qBittorrent
+    #备份配置文件: cd /home && zip -qr qbt_bat.zip qbt
     #还原qbt配置:
     docker stop qbittorrent
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home && rm -f qbt_bat.zip
