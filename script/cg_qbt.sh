@@ -52,6 +52,7 @@ check_qbt() {
     #还原qbt配置:
     docker stop qbittorrent
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home && rm -f qbt_bat.zip
+    wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O /home/qbt/cg_qbt.sh
     docker restart qbittorrent
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
