@@ -65,7 +65,7 @@ ${curr_date} [INFO] install done!
 下载目录: /home/qbt/downloads
 -----------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt|sed '/.*downloads.*/q'
+    tail -f /root/install_log.txt | sed '/.*downloads.*/q'
   fi
 }
 
