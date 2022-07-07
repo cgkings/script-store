@@ -71,7 +71,7 @@ EOF
     export LANGUAGE="zh_CN.UTF-8"
     export LANG="zh_CN.UTF-8"
     export LC_ALL="zh_CN.UTF-8"
-    echo -e "${info_message} 设置语言为中文，done!" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置语言为中文,done!" | tee -a /root/install_log.txt
   fi
 }
 
@@ -95,7 +95,7 @@ EOF
     export LANGUAGE="en_US.UTF-8"
     export LANG="en_US.UTF-8"
     export LC_ALL="en_US.UTF-8"
-    echo -e "${info_message} 设置语言为英文，done!" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置语言为英文,done!" | tee -a /root/install_log.txt
   fi
 }
 
@@ -131,7 +131,7 @@ alias cgqbt='bash <(curl -sL git.io/cg_qbt.sh)'
 alias yd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --write-auto-sub --sub-lang zh-Hans --embed-sub -i --exec 'fclone move {} cgking:{1849n4MVDof3ei8UYW3j430N1QPG_J2de} -vP'"
 alias nano="nano -m"
 EOF
-    echo -e "${info_message} 设置alias别名，done!！" | tee -a /root/install_log.txt
+    echo -e "${info_message} 设置alias别名,done!!" | tee -a /root/install_log.txt
   fi
 }
 
@@ -166,17 +166,17 @@ EOF
   cd /root && git clone https://github.com/gpakosz/.tmux.git
   ln -sf .tmux/.tmux.conf .
   cp .tmux/.tmux.conf.local .
-  echo -e "${info_message} 安装oh my tmux，done!" | tee -a /root/install_log.txt
+  echo -e "${info_message} 安装oh my tmux,done!" | tee -a /root/install_log.txt
   sudo chsh -s "$(which zsh)"
 }
 
 ################## buyvm挂载外挂硬盘 ##################
 mount_disk() {
-  disk_value=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "外挂硬盘名称" --nocancel '注：默认值/dev/sda，可自行fdisk -l查看名称' 10 68 /dev/sda 3>&1 1>&2 2>&3)
+  disk_value=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "外挂硬盘名称" --nocancel '注：默认值/dev/sda,可自行fdisk -l查看名称' 10 68 /dev/sda 3>&1 1>&2 2>&3)
   disk_status=$(fdisk -l | grep "$disk_value")
   mount_status=$(df -h | grep "$disk_value")
   if [ -z "$disk_status" ]; then
-    echo -e "${error_message} 未找到外挂磁盘名称，请到控制台先加卷后再运行本脚本" | tee -a /root/install_log.txt
+    echo -e "${error_message} 未找到外挂磁盘名称,请到控制台先加卷后再运行本脚本" | tee -a /root/install_log.txt
     exit
   else
     if [ -z "$mount_status" ]; then
@@ -196,9 +196,9 @@ y
 EOF
       mkdir -p 755 /home                                   #确保/home目录存在
       mount "$disk_value" /home                                 #将256G硬盘挂载到系统/home文件夹
-      echo "${disk_value} /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1，允许备份；0，忽略备份;第六列是fsck磁盘检查顺序设置:0，永不检查；/根目录分区永远为1。其它分区从2开始，数字相同，同时检查。
+      echo "${disk_value} /home ext4 defaults 1 2" >> /etc/fstab #第五列是dump备份设置:1,允许备份；0,忽略备份;第六列是fsck磁盘检查顺序设置:0,永不检查；/根目录分区永远为1。其它分区从2开始,数字相同,同时检查。
     else
-      echo -e "${info_message} $disk_value 磁盘已挂载，无须重复操作" | tee -a /root/install_log.txt
+      echo -e "${info_message} $disk_value 磁盘已挂载,无须重复操作" | tee -a /root/install_log.txt
     fi
   fi
   mount_status_update=$(df -h | grep "$disk_value")
@@ -220,17 +220,17 @@ check_bbr() {
       echo net.core.default_qdisc=fq >> /etc/sysctl.conf
       echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
       sysctl -p
-      echo -e "${info_message} BBR加速已启用！" | tee -a /root/install_log.txt
+      echo -e "${info_message} BBR加速已启用!" | tee -a /root/install_log.txt
     fi
   else
-    echo -e "${info_message} debian9以上版本自带bbr,您的系统内核未包含bbr，！" | tee -a /root/install_log.txt
+    echo -e "${info_message} debian9以上版本自带bbr,您的系统内核未包含bbr,!" | tee -a /root/install_log.txt
   fi
 }
 
 ################## 效率检测 ##################
 VPS_INFO() {
   clear
-  whiptail --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "机器配置信息" --msgbox "
+  whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "机器配置信息" --msgbox "
 CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')
 CPU 核心: $(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo)
 CPU 频率: $(awk -F: '/cpu MHz/ {freq=$2} END {print freq}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//') MHz
@@ -247,7 +247,7 @@ CPU 频率: $(awk -F: '/cpu MHz/ {freq=$2} END {print freq}' /proc/cpuinfo | sed
 }
 
 io_test() {
-  whiptail --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "硬盘I/O测试" --msgbox "
+  whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "硬盘I/O测试" --msgbox "
 硬盘I/O (第一次测试) :$( (LANG=C dd if=/dev/zero of=test_$$ bs=64k count=16k conv=fdatasync && rm -f test_$$ ) 2>&1 | awk -F, '{io=$NF} END { print io}' | sed 's/^[ \t]*//;s/[ \t]*$//')
 硬盘I/O (第二次测试) :$( (LANG=C dd if=/dev/zero of=test_$$ bs=64k count=16k conv=fdatasync && rm -f test_$$ ) 2>&1 | awk -F, '{io=$NF} END { print io}' | sed 's/^[ \t]*//;s/[ \t]*$//')
 硬盘I/O (第三次测试) :$( (LANG=C dd if=/dev/zero of=test_$$ bs=64k count=16k conv=fdatasync && rm -f test_$$ ) 2>&1 | awk -F, '{io=$NF} END { print io}' | sed 's/^[ \t]*//;s/[ \t]*$//')" 20 65
@@ -255,7 +255,7 @@ io_test() {
 
 ################## 主    菜    单 ##################
 start_menu() {
-  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')\n硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2> /dev/null | grep total | awk '{ print $2 }') / 1024)) GB   内存容量: $(free -m | awk '/Mem/ {print $2}') MB   虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB\n拥塞算法: $(awk '{print $1}' /proc/sys/net/ipv4/tcp_congestion_control)     队列算法: $(awk '{print $1}' /proc/sys/net/core/default_qdisc)\n注：本脚本所有操作日志路径：/root/install_log.txt" 17 60 5 \
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "Cg_toolbox 主菜单" --menu --nocancel "CPU 型号: $(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')\n硬盘容量: $(($(df -mt simfs -t ext2 -t ext3 -t ext4 -t btrfs -t xfs -t vfat -t ntfs -t swap --total 2> /dev/null | grep total | awk '{ print $2 }') / 1024)) GB   内存容量: $(free -m | awk '/Mem/ {print $2}') MB   虚拟内存: $(free -m | awk '/Swap/ {print $2}') MB\n拥塞算法: $(awk '{print $1}' /proc/sys/net/ipv4/tcp_congestion_control)     队列算法: $(awk '{print $1}' /proc/sys/net/core/default_qdisc)\n注：本脚本所有操作日志路径：/root/install_log.txt" 17 60 5 \
     "Install_standard" "=>>  基 础 安 装" \
     "Install_extend" "=>>  扩 展 安 装" \
     "Benchmark" "=>>  效 能 测 试" \
@@ -263,7 +263,7 @@ start_menu() {
     "Exit" "=>>  退 出 脚 本" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     Install_standard)
-      whiptail --clear --ok-button "安装完成请手动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "系统设置模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件，ESC退出脚本" 19 57 12 \
+      whiptail --clear --ok-button "安装完成请手动重启生效" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "系统设置模式" --checklist --separate-output --nocancel "请按空格及方向键来选择需要安装的软件,ESC退出脚本" 19 57 12 \
         "back" " == 返回上级菜单" off \
         "mountdisk" " == 挂载外挂硬盘" off \
         "languge_cn" " == 设置系统语言（中文）" off \
@@ -320,7 +320,7 @@ start_menu() {
       reboot
       ;;
     Install_extend)
-      extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 55 10 \
+      extend_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "扩展安装模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 55 10 \
         "Back_menu" " ==>> 返回上级菜单" \
         "Install_x-ui" " ==>> 搭建x-ui" \
         "Install_prober" " ==>> 搭建哪吒探针" \
@@ -379,7 +379,7 @@ start_menu() {
       esac
       ;;
     Benchmark)
-      Benchmark_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "测试模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 53 8 \
+      Benchmark_menu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "测试模式" --menu --nocancel "注：本脚本所有操作日志路径：/root/install_log.txt" 18 53 8 \
         "Back" "返回上级菜单" \
         "1" "  设备基础配置(快速)" \
         "2" "  yabs性能测试" \
@@ -423,7 +423,7 @@ start_menu() {
       esac
       ;;
     Onekey_dd)
-      dd_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "设置debian11密码" --nocancel '注：回车继续，ESC表示root密码为空' 10 68 123456789 3>&1 1>&2 2>&3)
+      dd_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "设置debian11密码" --nocancel '注：回车继续,ESC表示root密码为空' 10 68 123456789 3>&1 1>&2 2>&3)
       bash <(wget --no-check-certificate -qO- 'https://moeclub.org/attachment/LinuxShell/InstallNET.sh') -d 11 -v 64 -a -firmware -p "$dd_passwd"
       
       ;;
@@ -434,6 +434,6 @@ start_menu() {
 }
 
 ################## 执  行  命  令 ##################
-initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟，请稍后.........." 6 60 0
+initialization | whiptail --backtitle "Hi,欢迎使用cg_toolbox。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --gauge "初始化(initializing),过程可能需要几分钟,请稍后.........." 6 60 0
 check_rclone
 start_menu
