@@ -170,9 +170,9 @@ EOF
 }
 
 ################## 主执行模块 ##################
-check_qbt
 check_mktorrent
 check_amt
+check_qbt
 if [ -z "${file_hash}" ]; then
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息,脚本停止运行" >> /home/qbt/qb.log
   exit 0

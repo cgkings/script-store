@@ -164,7 +164,11 @@ check_amt() {
 
 ################## 卸载qbt ##################
 Uninstall_qbt() {
-  systemctl stop qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
+  if [[ "$(command -v qbittorrent-nox)" ]]; then
+  systemctl stop qbt && systemctl disable qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
+  elif docker ps -a | grep -q qbittorrent;then
+  docker stop qbittorrent && docker rm qbittorrent
+  fi
 }
 
 ################## 卸载transmission-daemon ##################
