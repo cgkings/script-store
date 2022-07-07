@@ -10,6 +10,9 @@
 # Version: final
 #=============================================================
 
+#set -e #异常则退出整个脚本，避免错误累加
+#set -x #脚本调试，逐行执行并输出执行的脚本命令行
+
 ################## 前置变量设置 ##################
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 #/home/qbt/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
@@ -31,6 +34,7 @@ rclone_remote="upsa"
 check_qbt() {
   if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep qbittorrent)" ]; then
     clear
+    echo -e "${curr_date} [DEBUG] 未找到qbittorrent.正在安装..."
     docker run -d \
       --name=qbittorrent \
       -e PUID=$UID \
@@ -62,78 +66,6 @@ EOF
   fi
 }
 
-################## 检查安装transmission ##################
-check_tr() {
-  if [ -z "$(command -v transmission-daemon)" ] && [ -z "$(docker ps -a | grep transmission)" ]; then
-    docker run -d --name="transmission" \
-      -p 51413:51413 \
-      -p 51413:51413/udp \
-      -p 9070:9070 \
-      -e USERNAME=admin \
-      -e PASSWORD=adminadmin \
-      -v /data/downloads:/home/tr/downloads \
-      -v /data/transmission:/home/tr/config \
-      --restart=always \
-      helloz/transmission
-    cat >> /root/install_log.txt << EOF
-------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
-------------------------------------------------------------------------
-容器名称: transmission
-网页地址: ${tr_web_url}
-默认用户: admin
-默认密码: adminadmin
-下载目录: /home/tr/downloads
-------------------------------------------------------------------------
-EOF
-    tail -f /root/install_log.txt|sed '/.*downloads.*/q'
-  fi
-}
-
-################## 检查安装aria2 ##################
-check_aria2() {
-  if [ -z "$(docker ps -a | grep aria2)" ]; then
-    docker run -d \
-      --name aria2-pro \
-      --restart unless-stopped \
-      --log-opt max-size=1m \
-      --network host \
-      -e PUID=$UID \
-      -e PGID=$GID \
-      -e RPC_SECRET=$aria2_rpc_secret \
-      -e RPC_PORT=6800 \
-      -e LISTEN_PORT=6888 \
-      -v /root/aria2:/config \
-      -v /home/dl:/downloads \
-      -v /usr/bin/fclone:/usr/local/bin/rclone \
-      -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
-      -e SPECIAL_MODE=rclone \
-      p3terx/aria2-pro
-    cp ~/.config/rclone/rclone.conf ~/aria2
-    [ -z "$(grep "$rclone_remote" ~/aria2/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$rclone_remote'/g' ~/aria2/script.conf
-    docker run -d \
-      --name ariang \
-      --restart unless-stopped \
-      --log-opt max-size=1m \
-      -p 6880:6880 \
-      p3terx/ariang
-    aria2_rpc_secret_bash64=$(echo $aria2_rpc_secret | base64 | tr -d "\n")
-    cat >> /root/install_log.txt << EOF
------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
------------------------------------------------------------------------------
-容器名称: aria2-pro & ariang
-网页地址: ${tr_web_url}
-默认用户: admin
-默认密码: adminadmin
-下载目录: /home/tr/downloads
-访问地址: http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
------------------------------------------------------------------------------
-EOF
-    tail -f /root/install_log.txt|sed '/.*6880.*/q'
-  fi
-}
-
 ################## 检查安装mktorrent ##################
 check_mktorrent() {
   if [ -z "$(command -v mktorrent)" ]; then
@@ -145,22 +77,38 @@ check_mktorrent() {
   fi
 }
 
-################## 卸载qbt ##################
-Uninstall_qbt() {
-  systemctl stop qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
+################## 检查安装autoremove-torrents ##################
+check_amt() {
+  if [ -z "$(command -v autoremove-torrents)" ]; then
+    echo -e "${curr_date} [DEBUG] 未找到autoremove-torrents.正在安装..."
+    sleep 1s
+    pip install autoremove-torrents && mkdir -p /home/amt && wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /home/amt/config.yml
+    echo -e "${curr_date} [INFO] mktorrent 安装完成!" >> /root/install_log.txt
+    echo
+  fi
 }
 
-################## 卸载transmission-daemon ##################
-Uninstall_transmission-daemon() {
-  systemctl disable transmission-daemon
-  service transmission-daemon stop
-  bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
-1
+################## rclone上传模块 ##################
+rclone_upload() {
+  fclone copy "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vP --transfers=1 --min-size 100M --ignore-existing --log-file=/home/qbt/bt_upload.log
+  RCLONE_EXIT_CODE=$?
+  if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
+    cat >> /home/qbt/qb.log << EOF
+--------------------------------------------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done ${file_category}:${torrent_name} ==> ${rclone_remote}:${rclone_dest}
 EOF
-  sudo apt remove -y transmission-daemon
-  sudo apt autoremove -y
-  rm -f /lib/systemd/system/transmission-daemon.service
+  else
+    cat >> /home/qbt/qb_fail.log << EOF
+--------------------------------------------------------------------------------------------------------------
+$(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ Upload failed:"$content_dir" "$rclone_remote":"$rclone_dest"
+分类名称: ${file_category}
+种子名称: ${torrent_name}
+文件哈希: ${file_hash}
+--------------------------------------------------------------------------------------------------------------
+EOF
+  fi
 }
+
 ################## qbt删除种子 ##################
 qb_del() {
   cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qpt_username}&password=${qpt_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
@@ -184,47 +132,11 @@ EOF
   fi
 }
 
-# ################## 检查上传类型: 文件or目录 ##################
-# check_content_dir() {
-#   if [ -f "${content_dir}" ]; then
-#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型: 文件" >> ${log_dir}/qb.log
-#     type="file"
-#   elif [ -d "${content_dir}" ]; then
-#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 类型: 目录" >> ${log_dir}/qb.log
-#     type="dir"
-#   else
-#     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 未知类型，取消上传" >> ${log_dir}/qb.log
-#   fi
-# }
-
-################## rclone上传模块 ##################
-rclone_upload() {
-  fclone copy "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vP --transfers=1 --min-size 100M --ignore-existing --log-file=/home/qbt/bt_upload.log
-  RCLONE_EXIT_CODE=$?
-  if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
-    cat >> /home/qbt/qb.log << EOF
---------------------------------------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] ✔ Upload done ${file_category}:${torrent_name} ==> ${rclone_remote}:${rclone_dest}
-EOF
-  else
-    cat >> /home/qbt/qb_fail.log << EOF
---------------------------------------------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [ERROR] ❌ Upload failed:"$content_dir" "$rclone_remote":"$rclone_dest"
-分类名称: ${file_category}
-种子名称: ${torrent_name}
-文件哈希: ${file_hash}
---------------------------------------------------------------------------------------------------------------
-EOF
-  fi
-}
-
 ################## 主执行模块 ##################
-check_rclone
 check_qbt
-# check_transmission
 check_mktorrent
-mkdir -p /home/qbt
-if [ -z "$content_dir" ]; then
+check_amt
+if [ -z "${file_hash}" ]; then
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] 无种子信息，脚本停止运行" >> /home/qbt/qb.log
   exit 0
 else
@@ -232,28 +144,14 @@ else
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
     rclone_upload
     qb_del
-  elif [ "${file_category}" == "rss-chs" ]; then
+  elif [ "${file_category}" == "98t-c" ]; then
     rclone_dest="{1hzETacfMuAIBAsHqKIys-98glIMRb-iv}"
     rclone_upload
     qb_del
-  elif [ "${file_category}" == "rss-fc2" ]; then
-    rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
-    rclone_upload
-    qb_del
-  elif [ "${file_category}" == "rss-suren" ]; then
-    rclone_dest="{1yIDI4ZMWpTiFecLrJwLb6hgJwfjWG18N}"
-    rclone_upload
-    qb_del
-  elif [ "${file_category}" == "pohuaiban" ]; then
-    rclone_dest="{1S-b-47Pe54j6wh6ph5t6eY5ZjZqnacqw}"
-    rclone_upload
-    qb_del
-  elif [ "${file_category}" == "00PT_for_down" ]; then
+  elif [ "${file_category}" == "1.pt-down" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
     rclone_upload
-  elif [ "${file_category}" == "00PT_for_up" ]; then
-    rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
-  elif [ "${file_category}" == "00seed_save" ]; then
+  elif [ "${file_category}" == "2.pt-up" ] || [ "${file_category}" == "3.pt-mt" ] || [ "${file_category}" == "4.pt-ttg" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   fi
 fi
