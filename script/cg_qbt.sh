@@ -24,10 +24,8 @@ file_hash=$5 #%I
 file_category=$6 #%L: 分类
 qpt_username="admin"
 qpt_password="adminadmin"
-aria2_rpc_secret="abc12345678"
 ip_addr=$(hostname -I | awk '{print $1}')
 qb_web_url="http://$ip_addr:8070"
-tr_web_url="http://$ip_addr:9070"
 rclone_remote="upsa"
 
 ################## 检查安装qbt ##################
