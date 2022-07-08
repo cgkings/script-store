@@ -107,30 +107,29 @@ check_aria2() {
       -e RPC_SECRET=$aria2_rpc_secret \
       -e RPC_PORT=6800 \
       -e LISTEN_PORT=6888 \
-      -v /root/aria2:/config \
-      -v /home/dl:/downloads \
+      -v ~/aria2:/config \
+      -v /home/aria2_dl:/downloads \
       -v /usr/bin/fclone:/usr/local/bin/rclone \
       -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
       -e SPECIAL_MODE=rclone \
       p3terx/aria2-pro
     cp ~/.config/rclone/rclone.conf ~/aria2
-    [ -z "$(grep "$rclone_remote" ~/aria2/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$rclone_remote'/g' ~/aria2/script.conf
+    [ -z "$(grep "$rclone_remote" /root/aria2/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$rclone_remote'/g' /root/aria2/script.conf
     docker run -d \
       --name ariang \
       --restart unless-stopped \
       --log-opt max-size=1m \
       -p 6880:6880 \
       p3terx/ariang
-    aria2_rpc_secret_bash64=$(echo $aria2_rpc_secret | base64 | tr -d "\n")
+    aria2_rpc_secret_bash64=$(echo -n "$aria2_rpc_secret" | base64)
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 -----------------------------------------------------------------------------
 容器名称: aria2-pro & ariang
 网页地址: ${tr_web_url}
-默认用户: admin
-默认密码: adminadmin
-下载目录: /home/tr/downloads
+默认rpc_secret: ${aria2_rpc_secret}
+下载目录: /home/aria2_dl
 访问地址: http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
 -----------------------------------------------------------------------------
 EOF
