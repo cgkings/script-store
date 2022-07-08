@@ -31,7 +31,6 @@ rclone_remote="upsa"
 ################## 检查安装qbt ##################
 check_qbt() {
   if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep qbittorrent)" ]; then
-    clear
     echo -e "${curr_date} [DEBUG] 未找到qbittorrent.正在安装..."
     docker run -d \
       --name=qbittorrent \
@@ -54,7 +53,7 @@ check_qbt() {
     docker start qbittorrent
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
-${curr_date} [INFO] install done!
+${curr_date} [INFO] qbittorrent 安装完成!
 -----------------------------------------------------------------------------
 容器名称: qbittorrent
 网页地址: ${qb_web_url}
@@ -72,7 +71,7 @@ check_mktorrent() {
   if [ -z "$(command -v mktorrent)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到mktorrent包.正在安装..."
     sleep 1s
-    git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
+    git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install > /dev/null
     echo -e "${curr_date} [INFO] mktorrent 安装完成!" | tee -a /root/install_log.txt
     echo
   fi
