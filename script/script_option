@@ -78,9 +78,9 @@ check_rclone() {
   if [ -z "$(command -v fclone)" ]; then
     echo -e "${debug_message} ${yellow}${jiacu}fclone${normal} 不存在.正在为您安装，请稍等..."
     if [[ $(uname -m 2> /dev/null) = x86_64 ]]; then
-      wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone && mv -f fclone /usr/bin/ > /dev/null && chmod +x /usr/bin/fclone
+      wget -q https://github.com/cgkings/script-store/raw/master/tools/fclone && mv -f fclone /usr/bin/ > /dev/null && chmod +x /usr/bin/fclone
     elif [[ $(uname -m 2> /dev/null) = aarch64 ]]; then
-      wget -qN https://github.com/cgkings/script-store/raw/master/tools/fclone_arm64/fclone && mv -f fclone /usr/bin/ > /dev/null && chmod +x /usr/bin/fclone
+      wget -q https://github.com/cgkings/script-store/raw/master/tools/fclone_arm64/fclone && mv -f fclone /usr/bin/ > /dev/null && chmod +x /usr/bin/fclone
     fi
     echo -e "${info_message} fclone已安装" | tee -a /root/install_log.txt
   fi

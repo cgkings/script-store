@@ -38,7 +38,7 @@ check_qbt() {
       -p 51414:51414/udp \
       -v /home/qbt/config:/config \
       -v /home/qbt/downloads:/downloads \
-      -v /usr/bin/fclone:/usr/local/bin/fclone \
+      -v /usr/bin/fclone:/usr/bin/fclone \
       -v /root/.config/rclone:/root/.config/rclone \
       -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
       --restart unless-stopped \
@@ -202,7 +202,7 @@ Uninstall_qbt() {
   if [[ "$(command -v qbittorrent-nox)" ]]; then
     systemctl stop qbt && systemctl disable qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
   elif docker ps -a | grep -q qbittorrent; then
-    docker stop qbittorrent && docker rm qbittorrent
+    docker stop qbittorrent && docker rm qbittorrent && docker rmi "$(docker images | grep qbittorrent | awk '{print $3}')"
   fi
 }
 

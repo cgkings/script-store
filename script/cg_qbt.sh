@@ -17,7 +17,8 @@
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 #/config/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
 torrent_name=$1 # %N: Torrent名称=mide-007-C
-content_dir=$(echo "$2" | sed "s/downloads/home\/qbt\/downloads/g") # %F: 内容路径=/home/btzz/mide-007-C
+#content_dir=$(echo "$2" | sed "s/downloads/home\/qbt\/downloads/g") # %F: 内容路径=/home/btzz/mide-007-C
+content_dir=$2
 #files_num=$3 # %C
 #torrent_size=$4 #%Z
 file_hash=$5 #%I
@@ -50,7 +51,7 @@ EOF
 
 ################## qbt删除种子 ##################
 qb_del() {
-  cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qpt_username}&password=${qpt_password}" "${qb_web_url}/api/v2/auth/login" | grep -P -o 'SID=\S{32}')
+  cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qpt_username}&password=${qpt_password}" "${qb_web_url}/api/v2/auth/login" | grep -Eo 'SID=\S{32}')
   if [ -n "${cookie}" ]; then
     curl -s "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
     cat >> /config/qb.log << EOF
