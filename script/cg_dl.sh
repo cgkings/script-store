@@ -191,7 +191,7 @@ EOF
     echo -e "${curr_date} [INFO] autoremove-torrents 安装完成!" | tee -a /root/install_log.txt
     # crontab -l | {
     #                cat
-    #                     echo "*/15 * * * * /usr/bin/autoremove-torrents --conf=/home/amt/config.yml"
+    #                     echo "*/15 * * * * $(command -v autoremove-torrents) -c /home/amt/config.yml --log=/home/amt"
     # }                                            | crontab -
   fi
 }
