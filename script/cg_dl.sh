@@ -45,9 +45,9 @@ check_qbt() {
     #备份配置文件: cd /home && zip -qr qbt_bat.zip qbt
     #还原qbt配置:
     docker stop qbittorrent
-    mkdir -p /home/qbt/config/rclone && cp ~/.config/rclone/rclone.conf /home/qbt/config/rclone
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home && rm -f qbt_bat.zip
     wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O /home/qbt/config/cg_qbt.sh && chmod 755 /home/qbt/config/cg_qbt.sh
+    mkdir -p /home/qbt/config/rclone && cp ~/.config/rclone/rclone.conf /home/qbt/config/rclone
     docker start qbittorrent
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
