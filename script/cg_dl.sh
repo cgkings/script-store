@@ -15,25 +15,17 @@
 
 ################## 前置变量设置 ##################
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
-#/home/qbt/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
-torrent_name=$1 # %N: Torrent名称=mide-007-C
-content_dir=$2 # %F: 内容路径=/home/btzz/mide-007-C
-#files_num=$3 # %C
-#torrent_size=$4 #%Z
-file_hash=$5 #%I
-file_category=$6 #%L: 分类
-qpt_username="admin"
-qpt_password="adminadmin"
+default_username="admin"
+default_password="adminadmin"
 aria2_rpc_secret="abc12345678"
 ip_addr=$(hostname -I | awk '{print $1}')
-qb_web_url="http://$ip_addr:8070"
-tr_web_url="http://$ip_addr:9070"
+tr_web_url="http://$(curl -sL ifconfig.me):9070"
+qb_web_url="http://$(curl -sL ifconfig.me):8070"
 rclone_remote="upsa"
 
 ################## 检查安装qbt ##################
 check_qbt() {
   if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep qbittorrent)" ]; then
-    clear
     echo -e "${curr_date} [DEBUG] 未找到qbittorrent.正在安装..."
     docker run -d \
       --name=qbittorrent \
@@ -48,21 +40,24 @@ check_qbt() {
       -v /home/qbt/downloads:/downloads \
       --restart unless-stopped \
       lscr.io/linuxserver/qbittorrent:latest
-    #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip qBittorrent
+    #备份配置文件: cd /home && zip -qr qbt_bat.zip qbt
     #还原qbt配置:
-    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt/config/qBittorrent && unzip -q qbt_bat.zip -d /home/qbt/config && rm -f qbt_bat.zip
+    docker stop qbittorrent
+    wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home && rm -f qbt_bat.zip
+    wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O /home/qbt/config/cg_qbt.sh && chmod 755 /home/qbt/config/cg_qbt.sh
+    docker start qbittorrent
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
+${curr_date} [INFO] qbittorrent 安装完成!
 -----------------------------------------------------------------------------
 容器名称: qbittorrent
 网页地址: ${qb_web_url}
-默认用户: admin
-默认密码: adminadmin
+默认用户: ${default_username}
+默认密码: ${default_password}
 下载目录: /home/qbt/downloads
 -----------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt|sed '/.*downloads.*/q'
+    tail -f /root/install_log.txt | sed '/.*downloads.*/q'
   fi
 }
 
@@ -86,12 +81,12 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 ------------------------------------------------------------------------
 容器名称: transmission
 网页地址: ${tr_web_url}
-默认用户: admin
-默认密码: adminadmin
+默认用户: ${default_username}
+默认密码: ${default_password}
 下载目录: /home/tr/downloads
 ------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt|sed '/.*downloads.*/q'
+    tail -f /root/install_log.txt | sed '/.*downloads.*/q'
   fi
 }
 
@@ -126,7 +121,7 @@ check_aria2() {
     aria2_rpc_secret_bash64=$(echo $aria2_rpc_secret | base64 | tr -d "\n")
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 -----------------------------------------------------------------------------
 容器名称: aria2-pro & ariang
 网页地址: ${tr_web_url}
@@ -136,17 +131,17 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 访问地址: http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
 -----------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt|sed '/.*6880.*/q'
+    tail -f /root/install_log.txt | sed '/.*6880.*/q'
   fi
 }
 
 ################## 检查安装mktorrent ##################
 check_mktorrent() {
   if [ -z "$(command -v mktorrent)" ]; then
-    echo -e "${curr_date} [DEBUG] 未找到mktorrent.正在安装..."
+    echo -e "${curr_date} [DEBUG] 未找到mktorrent包.正在安装..."
     sleep 1s
-    git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
-    echo -e "${curr_date} [INFO] mktorrent 安装完成!" >> /root/install_log.txt
+    git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install > /dev/null
+    echo -e "${curr_date} [INFO] mktorrent 安装完成!" | tee -a /root/install_log.txt
     echo
   fi
 }
@@ -156,18 +151,54 @@ check_amt() {
   if [ -z "$(command -v autoremove-torrents)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到autoremove-torrents.正在安装..."
     sleep 1s
-    pip install autoremove-torrents && mkdir -p /home/amt && wget -qN https://golang.org/dl/go1.15.6.linux-amd64.tar.gz -O /home/amt/config.yml
-    echo -e "${curr_date} [INFO] mktorrent 安装完成!" >> /root/install_log.txt
-    echo
+    pip install autoremove-torrents && mkdir -p /home/amt
+    cat > /home/amt/config.yml << EOF
+# 任务模板: YAML语法,不能使用tab,要用空格来缩进,每个层级要用两个空格缩进,否则必定报错!
+# Part 1: 任务块名称,左侧不能有空格
+my_task:
+# Part 2: BT客户端登录信息,可以管理其他机的客户端
+  client: qbittorrent
+  host: http://127.0.0.1:8070
+  username: admin
+  password: adminadmin
+# Part 3: 策略块（删除种子的条件）
+  strategies:
+    # Part I: 策略名称
+    strategy1:
+      # Part II: 筛选过滤器,过滤器定义了删除条件应用的范围,多个过滤器是且的关系,顺序执行过滤
+      excluded_status:
+        - Downloading
+      excluded_trackers:
+        - tracker.totheglory.im
+      # Part III: 删除条件,多个删除条件之间是或的关系,顺序应用删除条件
+      last_activity: 900
+      free_space:
+        min: 100
+        path: /home/qbt/downloads
+        action: remove-inactive-seeds
+    strategy2:
+      status: Downloading
+      remove: last_activity > 900 or download_speed < 50
+      #delete_data: true
+    # 一个任务块可以包括多个策略块...
+# Part 4: 是否在删除种子的同时也删除数据。如果此字段未指定,则默认值为false
+  delete_data: true
+# 该模板策略块1为:对于非下载状态且非TTG的种子,删除900秒未活动的种子,或硬盘小于100G时,尽量删除不活跃种子
+EOF
+    echo -e "${curr_date} [INFO] autoremove-torrents 安装完成!" | tee -a /root/install_log.txt
+    # crontab -l | {
+    #                cat
+    #                     echo "*/15 * * * * /usr/bin/autoremove-torrents --conf=/home/amt/config.yml"
+    # }                                            | crontab -
   fi
 }
 
 ################## 卸载qbt ##################
 Uninstall_qbt() {
   if [[ "$(command -v qbittorrent-nox)" ]]; then
-  systemctl stop qbt && systemctl disable qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
-  elif docker ps -a | grep -q qbittorrent;then
-  docker stop qbittorrent && docker rm qbittorrent
+    systemctl stop qbt && systemctl disable qbt && rm -f /etc/systemd/system/qbt.service && rm -f /usr/bin/qbittorrent-nox
+  elif docker ps -a | grep -q qbittorrent; then
+    docker stop qbittorrent && docker rm qbittorrent
   fi
 }
 
@@ -183,9 +214,8 @@ EOF
   rm -f /lib/systemd/system/transmission-daemon.service
 }
 
-
 ################## 安装flexget ##################
-install_flexget() {
+check_flexget() {
   if [ -z "$(command -v flexget)" ]; then
     #建立flexget独立的 python3 虚拟环境
     mkdir -p 755 /home/software/flexget/
@@ -195,7 +225,7 @@ install_flexget() {
     #建立 flexget 日志存放
     mkdir -p 755 /var/log/flexget && chown root:adm /var/log/flexget
     #建立 flexget 的配置文件
-    read -r -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址,有需要自行修改,路径为：/root/.config/flexget/config.yml：" config_yml_link
+    read -r -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址,有需要自行修改,路径为:/root/.config/flexget/config.yml:" config_yml_link
     config_yml_link=${config_yml_link:-https://raw.githubusercontent.com/cgkings/script-store/master/config/cn_yml/config.yml}
     mkdir -p 755 /root/.config/flexget && wget -qN "${config_yml_link}" -O /root/.config/flexget/config.yml
     aria2_key=$(grep "rpc-secret" /root/.aria2c/aria2.conf | awk -F= '{print $2}')
@@ -219,8 +249,16 @@ install_flexget() {
     }                                            | crontab -
   fi
   flexget --test execute
-  echo -e "flexget已完成部署动作,等10分钟,用<flexget status>命令看一下状态吧！"
+  echo -e "flexget已完成部署动作,等10分钟,用<flexget status>命令看一下状态吧!"
   echo -e "如安装有异常,请联系作者"
+}
+
+################## 安装rsshub ##################
+check_rsshub() {
+  if [ -z "$(docker ps -a | grep aria2)" ]; then
+    docker pull diygod/rsshub
+    docker run -d --name rsshub -p 1200:1200 diygod/rsshub
+  fi
 }
 
 ################## 脚本参数帮助 ##################
@@ -229,83 +267,72 @@ dl_help() {
 用法(Usage):
   bash <(curl -sL git.io/cg_dl) [flags]
 
-可用参数(Available flags)：
-  bash <(curl -sL git.io/cg_dl) a  安装配置aria2
-  bash <(curl -sL git.io/cg_dl) r  安装配置rsshub
-  bash <(curl -sL git.io/cg_dl) f  安装配置flexget
-  bash <(curl -sL git.io/cg_dl) h  命令帮助
-注：无参数则顺序安装配置aria2\rsshub\flexget
+可用参数(Available flags):
+  bash <(curl -sL git.io/cg_dl) --qb      安装配置qbittorrent套件
+  bash <(curl -sL git.io/cg_dl) --tr      安装配置transmission套件
+  bash <(curl -sL git.io/cg_dl) --aria2   安装配置aria2套件
+  bash <(curl -sL git.io/cg_dl) -h       命令帮助
+注:无参数则使用菜单模式
 EOF
 }
 
 ################## dl 主 菜 单 ##################
 dl_menu() {
-  whiptail --clear --ok-button "Enter键开始安装" --backtitle "Hi,欢迎使用cg_pt工具包。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "大锤 PT 工具包" --checklist --separate-output --nocancel "请按空格及方向键来选择安装软件,ESC键退出脚本" 14 57 6 \
+  whiptail --clear --ok-button "Enter键开始检查安装" --backtitle "Hi,欢迎使用cg_pt工具包。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "大锤 PT 工具包" --checklist --separate-output --nocancel "请按空格及方向键来选择安装软件,ESC键退出脚本" 14 58 8 \
         "install_qbt      " ": 安装qbittorrent" off \
         "install_tr       " ": 安装transmission" off \
         "install_aria2    " ": 安装aria2套件,带ariang" off \
-        "install_amt      " ": 安装Autoremove" off \
-        "install_mktorrent" ": 安装mktorrent" off \
+        "install_rsshub   " ": 安装rsshub" off \
+        "install_amt      " ": 安装Autoremove" on \
+        "install_mktorrent" ": 安装mktorrent" on \
         "install_flexget  " ": 安装flexget" off 2> results
-  case $dd_mainmenu in
-        Pure_dd)
-          dd_input
-          cmd_bash64=$(echo "apt install -y curl wget" | base64 | tr -d "\n")
-          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
-          ;;
-        Basic_dd)
-          dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --basic" | base64 | tr -d "\n")
-          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
-          ;;
-        Emby_dd)
-          dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --emby" | base64 | tr -d "\n")
-          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
-          ;;
-        Jellyfin_dd)
-          dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --jellyfin" | base64 | tr -d "\n")
-          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
-          ;;
-        Pt_dd)
-          dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --pt" | base64 | tr -d "\n")
-          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
-          ;;
-        Preload_package)
-          dd_input
-          cmd_bash64=$(echo "apt install -y curl && bash <(curl -sL git.io/cg_1key_dd) --package" | base64 | tr -d "\n")
-          bash <(curl -sL raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh) -d 11 -v 64 -a -p "${dd_passwd}" -port "${dd_port}" -cmd "${cmd_bash64}"
-          ;;
-        Exit | *)
-          exit 0
-          ;;
-  esac
+  while read -r choice; do
+        case $choice in
+          "install_qbt      ")
+            check_qbt
+            ;;
+          "install_tr       ")
+            check_tr
+            ;;
+          "install_aria2    ")
+            check_aria2
+            ;;
+          "install_rsshub   ")
+            check_rsshub
+            ;;
+          "install_amt      ")
+            check_amt
+            ;;
+          "install_mktorrent")
+            check_mktorrent
+            ;;
+          "install_flexget  ")
+            check_flexget
+            ;;
+          *)
+            exit
+            ;;
+    esac
+  done < results
+  rm results
 }
 
 ################## 执  行  主 命  令 ##################
-check_sys
-check_command wget
-check_rclone
-check_python
-check_nodejs
 if [ -z "$1" ]; then
   dl_menu
 else
   case "$1" in
-    --qbt)
+    --qb)
+      check_mktorrent
+      check_amt
       check_qbt
       ;;
     --tr)
+      check_mktorrent
+      check_amt
       check_tr
       ;;
     --aria2)
-      check_aria2
-      ;;
-    --all)
-      check_qbt
-      check_tr
       check_aria2
       ;;
     --help)
