@@ -114,13 +114,13 @@ check_aria2() {
       -e SPECIAL_MODE=rclone \
       p3terx/aria2-pro
     cp ~/.config/rclone/rclone.conf ~/aria2
-    [ -z "$(grep "$rclone_remote" /root/aria2/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$rclone_remote'/g' /root/aria2/script.conf
     docker run -d \
       --name ariang \
       --restart unless-stopped \
       --log-opt max-size=1m \
       -p 6880:6880 \
       p3terx/ariang
+    [ -z "$(grep $rclone_remote ~/aria2/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$rclone_remote'/g' ~/aria2/script.conf
     aria2_rpc_secret_bash64=$(echo -n "$aria2_rpc_secret" | base64)
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
