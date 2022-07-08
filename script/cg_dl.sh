@@ -282,35 +282,35 @@ EOF
 
 ################## dl 主 菜 单 ##################
 dl_menu() {
-  whiptail --clear --ok-button "Enter键开始检查安装" --backtitle "Hi,欢迎使用cg_pt工具包。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "大锤 PT 工具包" --checklist --separate-output --nocancel "请按空格及方向键来选择安装软件,ESC键退出脚本" 14 58 8 \
-        "install_qbt      " ": 安装qbittorrent" off \
-        "install_tr       " ": 安装transmission" off \
-        "install_aria2    " ": 安装aria2套件,带ariang" off \
-        "install_rsshub   " ": 安装rsshub" off \
-        "install_amt      " ": 安装Autoremove" on \
-        "install_mktorrent" ": 安装mktorrent" on \
-        "install_flexget  " ": 安装flexget" off 2> results
+  whiptail --clear --ok-button "Enter键开始检查安装" --backtitle "Hi,欢迎使用cg_pt工具包。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "大锤 PT 工具包" --checklist --separate-output --nocancel "请按空格及方向键来选择安装软件,ESC键退出脚本" 15 58 7 \
+        "install_qbt" " : 安装qbittorrent" off \
+        "install_tr" " : 安装transmission" off \
+        "install_aria2" " : 安装aria2套件,带ariang" off \
+        "install_rsshub" " : 安装rsshub" off \
+        "install_amt" " : 安装Autoremove" on \
+        "install_mktorrent" " : 安装mktorrent" on \
+        "install_flexget" " : 安装flexget" off 2> results
   while read -r choice; do
         case $choice in
-          "install_qbt      ")
+          "install_qbt")
             check_qbt
             ;;
-          "install_tr       ")
+          "install_tr")
             check_tr
             ;;
-          "install_aria2    ")
+          "install_aria2")
             check_aria2
             ;;
-          "install_rsshub   ")
+          "install_rsshub")
             check_rsshub
             ;;
-          "install_amt      ")
+          "install_amt")
             check_amt
             ;;
           "install_mktorrent")
             check_mktorrent
             ;;
-          "install_flexget  ")
+          "install_flexget")
             check_flexget
             ;;
           *)
