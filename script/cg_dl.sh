@@ -18,9 +18,9 @@ curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 default_username="admin"
 default_password="adminadmin"
 aria2_rpc_secret="abc12345678"
-ip_addr=$(hostname -I | awk '{print $1}')
-tr_web_url="http://$(curl -sL ifconfig.me):9070"
-qb_web_url="http://$(curl -sL ifconfig.me):8070"
+ip_addr=$(curl -sL ifconfig.me)
+tr_web_url="http://$ip_addr:9070"
+qb_web_url="http://$ip_addr:8070"
 rclone_remote="upsa"
 
 ################## 检查安装qbt ##################
