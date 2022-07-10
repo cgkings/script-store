@@ -23,14 +23,38 @@ tr_web_url="http://$ip_addr:9070"
 qb_web_url="http://$ip_addr:8070"
 rclone_remote="upsa"
 
+################## 检查安装docker ##################
+check_docker() {
+  if [ -z "$(command -v docker)" ]; then
+    echo -e "检测到系统未安装docker,开始安装docker"
+
+    if bash <(curl -sL https://get.docker.com); then
+      echo -e "docker安装成功······"
+    else
+      echo -e "docker安装失败······"
+      exit 1
+    fi
+  fi
+  if [ -z "$(which docker-compose)" ]; then
+    echo -e "检测到系统未安装docker-compose,开始安装docker-compose"
+
+    if curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose; then
+       echo -e "docker-compose安装成功······"
+    else
+      echo -e "docker-compose安装失败······"
+      exit 1
+    fi
+  fi
+}
+
 ################## 检查安装qbt ##################
 check_qbt() {
   if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep qbittorrent)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到qbittorrent.正在安装..."
     docker run -d \
       --name=qbittorrent \
-      -e PUID=$UID \
-      -e PGID=$GID \
+      -e PUID="$UID" \
+      -e PGID="$GID" \
       -e TZ=Asia/Shanghai \
       -e WEBUI_PORT=8070 \
       -p 8070:8070 \
@@ -280,7 +304,7 @@ EOF
 
 ################## dl 主 菜 单 ##################
 dl_menu() {
-  whiptail --clear --ok-button "Enter键开始检查安装" --backtitle "Hi,欢迎使用cg_pt工具包。本脚本仅适用于debian ubuntu,有关问题，请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "大锤 PT 工具包" --checklist --separate-output --nocancel "请按空格及方向键来选择安装软件,ESC键退出脚本" 15 58 7 \
+  whiptail --clear --ok-button "Enter键开始检查安装" --backtitle "Hi,欢迎使用cg_pt工具包。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "大锤 PT 工具包" --checklist --separate-output --nocancel "请按空格及方向键来选择安装软件,ESC键退出脚本" 15 58 7 \
         "install_qbt" " : 安装qbittorrent" off \
         "install_tr" " : 安装transmission" off \
         "install_aria2" " : 安装aria2套件,带ariang" off \
@@ -320,6 +344,7 @@ dl_menu() {
 }
 
 ################## 执  行  主 命  令 ##################
+check_docker
 if [ -z "$1" ]; then
   dl_menu
 else
