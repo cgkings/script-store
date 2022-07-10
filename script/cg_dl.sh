@@ -340,7 +340,6 @@ dl_menu() {
             ;;
     esac
   done < results
-  rm results
 }
 
 ################## 执  行  主 命  令 ##################
