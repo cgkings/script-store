@@ -151,7 +151,6 @@ check_aria2() {
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 -----------------------------------------------------------------------------
 容器名称: aria2-pro & ariang
-网页地址: ${tr_web_url}
 默认rpc_secret: ${aria2_rpc_secret}
 下载目录: /home/aria2_dl
 访问地址: http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
