@@ -17,10 +17,7 @@
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 default_username="admin"
 default_password="adminadmin"
-aria2_rpc_secret="abc12345678"
 ip_addr=$(curl -sL ifconfig.me)
-tr_web_url="http://$ip_addr:9070"
-qb_web_url="http://$ip_addr:8070"
 rclone_remote="upsa"
 
 ################## 检查安装docker ##################
@@ -37,7 +34,6 @@ check_docker() {
   fi
   if [ -z "$(which docker-compose)" ]; then
     echo -e "检测到系统未安装docker-compose,开始安装docker-compose"
-
     if curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose; then
        echo -e "docker-compose安装成功······"
     else
@@ -49,97 +45,131 @@ check_docker() {
 
 ################## docker命名 ##################
 docker_name_set() {
-  docker_name=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$name docker 命名" --nocancel '注：回车继续,ESC表示默认名qbittorrent' 10 68 qbittorrent 3>&1 1>&2 2>&3)
-  if docker ps -a | grep "$1"; then
-    echo -e "${info_message} $command_arges 安装成功！" | tee -a /root/install_log.txt
-  else
-    echo -e "${error_message} $command_arges 安装失败！" | tee -a /root/install_log.txt
-  fi
-
-  for error_num in $*; do
-    if [ -z "$(dock | grep "$command_arges")" ]; then
-      echo -e "${debug_message} ${yellow}${jiacu}$command_arges${normal} 不存在.正在为您安装，请稍后..."
-      apt-get install "$command_arges" -y --upgrade > /dev/null
-      if dpkg --get-selections | grep "$command_arges"; then
-        echo -e "${info_message} $command_arges 安装成功！" | tee -a /root/install_log.txt
-      else
-        echo -e "${error_message} $command_arges 安装失败！" | tee -a /root/install_log.txt
-      fi
+  unset docker_name i
+  i=1
+  while docker ps -aqf name="$docker_name"; do
+    i=$((i + 1))
+    if [ $i -lt 2 ];then
+      whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n Docker重名,请重新命名" 9 42
     fi
+    docker_name=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name docker 命名" --nocancel "注:回车继续,ESC表示默认docker名为$docker_default_name" 10 68 "$docker_default_name" 3>&1 1>&2 2>&3)
+    docker_name="${docker_name:-$docker_default_name}"
   done
+}
+
+################## 端口设置 ##################
+docker_port_set() {
+  unset webui_port i
+  i=1
+  while netstat -tunlp | grep "$webui_port"; do
+    i=$((i + 1))
+    if [ $i -lt 2 ];then
+      whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n 端口占用,请选择其他端口" 9 42
+    fi
+    webui_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui 端口" --nocancel "注：回车继续,ESC表示默认$webui_default_port" 10 68 "$webui_default_port" 3>&1 1>&2 2>&3)
+    webui_port="${webui_port:-$webui_default_port}"
+  done
+  unset connect_port i
+  i=1
+  while netstat -tunlp | grep "$connect_port"; do
+    i=$((i + 1))
+    if [ $i -lt 2 ];then
+      whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n 端口占用,请选择其他端口" 9 42
+    fi
+    connect_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name 连接端口" --nocancel "注：回车继续,ESC表示默认$connect_default_port" 10 68 "$connect_default_port" 3>&1 1>&2 2>&3)
+    connect_port="${connect_port:-$connect_default_port}"
+  done
+}
+
+################## 下载目录设置 ##################
+download_dir_set() {
+  download_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name 下载目录设置" --nocancel "注：回车继续,ESC表示默认$download_default_dir" 10 68 "$download_default_dir" 3>&1 1>&2 2>&3)
+  download_dir="${download_dir:-$download_default_dir}"
+  mkdir -p "$download_dir"
 }
 
 ################## 检查安装qbt ##################
 check_qbt() {
-  name="qbittorrent"
-  if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep linuxserver)" ]; then
+  docker_default_name="qbittorrent"
+  webui_default_port="8070"
+  connect_default_port="51414"
+  download_default_dir="/home/qbt/downloads"
+  if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep "/linuxserver/qbittorrent")" ]; then
     echo -e "${curr_date} [DEBUG] 未找到qbittorrent.即将安装..."
-
-    qb_webui_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "qb webui 端口" --nocancel '注：回车继续,ESC表示默认8070' 10 68 qbittorrent 3>&1 1>&2 2>&3)
-    qb_connect_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "qb webui 端口" --nocancel '注：回车继续,ESC表示默认8070' 10 68 qbittorrent 3>&1 1>&2 2>&3)
-    docker run -d \
-      --name="${qb_docker_name:=qbittorrent}" \
+    docker_name_set
+    docker_port_set
+    download_dir_set
+    docker run -d --name="$docker_name" \
       -e PUID="$UID" \
       -e PGID="$GID" \
       -e TZ=Asia/Shanghai \
-      -e WEBUI_PORT="${qb_webui_port:=8070}" \
-      -p "${qb_webui_port:=8070}":"${qb_webui_port:=8070}" \
-      -p "${qb_connect_port:=51414}":"${qb_connect_port:=51414}" \
-      -p "${qb_connect_port:=51414}":"${qb_connect_port:=51414}"/udp \
+      -e WEBUI_PORT="$webui_port" \
+      -p "$webui_port":"$webui_port" \
+      -p "$connect_port":"$connect_port" \
+      -p "$connect_port":"$connect_port"/udp \
       -v /home/qbt/config:/config \
-      -v /home/qbt/downloads:/downloads \
+      -v "$download_dir":/downloads \
       -v /usr/bin/fclone:/usr/bin/fclone \
       -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
-      --restart unless-stopped \
+      --restart=unless-stopped \
       lscr.io/linuxserver/qbittorrent:latest
     #备份配置文件: cd /home && zip -qr qbt_bat.zip qbt
     #还原qbt配置:
-    docker stop qbittorrent
+    docker stop "$docker_name"
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home && rm -f qbt_bat.zip
     wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O /home/qbt/config/cg_qbt.sh && chmod 755 /home/qbt/config/cg_qbt.sh
     mkdir -p /home/qbt/config/rclone && cp ~/.config/rclone/rclone.conf /home/qbt/config/rclone
-    docker start qbittorrent
+    docker start "$docker_name"
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
 ${curr_date} [INFO] qbittorrent 安装完成!
 -----------------------------------------------------------------------------
-容器名称: qbittorrent
-网页地址: ${qb_web_url}
-默认用户: ${default_username}
-默认密码: ${default_password}
-下载目录: /home/qbt/downloads
+容器名称: $docker_name
+网页地址: http://$ip_addr:$webui_port
+默认用户: $default_username
+默认密码: $default_password
+下载目录: $download_dir
+qb信息: /root/install_log.txt
 -----------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt | sed '/.*downloads.*/q'
+    tail -f /root/install_log.txt | sed '/.*qb信息.*/q'
   fi
 }
 
 ################## 检查安装transmission ##################
 check_tr() {
+  docker_default_name="transmission"
+  webui_default_port="9070"
+  connect_default_port="51413"
+  download_default_dir="/home/tr/downloads"
   if [ -z "$(command -v transmission-daemon)" ] && [ -z "$(docker ps -a | grep transmission)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到transmission.正在安装..."
-    docker run -d --name="transmission" \
-      -p 51413:51413 \
-      -p 51413:51413/udp \
-      -p 9070:9070 \
-      -e USERNAME=admin \
-      -e PASSWORD=adminadmin \
-      -v /data/downloads:/home/tr/downloads \
-      -v /data/transmission:/home/tr/config \
-      --restart=always \
+    docker_name_set
+    docker_port_set
+    download_dir_set
+    docker run -d --name="$docker_name" \
+      -p "$webui_port":"$webui_port" \
+      -p "$connect_port":"$connect_port" \
+      -p "$connect_port":"$connect_port"/udp \
+      -e USERNAME=$default_username \
+      -e PASSWORD=$default_password \
+      -v "$download_dir":/data/downloads \
+      -v /home/tr/config:/data/transmission \
+      --restart=unless-stopped \
       helloz/transmission
     cat >> /root/install_log.txt << EOF
 ------------------------------------------------------------------------
-$(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
+$(date '+%Y-%m-%d %H:%M:%S') [INFO] transmission 安装完成!
 ------------------------------------------------------------------------
-容器名称: transmission
-网页地址: ${tr_web_url}
-默认用户: ${default_username}
-默认密码: ${default_password}
-下载目录: /home/tr/downloads
+容器名称: $docker_name
+网页地址: http://$ip_addr:$webui_port
+默认用户: $default_username
+默认密码: $default_password
+下载目录: $download_dir
+tr信息 : /root/install_log.txt
 ------------------------------------------------------------------------
 EOF
-    tail -f /root/install_log.txt | sed '/.*downloads.*/q'
+    tail -f /root/install_log.txt | sed '/.*tr信息.*/q'
   fi
 }
 
@@ -147,39 +177,44 @@ EOF
 check_aria2() {
   if [ -z "$(docker ps -a | grep aria2)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到aria2.正在安装..."
+    download_default_dir="/home/aria2/downloads"
+    download_dir_set
     docker run -d \
       --name aria2-pro \
       --restart unless-stopped \
       --log-opt max-size=1m \
       --network host \
       -e PUID=$UID \
-      -e PGID=$GID \
-      -e RPC_SECRET=$aria2_rpc_secret \
+      -e PGID="$GID" \
+      -e RPC_SECRET="$aria2_rpc_secret" \
       -e RPC_PORT=6800 \
       -e LISTEN_PORT=6888 \
-      -v ~/aria2:/config \
-      -v /home/aria2_dl:/downloads \
+      -v /root/aria2:/config \
+      -v "$download_dir":/downloads \
       -v /usr/bin/fclone:/usr/local/bin/rclone \
       -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
       -e SPECIAL_MODE=rclone \
       p3terx/aria2-pro
-    cp ~/.config/rclone/rclone.conf ~/aria2
     docker run -d \
       --name ariang \
       --restart unless-stopped \
       --log-opt max-size=1m \
       -p 6880:6880 \
       p3terx/ariang
-    [ -z "$(grep $rclone_remote ~/aria2/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$rclone_remote'/g' ~/aria2/script.conf
+    [ -z "$(grep $rclone_remote /root/aria2/script.conf)" ] && sed -i 's/drive-name=.*$/drive-name='$rclone_remote'/g' /root/aria2/script.conf
+    cp /root/.config/rclone/rclone.conf /root/aria2
+    aria2_rpc_secret=$(tr -cd '0-9a-zA-Z' < /dev/urandom | head -c 16)
     aria2_rpc_secret_bash64=$(echo -n "$aria2_rpc_secret" | base64)
     cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
 $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 -----------------------------------------------------------------------------
-容器名称: aria2-pro & ariang
-默认rpc_secret: ${aria2_rpc_secret}
-下载目录: /home/aria2_dl
-访问地址: http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
+aria2  容器名称: aria2-pro
+aria2ng容器名称: ariang
+rpc_secret    : $aria2_rpc_secret
+aria2下载目录  : $download_dir
+访问地址:
+http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
 -----------------------------------------------------------------------------
 EOF
     tail -f /root/install_log.txt | sed '/.*6880.*/q'
