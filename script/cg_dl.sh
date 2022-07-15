@@ -57,7 +57,7 @@ esc_key() {
 docker_name_set() {
   unset docker_name i
   i=1
-  while [ -z "$(docker ps -aqf name="$docker_name")" ]; do
+  while [ -n "$(docker ps -aqf name="$docker_name")" ]; do
     i=$((i + 1))
     if [ $i -gt 2 ]; then
       whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n Docker重名,请重新命名" 9 42
@@ -71,7 +71,7 @@ docker_name_set() {
 docker_port_set() {
   unset webui_port i
   i=1
-  while netstat -tunlp | grep "$webui_port"; do
+  while netstat -tunlp | grep -q "$webui_port"; do
     i=$((i + 1))
     if [ $i -gt 2 ]; then
       whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n 端口占用,请选择其他端口" 9 42
@@ -81,7 +81,7 @@ docker_port_set() {
   done
   unset connect_port i
   i=1
-  while netstat -tunlp | grep "$connect_port"; do
+  while netstat -tunlp | grep -q "$connect_port"; do
     i=$((i + 1))
     if [ $i -gt 2 ]; then
       whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n 端口占用,请选择其他端口" 9 42
