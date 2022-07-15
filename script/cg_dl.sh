@@ -47,19 +47,45 @@ check_docker() {
   fi
 }
 
+################## docker命名 ##################
+docker_name_set() {
+  docker_name=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$name docker 命名" --nocancel '注：回车继续,ESC表示默认名qbittorrent' 10 68 qbittorrent 3>&1 1>&2 2>&3)
+  if docker ps -a | grep "$1"; then
+    echo -e "${info_message} $command_arges 安装成功！" | tee -a /root/install_log.txt
+  else
+    echo -e "${error_message} $command_arges 安装失败！" | tee -a /root/install_log.txt
+  fi
+
+  for error_num in $*; do
+    if [ -z "$(dock | grep "$command_arges")" ]; then
+      echo -e "${debug_message} ${yellow}${jiacu}$command_arges${normal} 不存在.正在为您安装，请稍后..."
+      apt-get install "$command_arges" -y --upgrade > /dev/null
+      if dpkg --get-selections | grep "$command_arges"; then
+        echo -e "${info_message} $command_arges 安装成功！" | tee -a /root/install_log.txt
+      else
+        echo -e "${error_message} $command_arges 安装失败！" | tee -a /root/install_log.txt
+      fi
+    fi
+  done
+}
+
 ################## 检查安装qbt ##################
 check_qbt() {
-  if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep qbittorrent)" ]; then
-    echo -e "${curr_date} [DEBUG] 未找到qbittorrent.正在安装..."
+  name="qbittorrent"
+  if [ -z "$(command -v qbittorrent-nox)" ] && [ -z "$(docker ps -a | grep linuxserver)" ]; then
+    echo -e "${curr_date} [DEBUG] 未找到qbittorrent.即将安装..."
+
+    qb_webui_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "qb webui 端口" --nocancel '注：回车继续,ESC表示默认8070' 10 68 qbittorrent 3>&1 1>&2 2>&3)
+    qb_connect_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "qb webui 端口" --nocancel '注：回车继续,ESC表示默认8070' 10 68 qbittorrent 3>&1 1>&2 2>&3)
     docker run -d \
-      --name=qbittorrent \
+      --name="${qb_docker_name:=qbittorrent}" \
       -e PUID="$UID" \
       -e PGID="$GID" \
       -e TZ=Asia/Shanghai \
-      -e WEBUI_PORT=8070 \
-      -p 8070:8070 \
-      -p 51414:51414 \
-      -p 51414:51414/udp \
+      -e WEBUI_PORT="${qb_webui_port:=8070}" \
+      -p "${qb_webui_port:=8070}":"${qb_webui_port:=8070}" \
+      -p "${qb_connect_port:=51414}":"${qb_connect_port:=51414}" \
+      -p "${qb_connect_port:=51414}":"${qb_connect_port:=51414}"/udp \
       -v /home/qbt/config:/config \
       -v /home/qbt/downloads:/downloads \
       -v /usr/bin/fclone:/usr/bin/fclone \
