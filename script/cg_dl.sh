@@ -57,7 +57,7 @@ esc_key() {
 docker_name_set() {
   unset docker_name i
   i=1
-  while [ -n "$(docker ps -aqf name="$docker_name" > /dev/null)" ]; do
+  while [ -n "$(docker ps -aqf name="$docker_name")" ]; do
     i=$((i + 1))
     if [ $i -gt 2 ]; then
       whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n Docker重名,请重新命名" 9 42
