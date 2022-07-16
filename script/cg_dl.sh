@@ -129,9 +129,9 @@ ${curr_date} [INFO] qbittorrent - $docker_name 安装完成!
 配置目录: /home/qbt/config
 下载目录: $download_dir
 qb信息: /root/install_log.txt
------------------------------------------------------------------------------
+------------------------------------------------------------------------qb-end
 EOF
-    tail -f /root/install_log.txt | sed '/.*qb信息.*/q'
+    tail -f /root/install_log.txt | sed '/.*qb-end.*/q'
 }
 
 ################## 检查安装transmission ##################
@@ -164,9 +164,9 @@ ${curr_date} [INFO] transmission - $docker_name 安装完成!
 配置目录: /home/tr/config
 下载目录: $download_dir
 tr信息 : /root/install_log.txt
-------------------------------------------------------------------------
+------------------------------------------------------------------tr-end
 EOF
-  tail -f /root/install_log.txt | sed '/.*tr信息.*/q'
+  tail -f /root/install_log.txt | sed '/.*tr-end.*/q'
 }
 
 ################## 检查安装aria2 ##################
@@ -212,9 +212,9 @@ aria2配置目录  : /root/aria2
 aria2下载目录  : $download_dir
 rpc_secret    : $aria2_rpc_secret
 访问地址:http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
------------------------------------------------------------------------------
+--------------------------------------------------------------------aria2-end
 EOF
-    tail -f /root/install_log.txt | sed '/.*6880.*/q'
+    tail -f /root/install_log.txt | sed '/.*aria2-end.*/q'
   fi
 }
 
