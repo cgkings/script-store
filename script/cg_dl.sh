@@ -188,8 +188,6 @@ check_aria2() {
   if [ -z "$(docker ps -a | grep aria2)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到aria2.正在安装..."
     aria2_rpc_secret=$(tr -cd '0-9a-zA-Z' < /dev/urandom | head -c 12)
-    download_default_dir="/home/aria2/downloads"
-    download_dir_set
     docker run -d \
       --name aria2-pro \
       --restart unless-stopped \
@@ -201,7 +199,7 @@ check_aria2() {
       -e RPC_PORT=6800 \
       -e LISTEN_PORT=6888 \
       -v /root/aria2:/config \
-      -v "$download_dir":/downloads \
+      -v /home/aria2/downloads:/downloads \
       -v /usr/bin/fclone:/usr/local/bin/rclone \
       -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
       -e SPECIAL_MODE=rclone \
