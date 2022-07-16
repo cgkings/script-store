@@ -55,7 +55,7 @@ esc_key() {
 
 ################## docker命名 ##################
 docker_name_set() {
-  unset docker_name i
+  unset docker_name
   i=1
   while [ -n "$(docker ps -aqf name="$docker_name")" ]; do
     i=$((i + 1))
