@@ -220,7 +220,7 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 aria2  容器名称: aria2-pro
 aria2ng容器名称: ariang
 rpc_secret    : $aria2_rpc_secret
-aria2下载目录  : $download_dir
+aria2下载目录  : /home/aria2/downloads
 访问地址:
 http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
 -----------------------------------------------------------------------------
