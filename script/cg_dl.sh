@@ -55,13 +55,10 @@ esc_key() {
 
 ################## docker命名 ##################
 docker_name_set() {
-  unset docker_name
-  i=1
+  docker_name=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name docker 命名" --nocancel "注:回车继续,ESC退出脚本" 10 68 "$docker_default_name" 3>&1 1>&2 2>&3)
+  esc_key "$docker_name"
   while [ -n "$(docker ps -aqf name="$docker_name")" ]; do
-    i=$((i + 1))
-    if [ $i -gt 2 ]; then
-      whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n Docker重名,请重新命名" 9 42
-    fi
+    whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n Docker重名,请重新命名" 9 42
     docker_name=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name docker 命名" --nocancel "注:回车继续,ESC退出脚本" 10 68 "$docker_default_name" 3>&1 1>&2 2>&3)
     esc_key "$docker_name"
   done
@@ -69,23 +66,17 @@ docker_name_set() {
 
 ################## 端口设置 ##################
 docker_port_set() {
-  unset webui_port i
-  i=1
+  webui_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui 端口" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$webui_default_port" 3>&1 1>&2 2>&3)
+  esc_key "$webui_port"
   while netstat -tunlp | grep -q "$webui_port"; do
-    i=$((i + 1))
-    if [ $i -gt 2 ]; then
-      whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n 端口占用,请选择其他端口" 9 42
-    fi
+    whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n 端口占用,请选择其他端口" 9 42
     webui_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui 端口" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$webui_default_port" 3>&1 1>&2 2>&3)
     esc_key "$webui_port"
   done
-  unset connect_port i
-  i=1
+  connect_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name 连接端口" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$connect_default_port" 3>&1 1>&2 2>&3)
+  esc_key "$connect_port"
   while netstat -tunlp | grep -q "$connect_port"; do
-    i=$((i + 1))
-    if [ $i -gt 2 ]; then
-      whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n 端口占用,请选择其他端口" 9 42
-    fi
+    whiptail --backtitle "Hi,欢迎使用。有关脚本问题,请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "错误提示" --msgbox "${curr_date}\n 端口占用,请选择其他端口" 9 42
     connect_port=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name 连接端口" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$connect_default_port" 3>&1 1>&2 2>&3)
     esc_key "$connect_port"
   done
