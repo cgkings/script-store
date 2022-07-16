@@ -93,9 +93,6 @@ docker_port_set() {
 
 ################## 下载目录设置 ##################
 download_dir_set() {
-  config_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name config目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$config_default_dir" 3>&1 1>&2 2>&3)
-  esc_key "$config_dir"
-  #######################
   download_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name 下载目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$download_default_dir" 3>&1 1>&2 2>&3)
   esc_key "$download_dir"
 }
@@ -106,7 +103,6 @@ check_qbt() {
   webui_default_port="8070"
   connect_default_port="51414"
   download_default_dir="/home/qbt/downloads"
-  config_default_dir="/home/qbt/config"
   docker_name_set
   docker_port_set
   download_dir_set
@@ -118,7 +114,7 @@ check_qbt() {
     -p "$webui_port":"$webui_port" \
     -p "$connect_port":"$connect_port" \
     -p "$connect_port":"$connect_port"/udp \
-    -v "$config_dir":/config \
+    -v /home/qbt/config:/config \
     -v "$download_dir":/downloads \
     -v /usr/bin/fclone:/usr/bin/fclone \
     -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
@@ -128,8 +124,8 @@ check_qbt() {
   #还原qbt配置:
   docker stop "$docker_name"
   #wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home && rm -f qbt_bat.zip
-  wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O "$config_dir"/cg_qbt.sh && chmod 755 "$config_dir"/cg_qbt.sh
-  mkdir -p "$config_dir"/rclone && cp /root/.config/rclone/rclone.conf "$config_dir"/rclone
+  wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O /home/qbt/config/cg_qbt.sh && chmod 755 /home/qbt/config/cg_qbt.sh
+  mkdir -p /home/qbt/config/rclone && cp /root/.config/rclone/rclone.conf /home/qbt/config/rclone
   docker start "$docker_name"
   cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
@@ -139,7 +135,7 @@ ${curr_date} [INFO] qbittorrent - $docker_name 安装完成!
 网页地址: http://$ip_addr:$webui_port
 默认用户: $default_username
 默认密码: $default_password
-配置目录: $config_dir
+配置目录: /home/qbt/config
 下载目录: $download_dir
 qb信息: /root/install_log.txt
 -----------------------------------------------------------------------------
@@ -153,7 +149,6 @@ check_tr() {
   webui_default_port="9070"
   connect_default_port="51413"
   download_default_dir="/home/tr/downloads"
-  config_default_dir="/home/tr/config"
   docker_name_set
   docker_port_set
   download_dir_set
@@ -163,8 +158,8 @@ check_tr() {
     -p "$connect_port":"$connect_port"/udp \
     -e USERNAME=$default_username \
     -e PASSWORD=$default_password \
+    -v /home/tr/config:/data/transmission \
     -v "$download_dir":/data/downloads \
-    -v "$config_dir":/data/transmission \
     --restart=unless-stopped \
     helloz/transmission
   cat >> /root/install_log.txt << EOF
@@ -175,7 +170,7 @@ ${curr_date} [INFO] transmission - $docker_name 安装完成!
 网页地址: http://$ip_addr:$webui_port
 默认用户: $default_username
 默认密码: $default_password
-配置目录: $config_dir
+配置目录: /home/tr/config
 下载目录: $download_dir
 tr信息 : /root/install_log.txt
 ------------------------------------------------------------------------
@@ -185,9 +180,12 @@ EOF
 
 ################## 检查安装aria2 ##################
 check_aria2() {
+  docker_default_name="aria2-pro"
   if [ -z "$(docker ps -a | grep aria2)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到aria2.正在安装..."
     aria2_rpc_secret=$(tr -cd '0-9a-zA-Z' < /dev/urandom | head -c 12)
+    download_default_dir="/home/aria2/downloads"
+    download_dir_set
     docker run -d \
       --name aria2-pro \
       --restart unless-stopped \
@@ -199,7 +197,7 @@ check_aria2() {
       -e RPC_PORT=6800 \
       -e LISTEN_PORT=6888 \
       -v /root/aria2:/config \
-      -v /home/aria2/downloads:/downloads \
+      -v "$download_dir":/downloads \
       -v /usr/bin/fclone:/usr/local/bin/rclone \
       -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
       -e SPECIAL_MODE=rclone \
@@ -220,9 +218,8 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done!
 aria2  容器名称: aria2-pro
 aria2ng容器名称: ariang
 rpc_secret    : $aria2_rpc_secret
-aria2下载目录  : /home/aria2/downloads
-访问地址:
-http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
+aria2下载目录  : $download_dir
+访问地址:http://$ip_addr:6880/#!/settings/rpc/set/http/$ip_addr/6800/jsonrpc/$aria2_rpc_secret_bash64
 -----------------------------------------------------------------------------
 EOF
     tail -f /root/install_log.txt | sed '/.*6880.*/q'
