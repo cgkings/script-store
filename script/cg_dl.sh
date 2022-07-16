@@ -82,6 +82,12 @@ docker_port_set() {
   done
 }
 
+################## config目录设置 ##################
+config_dir_set() {
+  config_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name config目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$config_default_dir" 3>&1 1>&2 2>&3)
+  esc_key "$config_dir"
+}
+
 ################## 下载目录设置 ##################
 download_dir_set() {
   download_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name 下载目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$download_default_dir" 3>&1 1>&2 2>&3)
@@ -93,9 +99,11 @@ check_qbt() {
   docker_default_name="qbittorrent"
   webui_default_port="8070"
   connect_default_port="51414"
+  config_default_dir="/home/qbt/config"
   download_default_dir="/home/qbt/downloads"
   docker_name_set
   docker_port_set
+  config_dir_set
   download_dir_set
   docker run -d --name="$docker_name" \
     -e PUID="$UID" \
@@ -105,18 +113,18 @@ check_qbt() {
     -p "$webui_port":"$webui_port" \
     -p "$connect_port":"$connect_port" \
     -p "$connect_port":"$connect_port"/udp \
-    -v /home/qbt/config:/config \
+    -v "$config_dir":/config \
     -v "$download_dir":/downloads \
     -v /usr/bin/fclone:/usr/bin/fclone \
     -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
     --restart=unless-stopped \
     lscr.io/linuxserver/qbittorrent:latest
-  #备份配置文件: cd /home && zip -qr qbt_bat.zip qbt
+  #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
   #还原qbt配置:
   docker stop "$docker_name"
-  #wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf /home/qbt && unzip -q qbt_bat.zip -d /home && rm -f qbt_bat.zip
-  wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O /home/qbt/config/cg_qbt.sh && chmod 755 /home/qbt/config/cg_qbt.sh
-  mkdir -p /home/qbt/config/rclone && cp /root/.config/rclone/rclone.conf /home/qbt/config/rclone
+  wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf "$config_dir" && mkdir -p "$config_dir" && unzip -q qbt_bat.zip -d "$config_dir" && rm -f qbt_bat.zip
+  wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O "$config_dir"/cg_qbt.sh && chmod 755 "$config_dir"/cg_qbt.sh
+  mkdir -p "$config_dir"/rclone && cp /root/.config/rclone/rclone.conf "$config_dir"/rclone
   docker start "$docker_name"
   cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
@@ -126,7 +134,7 @@ ${curr_date} [INFO] qbittorrent - $docker_name 安装完成!
 网页地址: http://$ip_addr:$webui_port
 默认用户: $default_username
 默认密码: $default_password
-配置目录: /home/qbt/config
+配置目录: $config_dir
 下载目录: $download_dir
 qb信息: /root/install_log.txt
 ------------------------------------------------------------------------qb-end
@@ -139,9 +147,11 @@ check_tr() {
   docker_default_name="transmission"
   webui_default_port="9070"
   connect_default_port="51413"
+  config_default_dir="/home/tr/config"
   download_default_dir="/home/tr/downloads"
   docker_name_set
   docker_port_set
+  config_dir_set
   download_dir_set
   docker run -d --name="$docker_name" \
     -p "$webui_port":"$webui_port" \
@@ -149,7 +159,7 @@ check_tr() {
     -p "$connect_port":"$connect_port"/udp \
     -e USERNAME=$default_username \
     -e PASSWORD=$default_password \
-    -v /home/tr/config:/data/transmission \
+    -v "$config_dir":/data/transmission \
     -v "$download_dir":/data/downloads \
     --restart=unless-stopped \
     helloz/transmission
@@ -161,7 +171,7 @@ ${curr_date} [INFO] transmission - $docker_name 安装完成!
 网页地址: http://$ip_addr:$webui_port
 默认用户: $default_username
 默认密码: $default_password
-配置目录: /home/tr/config
+配置目录: $config_dir
 下载目录: $download_dir
 tr信息 : /root/install_log.txt
 ------------------------------------------------------------------tr-end
