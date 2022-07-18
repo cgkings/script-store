@@ -153,6 +153,18 @@ cp .tmux/.tmux.conf.local .
 echo -e "${curr_date} 安装oh my tmux，done!" | tee -a /root/install_log.txt
 sudo chsh -s "$(which zsh)"
 
+################## 安装caddy ##################
+if [ -z "$(command -v caddy)" ]; then
+  echo -e "${curr_date} [DEBUG] caddy2 不存在.正在为您安装，请稍后..."
+  sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https 2> /dev/null
+  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+  sudo apt update 2> /dev/null
+  sudo apt install -y caddy 2> /dev/null
+  systemctl enable caddy
+  echo -e "${curr_date} [INFO] caddy2 安装完成!" | tee -a /root/install_log.txt
+fi
+
 ################## 安装rclone ##################
 #检查fclone安装状态，没装就安装
 if [ -z "$(command -v fclone)" ]; then
