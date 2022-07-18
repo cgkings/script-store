@@ -24,7 +24,7 @@ sys_update=$(apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' 
 sys_upgrade=$(apt upgrade -y 2> /dev/null | grep upgraded)
 echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
 #echo -e "${curr_date} 静默检查并安装常用软件1"
-apt install -y sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
+apt install -y sudo git make curl wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
 #echo -e "${curr_date} 静默检查并安装常用软件2"
 apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse fonts-noto-cjk-extra 2> /dev/null
 echo -e "${curr_date} sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu 已安装" | tee -a /root/install_log.txt
@@ -130,17 +130,6 @@ bash <(curl -sL https://get.docker.com)
 #预装docker-compose
 curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
-################## 安装caddy ##################
-if [ -z "$(command -v caddy)" ]; then
-  echo -e "${curr_date} [DEBUG] caddy2 不存在.正在为您安装，请稍后..."
-  sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https 2> /dev/null
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-  sudo apt update 2> /dev/null
-  sudo apt install -y caddy 2> /dev/null
-  systemctl enable caddy
-  echo -e "${curr_date} [INFO] caddy2 安装完成!" | tee -a /root/install_log.txt
-fi
 ################## 安装装逼神器 ohmyzsh & ohmytmux ##################
 #安装oh my zsh
 cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
