@@ -97,8 +97,8 @@ download_dir_set() {
 ################## 检查安装qbt ##################
 check_qbt() {
   docker_default_name="qbittorrent"
-  webui_default_port="8070"
-  connect_default_port="51414"
+  webui_default_port="18080"
+  connect_default_port="7881"
   config_default_dir="/home/qbt/config"
   download_default_dir="/home/qbt/downloads"
   docker_name_set
@@ -106,19 +106,19 @@ check_qbt() {
   config_dir_set
   download_dir_set
   docker run -d --name="$docker_name" \
-    -e PUID="$UID" \
-    -e PGID="$GID" \
-    -e TZ=Asia/Shanghai \
-    -e WEBUI_PORT="$webui_port" \
-    -p "$webui_port":"$webui_port" \
-    -p "$connect_port":"$connect_port" \
-    -p "$connect_port":"$connect_port"/udp \
-    -v "$config_dir":/config \
-    -v "$download_dir":/downloads \
-    -v /usr/bin/fclone:/usr/bin/fclone \
-    -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
-    --restart=unless-stopped \
-    lscr.io/linuxserver/qbittorrent:latest
+  -p "$connect_port":"$connect_port" \
+  -p "$connect_port":"$connect_port" \
+  -p "$webui_port":"$webui_port" \
+  -v "$config_dir":/etc/qBittorrent \
+  -v "$download_dir":/downloads \
+  -v /usr/bin/fclone:/usr/bin/fclone \
+  -v /root/.config/rclone/rclone.conf:/root/.config/rclone/rclone.conf \
+  -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
+  --restart unless-stopped \
+  cgkings/qbittorrent:latest
+    # -e PUID="$UID" \
+    # -e PGID="$GID" \
+    # -e TZ=Asia/Shanghai \
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
   #还原qbt配置:
   docker stop "$docker_name"
