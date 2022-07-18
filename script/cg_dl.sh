@@ -97,8 +97,8 @@ download_dir_set() {
 ################## 检查安装qbt ##################
 check_qbt() {
   docker_default_name="qbittorrent"
-  webui_default_port="18080"
-  connect_default_port="7881"
+  webui_default_port="8077"
+  connect_default_port="51414"
   config_default_dir="/home/qbt/config"
   download_default_dir="/home/qbt/downloads"
   docker_name_set
@@ -107,7 +107,7 @@ check_qbt() {
   download_dir_set
   docker run -d --name="$docker_name" \
   -p "$connect_port":"$connect_port" \
-  -p "$connect_port":"$connect_port" \
+  -p "$connect_port":"$connect_port"/udp \
   -p "$webui_port":"$webui_port" \
   -v "$config_dir":/etc/qBittorrent \
   -v "$download_dir":/downloads \
