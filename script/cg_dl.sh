@@ -106,20 +106,26 @@ check_qbt() {
   config_dir_set
   download_dir_set
   docker run -d --name="$docker_name" \
-  -p "$connect_port":"$connect_port" \
-  -p "$connect_port":"$connect_port"/udp \
-  -p "$webui_port":"$webui_port" \
-  -v "$config_dir":/etc/qBittorrent \
-  -v "$download_dir":/downloads \
-  -v /usr/bin/fclone:/usr/bin/fclone \
-  -v /root/.config/rclone/rclone.conf:/root/.config/rclone/rclone.conf \
-  -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
-  --restart unless-stopped \
-  cgkings/qbittorrent:latest
-    # -e PUID="$UID" \
-    # -e PGID="$GID" \
-    # -e TZ=Asia/Shanghai \
+    -e PUID="$UID" \
+    -e PGID="$GID" \
+    -e TZ=Asia/Shanghai \
+    -e WEBUI_PORT="$webui_port" \
+    -p "$webui_port":"$webui_port" \
+    -p "$connect_port":"$connect_port" \
+    -p "$connect_port":"$connect_port"/udp \
+    -v "$config_dir":/config \
+    -v "$download_dir":/downloads \
+    -v /usr/bin/fclone:/usr/bin/fclone \
+    -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
+    --restart=unless-stopped \
+    lscr.io/linuxserver/qbittorrent:latest
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
+  #还原qbt配置:
+  docker stop "$docker_name"
+  wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.zip && rm -rf "$config_dir" && mkdir -p "$config_dir" && unzip -q qbt_bat.zip -d "$config_dir" && rm -f qbt_bat.zip
+  wget -qN https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh -O "$config_dir"/cg_qbt.sh && chmod 755 "$config_dir"/cg_qbt.sh
+  mkdir -p "$config_dir"/rclone && cp /root/.config/rclone/rclone.conf "$config_dir"/rclone
+  docker start "$docker_name"
   cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
 ${curr_date} [INFO] qbittorrent - $docker_name 安装完成!
