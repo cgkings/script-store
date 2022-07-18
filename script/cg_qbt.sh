@@ -25,7 +25,7 @@ file_hash=$5 #%I
 file_category=$6 #%L: 分类
 qpt_username="admin"
 qpt_password="adminadmin"
-qb_web_url="http://$(curl -sL ifconfig.me):8070"
+qb_web_url="http://$(curl -sL ifconfig.me):18080"
 rclone_remote="upsa"
 
 ################## rclone上传模块 ##################
