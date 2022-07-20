@@ -15,7 +15,7 @@
 
 ################## 前置变量设置 ##################
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
-#/config/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
+#/etc/qBittorrent/cg_qbt.sh "%N" "%F" "%C" "%Z" "%I" "%L"
 torrent_name=$1 # %N: Torrent名称=mide-007-C
 #content_dir=$(echo "$2" | sed "s/downloads/home\/qbt\/downloads/g") # %F: 内容路径=/home/btzz/mide-007-C
 content_dir=$2
@@ -30,15 +30,15 @@ rclone_remote="upsa"
 
 ################## rclone上传模块 ##################
 rclone_upload() {
-  fclone copy "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vP --transfers=1 --min-size 100M --ignore-existing --log-file=/config/bt_upload.log
+  fclone copy "$content_dir" "$rclone_remote":"$rclone_dest" --use-mmap --stats=10s --stats-one-line -vP --transfers=1 --min-size 100M --ignore-existing --log-file=/etc/qBittorrent/bt_upload.log
   RCLONE_EXIT_CODE=$?
   if [ ${RCLONE_EXIT_CODE} -eq 0 ]; then
-    cat >> /config/qb.log << EOF
+    cat >> /etc/qBittorrent/qb.log << EOF
 --------------------------------------------------------------------------------------------------------------
 ${curr_date} [INFO] ✔ Upload done ${file_category}:${torrent_name} ==> ${rclone_remote}:${rclone_dest}
 EOF
   else
-    cat >> /config/qb_fail.log << EOF
+    cat >> /etc/qBittorrent/qb_fail.log << EOF
 --------------------------------------------------------------------------------------------------------------
 ${curr_date} [ERROR] ❌ Upload failed:"$content_dir" "$rclone_remote":"$rclone_dest"
 分类名称: ${file_category}
@@ -54,12 +54,12 @@ qb_del() {
   cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${qpt_username}&password=${qpt_password}" "${qb_web_url}/api/v2/auth/login" | grep -Eo 'SID=\S{32}')
   if [ -n "${cookie}" ]; then
     curl -s "${qb_web_url}/api/v2/torrents/delete?hashes=${file_hash}&deleteFiles=true" --cookie "$cookie"
-    cat >> /config/qb.log << EOF
+    cat >> /etc/qBittorrent/qb.log << EOF
 ${curr_date} [INFO] ✔ login  done ${cookie}
 ${curr_date} [INFO] ✔ delete done ${content_dir}
 EOF
   else
-    cat >> /config/qb_fail.log << EOF
+    cat >> /etc/qBittorrent/qb_fail.log << EOF
 -----------------------------------------------------------------------------------------------------
 ${curr_date} [ERROR] ❌ 登录删除失败！:
 分类名称: ${file_category}
@@ -74,7 +74,7 @@ EOF
 
 ################## 主执行模块 ##################
 if [ -z "${file_hash}" ]; then
-  echo -e "${curr_date} [ERROR] 无种子信息,脚本停止运行" >> /config/qb.log
+  echo -e "${curr_date} [ERROR] 无种子信息,脚本停止运行" >> /etc/qBittorrent/qb.log
   exit 0
 else
   if [ -z "${file_category}" ]; then
