@@ -94,13 +94,13 @@ download_dir_set() {
   esc_key "$download_dir"
 }
 
-################## 下载目录设置 ##################
-passwd_set() {
-  webui_username=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui用户名设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$default_username" 3>&1 1>&2 2>&3)
-  esc_key "$webui_username"
-  webui_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui密码设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$default_password" 3>&1 1>&2 2>&3)
-  esc_key "$webui_passwd"
-}
+# ################## 用户名密码设置 ##################
+# passwd_set() {
+#   webui_username=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui用户名设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$" 3>&1 1>&2 2>&3)
+#   esc_key "$webui_username"
+#   webui_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui密码设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$default_password" 3>&1 1>&2 2>&3)
+#   esc_key "$webui_passwd"
+# }
 
 
 ################## 检查安装qbt ##################
@@ -114,7 +114,7 @@ check_qbt() {
   docker_port_set
   config_dir_set
   download_dir_set
-  passwd_set
+  # passwd_set
   docker run -d --name="$docker_name" \
   -e PUID="$UID" \
   -e PGID="$GID" \
@@ -131,16 +131,16 @@ check_qbt() {
   --restart unless-stopped \
   cgkings/qbittorrent
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
-  sleep 2s
-  docker exec -it "$docker_name" curl -X POST -d 'json={"web_ui_username":"${webui_username}","web_ui_password":"${webui_passwd}"}' http://127.0.0.1:"${webui_port}"/api/v2/app/setPreferences
+  # sleep 2s
+  # docker exec -it "$docker_name" curl -X POST -d 'json={"web_ui_username":"${webui_username}","web_ui_password":"${webui_passwd}"}' http://127.0.0.1:"${webui_port}"/api/v2/app/setPreferences
   cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
 ${curr_date} [INFO] qbittorrent - $docker_name 安装完成!
 -----------------------------------------------------------------------------
 容器名称: $docker_name
 网页地址: http://$ip_addr:$webui_port
-登录用户: ${webui_username}
-登录密码: ${webui_passwd}
+登录用户: ${default_username}
+登录密码: ${default_password}
 配置目录: $config_dir
 下载目录: $download_dir
 qb信息: /root/install_log.txt
@@ -160,13 +160,13 @@ check_tr() {
   docker_port_set
   config_dir_set
   download_dir_set
-  passwd_set
+  # passwd_set
   docker run -d --name="$docker_name" \
     -p "$webui_port":"$webui_port" \
     -p "$connect_port":"$connect_port" \
     -p "$connect_port":"$connect_port"/udp \
-    -e USERNAME="${webui_username}" \
-    -e PASSWORD="${webui_passwd}" \
+    -e USERNAME="${default_username}" \
+    -e PASSWORD="${default_password}" \
     -v "$config_dir":/data/transmission \
     -v "$download_dir":/data/downloads \
     --restart=unless-stopped \
