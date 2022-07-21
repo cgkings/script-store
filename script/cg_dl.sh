@@ -98,8 +98,8 @@ download_dir_set() {
 passwd_set() {
   webui_username=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui用户名设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$default_username" 3>&1 1>&2 2>&3)
   esc_key "$webui_username"
-  webui_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name 下载目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$download_default_dir" 3>&1 1>&2 2>&3)
-  esc_key "$download_dir"
+  webui_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui密码设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$default_password" 3>&1 1>&2 2>&3)
+  esc_key "$webui_passwd"
 }
 
 
@@ -107,13 +107,14 @@ passwd_set() {
 check_qbt() {
   docker_default_name="qbittorrent"
   webui_default_port="8070"
-  connect_default_port="51414"
+  connect_default_port="34567"
   config_default_dir="/home/qbt/config"
   download_default_dir="/home/qbt/downloads"
   docker_name_set
   docker_port_set
   config_dir_set
   download_dir_set
+  passwd_set
   docker run -d --name="$docker_name" \
   -e PUID="$UID" \
   -e PGID="$GID" \
@@ -130,15 +131,16 @@ check_qbt() {
   --restart unless-stopped \
   cgkings/qbittorrent
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
-  docker exec -it "$docker_name" curl -X POST -d 'json={"web_ui_username":"cgking","web_ui_password":"sREctgZffLNjTdxp9b"}' http://127.0.0.1:"$webui_port"/api/v2/app/setPreferences
+  sleep 2s
+  docker exec -it "$docker_name" curl -X POST -d 'json={"web_ui_username":"${webui_username}","web_ui_password":"${webui_passwd}"}' http://127.0.0.1:"${webui_port}"/api/v2/app/setPreferences
   cat >> /root/install_log.txt << EOF
 -----------------------------------------------------------------------------
 ${curr_date} [INFO] qbittorrent - $docker_name 安装完成!
 -----------------------------------------------------------------------------
 容器名称: $docker_name
 网页地址: http://$ip_addr:$webui_port
-默认用户: $default_username
-默认密码: $default_password
+登录用户: ${webui_username}
+登录密码: ${webui_passwd}
 配置目录: $config_dir
 下载目录: $download_dir
 qb信息: /root/install_log.txt
@@ -158,12 +160,13 @@ check_tr() {
   docker_port_set
   config_dir_set
   download_dir_set
+  passwd_set
   docker run -d --name="$docker_name" \
     -p "$webui_port":"$webui_port" \
     -p "$connect_port":"$connect_port" \
     -p "$connect_port":"$connect_port"/udp \
-    -e USERNAME=$default_username \
-    -e PASSWORD=$default_password \
+    -e USERNAME="${webui_username}" \
+    -e PASSWORD="${webui_passwd}" \
     -v "$config_dir":/data/transmission \
     -v "$download_dir":/data/downloads \
     --restart=unless-stopped \
