@@ -269,6 +269,7 @@ my_task:
       # Part II: 筛选过滤器,过滤器定义了删除条件应用的范围,多个过滤器是且的关系,顺序执行过滤
       excluded_status:
         - Downloading
+      excluded_categories: 1.pt-down
       excluded_trackers:
         - tracker.totheglory.im
       # Part III: 删除条件,多个删除条件之间是或的关系,顺序应用删除条件
@@ -278,6 +279,7 @@ my_task:
         action: remove-slow-upload-seeds
     remove_low_download:
       status: Downloading
+      excluded_categories: 1.pt-down
       remove: last_activity > 900 or download_speed < 50
     remove_low_upload:
       status: uploading
