@@ -248,12 +248,12 @@ check_mktorrent() {
 }
 
 ################## 检查安装autoremove-torrents ##################
-check_amt() {
+check_art() {
   if [ -z "$(command -v autoremove-torrents)" ]; then
     echo -e "${curr_date} [DEBUG] 未找到autoremove-torrents.正在安装..."
     sleep 1s
-    pip install autoremove-torrents && mkdir -p /home/amt
-    cat > /home/amt/config.yml << EOF
+    pip install autoremove-torrents && mkdir -p /home/art/logs
+    cat > /home/art/config.yml << EOF
 # 任务模板: YAML语法,不能使用tab,要用空格来缩进,每个层级要用两个空格缩进,否则必定报错!
 # Part 1: 任务块名称,左侧不能有空格
 my_task:
@@ -265,31 +265,32 @@ my_task:
 # Part 3: 策略块（删除种子的条件）
   strategies:
     # Part I: 策略名称
-    strategy1:
+    remove_low_disk:
       # Part II: 筛选过滤器,过滤器定义了删除条件应用的范围,多个过滤器是且的关系,顺序执行过滤
       excluded_status:
         - Downloading
       excluded_trackers:
         - tracker.totheglory.im
       # Part III: 删除条件,多个删除条件之间是或的关系,顺序应用删除条件
-      last_activity: 900
       free_space:
-        min: 100
-        path: /home/qbt/downloads
-        action: remove-inactive-seeds
-    strategy2:
+        min: 300
+        path: /home/qbt-pter/downloads
+        action: remove-slow-upload-seeds
+    remove_low_download:
       status: Downloading
       remove: last_activity > 900 or download_speed < 50
-      #delete_data: true
+    remove_low_upload:
+      status: uploading
+      excluded_categories: 1.pt-down
+      remove: upload_speed < 2 or connected_leecher < 1
     # 一个任务块可以包括多个策略块...
 # Part 4: 是否在删除种子的同时也删除数据。如果此字段未指定,则默认值为false
   delete_data: true
-# 该模板策略块1为:对于非下载状态且非TTG的种子,删除900秒未活动的种子,或硬盘小于100G时,尽量删除不活跃种子
 EOF
     echo -e "${curr_date} [INFO] autoremove-torrents 安装完成!" | tee -a /root/install_log.txt
     # crontab -l | {
     #                cat
-    #                     echo "*/15 * * * * $(command -v autoremove-torrents) -c /home/amt/config.yml --log=/home/amt"
+    #                     echo "*/15 * * * * $(command -v autoremove-torrents) -c /home/art/config.yml -l /home/art/logs"
     # }                                            | crontab -
   fi
 }
@@ -384,7 +385,7 @@ dl_menu() {
         "install_tr" " : 安装transmission" off \
         "install_aria2" " : 安装aria2套件,带ariang" off \
         "install_rsshub" " : 安装rsshub" off \
-        "install_amt" " : 安装Autoremove" on \
+        "install_art" " : 安装Autoremove" on \
         "install_mktorrent" " : 安装mktorrent" on \
         "install_flexget" " : 安装flexget" off 2> results
   while read -r choice; do
@@ -401,8 +402,8 @@ dl_menu() {
           "install_rsshub")
             check_rsshub
             ;;
-          "install_amt")
-            check_amt
+          "install_art")
+            check_art
             ;;
           "install_mktorrent")
             check_mktorrent
@@ -425,12 +426,12 @@ else
   case "$1" in
     --qb)
       check_mktorrent
-      check_amt
+      check_art
       check_qbt
       ;;
     --tr)
       check_mktorrent
-      check_amt
+      check_art
       check_tr
       ;;
     --aria2)
