@@ -259,19 +259,17 @@ check_art() {
 my_task:
 # Part 2: BT客户端登录信息,可以管理其他机的客户端
   client: qbittorrent
-  host: http://127.0.0.1:8070
-  username: admin
-  password: adminadmin
+  host: http://127.0.0.1:8071
+  username: cgking
+  password: sBP6NN9Sj3TtKJT
 # Part 3: 策略块（删除种子的条件）
   strategies:
     # Part I: 策略名称
     remove_low_disk:
       # Part II: 筛选过滤器,过滤器定义了删除条件应用的范围,多个过滤器是且的关系,顺序执行过滤
-      excluded_status:
-        - Downloading
+      excluded_status: Downloading
       excluded_categories: 1.pt-down
-      excluded_trackers:
-        - tracker.totheglory.im
+      excluded_trackers: tracker.totheglory.im
       # Part III: 删除条件,多个删除条件之间是或的关系,顺序应用删除条件
       free_space:
         min: 300
@@ -280,14 +278,16 @@ my_task:
     remove_low_download:
       status: Downloading
       excluded_categories: 1.pt-down
-      remove: last_activity > 900 or download_speed < 50
+      remove: last_activity > 900 or download_speed < 50 or create_time > 1800 and connected_leecher < 1 and average_uploadspeed < 10 or create_time > 1800 and ratio = 0
     remove_low_upload:
       status: uploading
       excluded_categories: 1.pt-down
       remove: upload_speed < 2 or connected_leecher < 1
+      #delete_data: true
     # 一个任务块可以包括多个策略块...
 # Part 4: 是否在删除种子的同时也删除数据。如果此字段未指定,则默认值为false
   delete_data: true
+# 该模板策略块1为:对于非下载状态且非TTG的种子,删除900秒未活动的种子,或硬盘小于100G时,尽量删除不活跃种子
 EOF
     echo -e "${curr_date} [INFO] autoremove-torrents 安装完成!" | tee -a /root/install_log.txt
     # crontab -l | {
