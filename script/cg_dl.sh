@@ -259,9 +259,9 @@ check_art() {
 my_task:
 # Part 2: BT客户端登录信息,可以管理其他机的客户端
   client: qbittorrent
-  host: http://127.0.0.1:8071
-  username: cgking
-  password: sBP6NN9Sj3TtKJT
+  host: http://127.0.0.1:8070
+  username: admin
+  password: adminadmin
 # Part 3: 策略块（删除种子的条件）
   strategies:
     # Part I: 策略名称
