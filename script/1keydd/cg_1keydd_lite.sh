@@ -24,10 +24,10 @@ sys_update=$(apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' 
 sys_upgrade=$(apt upgrade -y 2> /dev/null | grep upgraded)
 echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
 #echo -e "${curr_date} 静默检查并安装常用软件1"
-apt install -y sudo git make curl wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
+apt install -y sudo git make curl wget tree nano tmux htop net-tools parted nethogs ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect iotop 2> /dev/null
 #echo -e "${curr_date} 静默检查并安装常用软件2"
-apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse fonts-noto-cjk-extra 2> /dev/null
-echo -e "${curr_date} sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv locale ffmpeg build-essential ncdu 已安装" | tee -a /root/install_log.txt
+apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar pv ffmpeg build-essential ncdu zsh fonts-powerline fuse fonts-noto-cjk-extra wondershaper 2> /dev/null
+echo -e "${curr_date} sudo git make wget tree nano tmux htop iotop wondershaper net-tools parted nethogs ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar pv locale ffmpeg build-essential ncdu 已安装" | tee -a /root/install_log.txt
 #echo -e "${curr_date} 静默检查并安装youtubedl"
 if [ -z "$(command -v youtube-dl)" ]; then
   sudo curl -sL https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
