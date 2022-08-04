@@ -199,7 +199,7 @@ check_caddy() {
 
 ################## 待调用-安装emby ##################
 check_emby() {
-  emby_version="4.7.5.0"
+  emby_version="4.7.6.0"
   if [ ! -f "/usr/lib/systemd/system/emby-server.service" ]; then
     if [[ $(uname -m 2> /dev/null) = x86_64 ]]; then
       wget -qN https://github.com/MediaBrowser/Emby.Releases/releases/download/"${emby_version}"/emby-server-deb_"${emby_version}"_amd64.deb

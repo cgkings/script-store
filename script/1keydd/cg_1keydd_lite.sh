@@ -26,8 +26,11 @@ echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
 #echo -e "${curr_date} 静默检查并安装常用软件1"
 apt install -y sudo git make curl wget tree nano tmux htop net-tools parted nethogs ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect iotop 2> /dev/null
 #echo -e "${curr_date} 静默检查并安装常用软件2"
-apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar pv ffmpeg build-essential ncdu zsh fonts-powerline fuse fonts-noto-cjk-extra wondershaper 2> /dev/null
-echo -e "${curr_date} sudo git make wget tree nano tmux htop iotop wondershaper net-tools parted nethogs ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar pv locale ffmpeg build-essential ncdu 已安装" | tee -a /root/install_log.txt
+apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar pv ffmpeg build-essential ncdu zsh fonts-powerline fuse fonts-noto-cjk-extra wondershaper vnstat 2> /dev/null
+echo -e "${curr_date} 基础常用:sudo git make curl wget tree nano tmux parted ntpdate manpages-zh screenfetch file virt-what jq expect \n系统监控:htop iotop net-tools vnstat nethogs iperf3\n解压缩:tar zip unzip gzip bzip2 unar
+
+
+net-tools parted nethogs ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect ca-certificates dmidecode findutils dpkg pv locale ffmpeg build-essential ncdu  已安装" | tee -a /root/install_log.txt
 #echo -e "${curr_date} 静默检查并安装youtubedl"
 if [ -z "$(command -v youtube-dl)" ]; then
   sudo curl -sL https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
