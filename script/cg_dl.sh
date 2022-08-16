@@ -152,8 +152,8 @@ EOF
 ################## 检查安装transmission ##################
 check_tr() {
   docker_default_name="transmission"
-  webui_default_port="9070"
-  connect_default_port="51413"
+  webui_default_port="9091"
+  connect_default_port="51416"
   config_default_dir="/home/tr/config"
   download_default_dir="/home/tr/downloads"
   docker_name_set
@@ -162,15 +162,21 @@ check_tr() {
   download_dir_set
   # passwd_set
   docker run -d --name="$docker_name" \
-    -p "$webui_port":"$webui_port" \
-    -p "$connect_port":"$connect_port" \
-    -p "$connect_port":"$connect_port"/udp \
-    -e USERNAME="${default_username}" \
-    -e PASSWORD="${default_password}" \
-    -v "$config_dir":/data/transmission \
-    -v "$download_dir":/data/downloads \
-    --restart=unless-stopped \
-    helloz/transmission
+  -e PUID="$UID" \
+  -e PGID="$GID" \
+  -e TZ=Asia/Shanghai \
+  -e USER="${default_username}" \
+  -e PASS="${default_password}" \
+  -e RPCPORT="$webui_port" \
+  -e PEERPORT="$connect_port" \
+  -p "$webui_port":"$webui_port" \
+  -p "$connect_port":"$connect_port" \
+  -p "$connect_port":"$connect_port"/udp \
+  -v "$config_dir":/config \
+  -v "$download_dir":/downloads \
+  -v /home/tr/torrents:/watch \
+  --restart unless-stopped \
+  chisbread/transmission
   cat >> /root/install_log.txt << EOF
 ------------------------------------------------------------------------
 ${curr_date} [INFO] transmission - $docker_name 安装完成!
