@@ -120,6 +120,7 @@ check_qbt() {
   -e PGID="$GID" \
   -e WEBUI_PORT="$webui_port" \
   -e BT_PORT="$connect_port" \
+  -e LANG=C.utf8 \
   -p "$connect_port":"$connect_port" \
   -p "$connect_port":"$connect_port"/udp \
   -p "$webui_port":"$webui_port" \
