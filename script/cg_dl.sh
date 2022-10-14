@@ -4,7 +4,7 @@
 # bash <(curl -sL git.io/cg_dl)
 # File Name: cg_dl一键脚本
 # Author: cgkings
-# Created Time : 2020.12.25
+# Created Time : 2022.10.15
 # Description:flexget
 # System Required: Debian/Ubuntu
 # Version: 1.0
