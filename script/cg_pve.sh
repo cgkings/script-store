@@ -17,6 +17,10 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
+network_ip=$(curl -sL ifconfig.me)
+network_hostname=$(hostnamectl | grep hostname | awk '{print $3}')
+network_card=$(ifconfig | grep -B 1 "$(curl -sL ifconfig.me)"|head -n 1|awk -F: '{print $1}')
+network_netmask=$(ifconfig | grep "$(curl -sL ifconfig.me)"|awk '{print $4}')
 
 ################## 前置变量设置 ##################
 install_pve() {
@@ -26,7 +30,7 @@ install_pve() {
     apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
     cat > /etc/hosts << EOF
 127.0.0.1       localhost.localdomain localhost
-$(curl -sL ifconfig.me)   $(hostnamectl | grep hostname | awk '{print $3}').proxmox.com $(hostnamectl | grep hostname | awk '{print $3}')
+$network_ip   $network_hostname.proxmox.com $network_hostname
 
 # The following lines are desirable for IPv6 capable hosts
 ::1     localhost ip6-localhost ip6-loopback
@@ -49,17 +53,16 @@ source /etc/network/interfaces.d/*
 auto lo
 iface lo inet loopback
 
-auto 母鸡网卡名
-iface 母鸡网卡名 inet manual
-
+auto $network_card
+iface $network_card inet manual
 
 auto vmbr0
 iface vmbr0 inet static
-    address  母鸡主IP
-    netmask  母鸡子网掩码
-    gateway  母鸡网关 $(ip route list | grep default | awk '{print $3}')
+    address  $(curl -sL ifconfig.me)
+    netmask  $network_netmask
+    gateway  $(ip route list | grep default | awk '{print $3}')
     broadcast  广播地址
-    bridge-ports 母鸡网卡名
+    bridge-ports $network_card
     bridge-stp off
     bridge-fd 0
 
