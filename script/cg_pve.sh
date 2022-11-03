@@ -21,12 +21,11 @@ setcolor
 ################## 前置变量设置 ##################
 install_pve() {
 cat > /etc/hosts << EOF
-
-127.0.0.1       localhost
-$(curl -sL ifconfig.me)       $(hostnamectl|grep hostname|awk '{print $3}').proxmox.com $(hostnamectl|grep hostname|awk '{print $3}')
+127.0.0.1       localhost localhost.localdomain
+$(curl -sL ifconfig.me)       $(hostnamectl|grep hostname|awk '{print $3}') $(hostnamectl|grep hostname|awk '{print $3}').proxmox.com
 
 # The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
+::1     localhost localhost.localdomain
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 EOF
