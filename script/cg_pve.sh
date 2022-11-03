@@ -32,7 +32,7 @@ EOF
 echo "deb [arch=amd64] http://download.proxmox.com/debian/pve bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
 wget -q https://enterprise.proxmox.com/debian/proxmox-release-bullseye.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg
 apt update 2>/dev/null | grep packages | cut -d '.' -f 1
-apt full-upgrade -y 2>/dev/null
+apt full-upgrade -y 2> /dev/null | grep upgraded
 apt install -y proxmox-ve postfix open-iscsi 2>/dev/null
 
 
