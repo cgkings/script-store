@@ -20,23 +20,59 @@ setcolor
 
 ################## 前置变量设置 ##################
 install_pve() {
-  apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
-  apt install -y curl sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
-  apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
-  cat > /etc/hosts << EOF
-127.0.0.1       localhost localhost.localdomain
-$(curl -sL ifconfig.me)       $(hostnamectl | grep hostname | awk '{print $3}') $(hostnamectl | grep hostname | awk '{print $3}').proxmox.com
+  if [ -z "$(command -v postfix)" ]; then
+    apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
+    apt install -y curl sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
+    apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
+    cat > /etc/hosts << EOF
+127.0.0.1       localhost.localdomain localhost
+$(curl -sL ifconfig.me)   $(hostnamectl | grep hostname | awk '{print $3}').proxmox.com $(hostnamectl | grep hostname | awk '{print $3}')
 
 # The following lines are desirable for IPv6 capable hosts
-::1     localhost localhost.localdomain
+::1     localhost ip6-localhost ip6-loopback
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 EOF
-  echo "deb [arch=amd64] http://download.proxmox.com/debian/pve bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
-  wget -q https://enterprise.proxmox.com/debian/proxmox-release-bullseye.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg
-  apt update 2> /dev/null | grep packages | cut -d '.' -f 1 && apt full-upgrade -y 2> /dev/null | grep upgraded
-  apt install -y proxmox-ve postfix open-iscsi 2> /dev/null
-  systemctl reboot
+    echo "deb [arch=amd64] http://download.proxmox.com/debian/pve buster pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
+    wget -q https://enterprise.proxmox.com/debian/proxmox-release-bullseye.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg && chmod +r /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg
+    apt update 2> /dev/null | grep packages | cut -d '.' -f 1 && apt full-upgrade -y 2> /dev/null | grep upgraded
+    apt install -y proxmox-ve postfix open-iscsi 2> /dev/null
+    systemctl reboot
+  fi
+  if [ -z "$(command -v os-prober)" ]; then
+    apt remove linux-image-amd64 'linux-image-5.10*' -y
+    update-grub
+    apt remove os-prober -y
+    cat > /etc/network/interfaces << EOF
+source /etc/network/interfaces.d/*
+
+auto lo
+iface lo inet loopback
+
+auto 母鸡网卡名
+iface 母鸡网卡名 inet manual
+
+
+auto vmbr0
+iface vmbr0 inet static
+    address  母鸡主IP
+    netmask  母鸡子网掩码
+    gateway  母鸡网关 $(ip route list | grep default | awk '{print $3}')
+    broadcast  广播地址
+    bridge-ports 母鸡网卡名
+    bridge-stp off
+    bridge-fd 0
+
+EOF
+    systemctl restart networking
+  fi
 }
 
 install_pve
+
+# Proxmox VE 无法关闭虚拟机的解决方法
+# ls -l /run/lock/qemu-server
+# rm -f /run/lock/qemu-server/lock-100.conf
+# qm unlock 101
+# qm stop 101
+# qm status 101
