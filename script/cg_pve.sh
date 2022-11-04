@@ -34,7 +34,7 @@ network_ipv6ipkuai="2602:ffc8:5:a::/64"
 
 ################## 前置变量设置 ##################
 install_pve() {
-  if [ -z "$(command -v postfix)" ]; then
+  if [ ! -f "/etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg" ];then
     cat > /etc/hosts << EOF
 127.0.0.1       localhost.localdomain localhost
 $network_ip   $network_hostname.proxmox.com $network_hostname
@@ -45,10 +45,13 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 EOF
     echo "deb [arch=amd64] http://download.proxmox.com/debian/pve bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
-    wget -q https://enterprise.proxmox.com/debian/proxmox-release-bullseye.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg && chmod +r /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg
+    wget -q https://enterprise.proxmox.com/debian/proxmox-release-bullseye.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg
     apt update 2> /dev/null | grep packages | cut -d '.' -f 1 && apt full-upgrade -y 2> /dev/null | grep upgraded
-    apt install -y proxmox-ve postfix open-iscsi 2> /dev/null
+    apt install -y pve-kernel-5.15
     systemctl reboot
+  fi
+  if [ -z "$(command -v postfix)" ]; then
+    apt install -y proxmox-ve postfix open-iscsi 2> /dev/null
   fi
   if [ -z "$(command -v os-prober)" ]; then
     apt remove linux-image-amd64 'linux-image-5.10*' -y
