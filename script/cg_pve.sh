@@ -26,8 +26,13 @@ network_hostname=$(hostnamectl | grep hostname | awk '{print $3}')
 network_card=$(ifconfig | grep -B 1 "$(curl -sL ifconfig.me)" | head -n 1 | awk -F: '{print $1}')
 #network_netmask=$(ifconfig | grep "$(curl -sL ifconfig.me)" | awk '{print $4}')
 network_gateway=$(ip route list | grep default | awk '{print $3}')
-network_ipv6ip=$(ip -6 a|grep -m 1 global|awk '{print $2}')
-network_ipv6gateway=$(ip -6 route list | grep -m 1 default | awk '{print $3}')
+#network_ipv6ip=$(ip -6 a|grep -m 1 global|awk '{print $2}')
+network_ipv6ip="2602:ffc8:5:a::15c:2786/112"
+#network_ipv6gateway=$(ip -6 route list | grep -m 1 default | awk '{print $3}')
+network_ipv6gateway="2602:ffc8:5:a::1"
+network_ipv6ipkuai="2602:ffc8:5:a::/64"
+#ipv6_dns1="2001:4860:4860::8888"
+#ipv6_dns2="2001:4860:4860::8844"
 
 ################## 前置变量设置 ##################
 install_pve() {
@@ -51,6 +56,10 @@ EOF
     apt remove linux-image-amd64 'linux-image-5.10*' -y
     update-grub
     apt remove os-prober -y
+    cat >> /etc/default/grub << EOF
+GRUB_CMDLINE_LINUX_DEFAULT="quiet net.ifnames=0 biosdevname=0"
+EOF
+    update-grub
     cat > /etc/network/interfaces << EOF
 source /etc/network/interfaces.d/*
 
@@ -86,15 +95,31 @@ EOF
     echo "net.ipv6.conf.all.forwarding = 1" >> /etc/sysctl.conf && sysctl -p
     apt -y install ndppd
     cat > /etc/ndppd.conf << EOF
-
-
 proxy vmbr0 {
-  rule 2001:41d0:x:xxxx::/64 {
+  rule $network_ipv6ipkuai {
     static
   }
 }
 EOF
+    systemctl restart ndppd.service
+    systemctl enable ndppd.service
+    apt -y install radvd
+    cat > /etc/radvd.conf << EOF
+interface vmbr0 {
+  AdvSendAdvert on;
+  MinRtrAdvInterval 3;
+  MaxRtrAdvInterval 10;
+  prefix $network_ipv6ipkuai {
+    AdvOnLink on;
+    AdvAutonomous on;
+    AdvRouterAddr on;
+  };
+};
+EOF
+systemctl restart radvd.service
+systemctl enable radvd.service
   fi
+  #iptables -t nat -A PREROUTING -p tcp -m tcp --dport 16823 -j DNAT --to-destination 192.168.0.4:22
 }
 
 install_pve
