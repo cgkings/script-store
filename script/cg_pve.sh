@@ -44,7 +44,7 @@ $network_ip   $network_hostname.proxmox.com $network_hostname
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 EOF
-    echo "deb [arch=amd64] http://download.proxmox.com/debian/pve buster pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
+    echo "deb [arch=amd64] http://download.proxmox.com/debian/pve bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
     wget -q https://enterprise.proxmox.com/debian/proxmox-release-bullseye.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg && chmod +r /etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg
     apt update 2> /dev/null | grep packages | cut -d '.' -f 1 && apt full-upgrade -y 2> /dev/null | grep upgraded
     apt install -y proxmox-ve postfix open-iscsi 2> /dev/null
