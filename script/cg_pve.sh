@@ -17,17 +17,21 @@
 # shellcheck source=/dev/null
 source <(curl -sL git.io/cg_script_option)
 setcolor
+apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
+apt install -y curl sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
+apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
+
 network_ip=$(curl -sL ifconfig.me)
 network_hostname=$(hostnamectl | grep hostname | awk '{print $3}')
-network_card=$(ifconfig | grep -B 1 "$(curl -sL ifconfig.me)"|head -n 1|awk -F: '{print $1}')
-network_netmask=$(ifconfig | grep "$(curl -sL ifconfig.me)"|awk '{print $4}')
+network_card=$(ifconfig | grep -B 1 "$(curl -sL ifconfig.me)" | head -n 1 | awk -F: '{print $1}')
+#network_netmask=$(ifconfig | grep "$(curl -sL ifconfig.me)" | awk '{print $4}')
+network_gateway=$(ip route list | grep default | awk '{print $3}')
+network_ipv6ip=$(ip -6 a|grep -m 1 global|awk '{print $2}')
+network_ipv6gateway=$(ip -6 route list | grep -m 1 default | awk '{print $3}')
 
 ################## 前置变量设置 ##################
 install_pve() {
   if [ -z "$(command -v postfix)" ]; then
-    apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
-    apt install -y curl sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
-    apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
     cat > /etc/hosts << EOF
 127.0.0.1       localhost.localdomain localhost
 $network_ip   $network_hostname.proxmox.com $network_hostname
@@ -53,21 +57,43 @@ source /etc/network/interfaces.d/*
 auto lo
 iface lo inet loopback
 
-auto $network_card
 iface $network_card inet manual
 
 auto vmbr0
 iface vmbr0 inet static
-    address  $(curl -sL ifconfig.me)
-    netmask  $network_netmask
-    gateway  $(ip route list | grep default | awk '{print $3}')
-    broadcast  广播地址
-    bridge-ports $network_card
-    bridge-stp off
-    bridge-fd 0
+	address $network_ip/24
+	gateway $network_gateway
+	bridge-ports $network_card
+	bridge-stp off
+	bridge-fd 0
 
+iface vmbr0 inet6 static
+        address $network_ipv6ip
+        gateway $network_ipv6gateway
+
+auto vmbr1
+iface vmbr1 inet static
+        address 192.168.0.1
+        netmask 255.255.255.0
+        bridge_ports none
+        bridge_stp off
+        bridge_fd 0
+        post-up echo 1 > /proc/sys/net/ipv4/ip_forward
+        post-up iptables -t nat -A POSTROUTING -s '192.168.0.0/24' -o vmbr0 -j MASQUERADE
+        post-down iptables -t nat -D POSTROUTING -s '192.168.0.0/24' -o vmbr0 -j MASQUERADE
 EOF
     systemctl restart networking
+    echo "net.ipv6.conf.all.forwarding = 1" >> /etc/sysctl.conf && sysctl -p
+    apt -y install ndppd
+    cat > /etc/ndppd.conf << EOF
+
+
+proxy vmbr0 {
+  rule 2001:41d0:x:xxxx::/64 {
+    static
+  }
+}
+EOF
   fi
 }
 
