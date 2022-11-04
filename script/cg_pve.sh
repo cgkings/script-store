@@ -116,8 +116,8 @@ interface vmbr0 {
   };
 };
 EOF
-systemctl restart radvd.service
-systemctl enable radvd.service
+    systemctl restart radvd.service
+    systemctl enable radvd.service
   fi
   #iptables -t nat -A PREROUTING -p tcp -m tcp --dport 16823 -j DNAT --to-destination 192.168.0.4:22
 }
