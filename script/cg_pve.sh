@@ -15,8 +15,6 @@
 
 ################## 前置变量设置 ##################
 # shellcheck source=/dev/null
-source <(curl -sL git.io/cg_script_option)
-setcolor
 apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1
 apt install -y curl sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
 apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
