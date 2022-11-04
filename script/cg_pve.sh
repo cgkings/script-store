@@ -34,7 +34,7 @@ network_ipv6ipkuai="2602:ffc8:5:a::/64"
 
 ################## 前置变量设置 ##################
 install_pve() {
-  if [ ! -f "/etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg" ];then
+  if [ ! -f "/etc/apt/trusted.gpg.d/proxmox-release-bullseye.gpg" ]; then
     cat > /etc/hosts << EOF
 127.0.0.1       localhost.localdomain localhost
 $network_ip   $network_hostname.proxmox.com $network_hostname
@@ -52,11 +52,11 @@ EOF
   fi
   if [ -z "$(command -v postfix)" ]; then
     apt install -y proxmox-ve postfix open-iscsi 2> /dev/null
-  fi
-  if [ -z "$(command -v os-prober)" ]; then
     apt remove linux-image-amd64 'linux-image-5.10*' -y
     update-grub
     apt remove os-prober -y
+  fi
+  if [ -z "$(command -v ndppd)" ]; then
     cat >> /etc/default/grub << EOF
 GRUB_CMDLINE_LINUX_DEFAULT="quiet net.ifnames=0 biosdevname=0"
 EOF
