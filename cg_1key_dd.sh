@@ -89,8 +89,17 @@ check_bbr() {
     if lsmod | grep -q bbr; then
       echo
   else
-      echo net.core.default_qdisc=fq >> /etc/sysctl.conf
-      echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
+    cat >> /etc/sysctl.conf << EOF
+#vm.swappiness=0
+net.core.default_qdisc=fq
+net.ipv4.tcp_congestion_control=bbr
+net.core.rmem_max = 8400000
+net.core.rmem_default = 4200000
+net.core.wmem_max = 8400000
+net.core.wmem_default = 4200000
+net.ipv4.tcp_wmem = 4096 4200000 8400000
+net.ipv4.tcp_rmem = 4096 4200000 8400000
+EOF
       sysctl -p
       echo -e "${curr_date} BBR加速已启用" | tee -a /root/install_log.txt
   fi
@@ -231,7 +240,7 @@ check_jellyfin() {
 
 ################## 待调用-安装pt套装 ##################
 check_pt() {
-#安装qbt最新版
+  #安装qbt最新版
   if [ -z "$(command -v qbittorrent-nox)" ]; then
     clear
     apt remove qbittorrent-nox -y && rm -f /usr/bin/qbittorrent-nox
@@ -241,9 +250,9 @@ check_pt() {
       wget -qO /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/aarch64-qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
     fi
     #备份配置文件：cd /home && tar -cvf qbt_bat.tar qbt
-#还原qbt配置：
+    #还原qbt配置：
     wget -qN https://github.com/cgkings/script-store/raw/master/config/qbt_bat.tar && rm -rf /home/qbt && tar -xvf qbt_bat.tar -C /home && rm -f qbt_bat.tar && chmod -R 755 /home/qbt
-#建立qbt服务
+    #建立qbt服务
     cat > '/etc/systemd/system/qbt.service' << EOF
 [Unit]
 Description=qBittorrent Daemon Service
@@ -277,33 +286,33 @@ $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
 -----------------------------------------------------------------------------
 EOF
   fi
-#安装mktorrent
+  #安装mktorrent
   git clone https://github.com/Rudde/mktorrent.git && cd mktorrent && make && make install
-#安装tr
-#   if [ -z "$(command -v transmission-daemon)" ]; then
-#     echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
-#     apt install -y transmission-daemon
-#     mkdir -p /home/downloads
-#     chmod 777 /home/downloads
-#     #下载settings.json
-#     service transmission-daemon stop
-#     rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
-#     service transmission-daemon start
-#     bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
-# 1
-# EOF
-#     cat >> /root/install_log.txt << EOF
-# -----------------------------------------------------------------------------
-# $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
-# -----------------------------------------------------------------------------
-# 程序名称：transmission-daemon
-# 版本名称：3.0
-# 程序目录：/var/lib/transmission-daemon
-# 下载目录：/home/downloads
-# 服务地址：/lib/systemd/system/transmission-daemon.service
-# -----------------------------------------------------------------------------
-# EOF
-#   fi
+  #安装tr
+  #   if [ -z "$(command -v transmission-daemon)" ]; then
+  #     echo -e "${curr_date} [DEBUG] 未找到transmission-daemon包.正在安装..."
+  #     apt install -y transmission-daemon
+  #     mkdir -p /home/downloads
+  #     chmod 777 /home/downloads
+  #     #下载settings.json
+  #     service transmission-daemon stop
+  #     rm -f /var/lib/transmission-daemon/info/settings.json && wget -qO /var/lib/transmission-daemon/info/settings.json https://raw.githubusercontent.com/cgkings/script-store/master/config/transmission/settings.json && chmod +x /var/lib/transmission-daemon/info/settings.json
+  #     service transmission-daemon start
+  #     bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
+  # 1
+  # EOF
+  #     cat >> /root/install_log.txt << EOF
+  # -----------------------------------------------------------------------------
+  # $(date '+%Y-%m-%d %H:%M:%S') [INFO] install done！
+  # -----------------------------------------------------------------------------
+  # 程序名称：transmission-daemon
+  # 版本名称：3.0
+  # 程序目录：/var/lib/transmission-daemon
+  # 下载目录：/home/downloads
+  # 服务地址：/lib/systemd/system/transmission-daemon.service
+  # -----------------------------------------------------------------------------
+  # EOF
+  #   fi
 }
 
 ################## 搭建aria2 ##################
@@ -366,7 +375,6 @@ install_rsshub() {
   echo -e "rsshub已完成部署动作，可网页访问你的ip:1200，看下效果吧！"
 }
 
-
 ################## 初始安装 ##################
 initialization() {
   #echo -e "${curr_date} 静默升级系统软件源"
@@ -423,7 +431,7 @@ EOF
   #别名设置
   set_alias
   #预装ohmyzsh和ohmytmux
-  check_beautify  
+  check_beautify
   #bbr
   check_bbr
 }
@@ -515,7 +523,7 @@ else
       check_php7.4
       check_caddy
       #禁用swap
-      echo 'vm.swappiness=0'>> /etc/sysctl.conf
+      echo 'vm.swappiness=0' >> /etc/sysctl.conf
       #预装X-UI
       bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
       reboot
