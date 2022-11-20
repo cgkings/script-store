@@ -122,8 +122,7 @@ check_rclone() {
   if grep -q "65535" /etc/security/limits.conf; then
     echo > /dev/null
   else
-    echo -e "\nfs.file-max = 6553500" >> /etc/sysctl.conf
-    sysctl -p
+    echo -e "\nfs.file-max = 6553500" >> /etc/sysctl.conf && sysctl -p
     cat >> /etc/security/limits.conf << EOF
 
 * soft memlock unlimited
@@ -410,9 +409,7 @@ LANGUAGE="en_US.UTF-8"
 LANG="en_US.UTF-8"
 LC_ALL="en_US.UTF-8"
 EOF
-    export LANGUAGE="en_US.UTF-8"
-    export LANG="en_US.UTF-8"
-    export LC_ALL="en_US.UTF-8"
+    export LANGUAGE="en_US.UTF-8" && export LANG="en_US.UTF-8" && export LC_ALL="en_US.UTF-8"
     echo -e "${curr_date} 设置语言为英文，done!" | tee -a /root/install_log.txt
   fi
   #预装py/go/node/php
