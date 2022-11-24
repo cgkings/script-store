@@ -379,8 +379,8 @@ install_rsshub() {
 initialization() {
   #echo -e "${curr_date} 静默升级系统软件源"
   sys_update=$(apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1)
-  sys_upgrade=$(apt upgrade -y 2> /dev/null | grep upgraded)
-  echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
+  #sys_upgrade=$(apt upgrade -y 2> /dev/null | grep upgraded)
+  echo -e "${curr_date} $sys_update" | tee -a /root/install_log.txt
   #echo -e "${curr_date} 静默检查并安装常用软件"
   apt install -y sudo git make wget tree vim nano tmux htop net-tools parted nethogs screen ntpdate manpages-zh screenfetch file virt-what iperf3 jq expect 2> /dev/null
   apt install -y ca-certificates dmidecode findutils dpkg tar zip unzip gzip bzip2 unar p7zip-full pv ffmpeg build-essential ncdu zsh fonts-powerline fuse 2> /dev/null
