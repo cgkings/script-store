@@ -19,7 +19,7 @@ source <(curl -sL git.io/cg_script_option)
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ip_addr=$(hostname -I | awk '{print $1}')
 #emby版本
-emby_version="4.7.8.0"
+emby_version="4.7.11.0"
 emby_local_version=$(dpkg -l emby-server | grep -Eo "[0-9.]+\.[0-9]+")
 emby_local_version=${emby_local_version:-"未安装"}
 
