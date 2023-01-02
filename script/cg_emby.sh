@@ -178,15 +178,15 @@ EOF
 ################## 选择挂载参数 ##################
 choose_mount_tag() {
   choose_mount_tag_status=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_mount。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "选择挂载参数" --menu --nocancel "注：默认缓存目录为/home/cache，ESC退出脚本" 12 80 3 \
-    "1" "扫库参数[单文件内存缓冲256M,缓存块 1M,缓存步进32M ]" \
-    "2" "观看参数[单文件内存缓冲512M,缓存块16M,缓存步进64M ]" \
+    "1" "扫库参数[单文件内存缓冲2G,缓存块 1M,缓存步进32M ]" \
+    "2" "观看参数[单文件内存缓冲2G,缓存块16M,缓存步进64M ]" \
     "3" "退出脚本" 3>&1 1>&2 2>&3)
   case $choose_mount_tag_status in
     1)
-      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 16M --checkers=4 --transfers=1 --vfs-cache-max-size 10G"
+      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 2G --vfs-read-chunk-size 1M --vfs-read-chunk-size-limit 16M --checkers=4 --transfers=1 --vfs-cache-max-size 10G"
       ;;
     2)
-      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 512M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 64M --checkers=4 --transfers=1 --vfs-cache-max-size 10G"
+      mount_tag="--use-mmap --umask 000 --allow-other --allow-non-empty --dir-cache-time 24h --cache-dir=/home/cache --vfs-cache-mode full --buffer-size 2G --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 64M --checkers=4 --transfers=1 --vfs-cache-max-size 10G"
       ;;
     3 | *)
       myexit 0
@@ -254,7 +254,7 @@ check_status() {
   if [ -n "$curr_mount_tag" ]; then
     if echo "$curr_mount_tag" | grep -q "1M"; then
       curr_mount_tag_status="扫库参数"
-    elif echo "$curr_mount_tag" | grep -q "buffer-size"; then
+    elif echo "$curr_mount_tag" | grep -q "64M"; then
       curr_mount_tag_status="观看参数"
     fi
   fi
