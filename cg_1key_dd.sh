@@ -90,15 +90,15 @@ check_bbr() {
       echo
   else
     cat >> /etc/sysctl.conf << EOF
-#vm.swappiness=0
+vm.swappiness=0
 net.core.default_qdisc=fq
 net.ipv4.tcp_congestion_control=bbr
-net.core.rmem_max = 8400000
-net.core.rmem_default = 4200000
-net.core.wmem_max = 8400000
-net.core.wmem_default = 4200000
-net.ipv4.tcp_wmem = 4096 4200000 8400000
-net.ipv4.tcp_rmem = 4096 4200000 8400000
+# net.core.rmem_max = 8400000
+# net.core.rmem_default = 4200000
+# net.core.wmem_max = 8400000
+# net.core.wmem_default = 4200000
+# net.ipv4.tcp_wmem = 4096 4200000 8400000
+# net.ipv4.tcp_rmem = 4096 4200000 8400000
 EOF
       sysctl -p
       echo -e "${curr_date} BBR加速已启用" | tee -a /root/install_log.txt
