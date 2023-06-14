@@ -57,35 +57,12 @@ initialization() {
       rm -f emby-server-deb_"${emby_version}"_arm64.deb
     fi
     echo -e "${curr_date} [INFO] 恭喜您emby $emby_version 安装成功，请访问：http://${ip_addr}:8096 进一步配置" | tee -a /root/install_log.txt
-  else
-    if [[ "$emby_local_version" != "$emby_version" ]]; then
-      echo -e "${curr_date} [ERROR] 本机emby版本为 $emby_local_version，本脚本仅支持 $emby_version,请运行命令卸载后重新运行本脚本\nsystemctl stop emby-server && dpkg --purge emby-server" | tee -a /root/install_log.txt
-      exit 1
-    fi
   fi
   sleep 0.5s
   echo 80
-  #step5:emby破解检查
-  #crack_emby
   sleep 0.5s
   echo 100
 }
-
-# crack_emby() {
-#   if grep -q "破解成功" /root/install_log.txt; then
-#     echo > /dev/null
-#   else
-#     systemctl stop emby-server
-#     #破解emby
-#     rm -rf /opt/emby-server/system/System.Net.Http.dll /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js /opt/emby-server/system/Emby.Web.dll
-#     wget -q https://github.com/cgkings/script-store/raw/master/config/emby/System.Net.Http.dll -O /opt/emby-server/system/System.Net.Http.dll --no-check-certificate
-#     wget -q https://raw.githubusercontent.com/cgkings/script-store/master/config/emby/464crack/embypremiere.js -O /opt/emby-server/system/dashboard-ui/embypremiere/embypremiere.js --no-check-certificate
-#     wget -q https://github.com/cgkings/script-store/raw/master/config/emby/464crack/Emby.Web.dll -O /opt/emby-server/system/Emby.Web.dll --no-check-certificate
-#     sleep 3s
-#     systemctl daemon-reload && systemctl restart emby-server
-#     echo -e "${curr_date} [INFO] 恭喜您emby破解成功，请您访问：http://${ip_addr}:8096 输入任意值密钥解锁会员" | tee -a /root/install_log.txt
-#   fi
-# }
 
 ################## 备份emby ##################
 bak_emby() {
@@ -231,12 +208,6 @@ mount_del() {
 
 ################## 检查emby安装版本及rclone挂载状态 ##################
 check_status() {
-  # #emby破解状态
-  # if grep -q "破解成功" /root/install_log.txt; then
-  #   emby_crack_status="已破解"
-  # else
-  #   emby_crack_status="未破解"
-  # fi
   #挂载状态
   if [ -f /lib/systemd/system/rclone-mntgd.service ]; then
     if systemctl | grep -q "rclone"; then
