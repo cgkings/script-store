@@ -155,6 +155,7 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
   mkdir -p "$download_dir" && mkdir -p "$config_dir"/qBittorrent/data/GeoIP
+  systemctl enable qbittorrent-nox.service && systemctl start qbittorrent-nox.service
   ## 下载最新GeoLite2-Country.mmdb
   curl -kLo "$config_dir"/qBittorrent/data/GeoIP/GeoLite2-Country.mmdb https://github.com/helloxz/qbittorrent/raw/main/GeoLite2-Country.mmdb
   ## 计算密码
@@ -162,6 +163,7 @@ EOF
   PBKDF2password=$("$HOME"/qb_password_gen "$webui_passwd")
   rm -f "$HOME"/qb_password_gen
   ## 调整qBittorrent.conf参数
+  systemctl stop qbittorrent-nox.service
   cat << EOF > "$config_dir"/qBittorrent/config/qBittorrent.conf
 
 [General]
@@ -169,7 +171,7 @@ ported_to_new_savepath_system=true
 
 [AutoRun]
 enabled=true
-program=/"$config_dir"/qBittorrent/cg_qbt.sh \"%N\" \"%F\" \"%C\" \"%Z\" \"%I\" \"%L\"
+program=$config_dir/qBittorrent/cg_qbt.sh \"%N\" \"%F\" \"%C\" \"%Z\" \"%I\" \"%L\"
 
 [BitTorrent]
 Session\AddExtensionToIncompleteFiles=true
@@ -200,7 +202,7 @@ WebUI\Port="$webui_port"
 WebUI\Username=$webui_username
 WebUI\Password_PBKDF2="@ByteArray($PBKDF2password)"
 EOF
-  systemctl enable qbittorrent-nox.service && systemctl start qbittorrent-nox.service
+  systemctl start qbittorrent-nox.service
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
   # sleep 2s
   # docker exec -it "$docker_name" curl -X POST -d 'json={"web_ui_username":"${webui_username}","web_ui_password":"${webui_passwd}"}' http://127.0.0.1:"${webui_port}"/api/v2/app/setPreferences
