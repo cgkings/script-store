@@ -158,6 +158,7 @@ EOF
   systemctl enable qbittorrent-nox.service && systemctl start qbittorrent-nox.service
   ## 下载最新GeoLite2-Country.mmdb
   curl -kLo "$config_dir"/qBittorrent/data/GeoIP/GeoLite2-Country.mmdb https://github.com/helloxz/qbittorrent/raw/main/GeoLite2-Country.mmdb
+  curl -kLo "$config_dir"/qBittorrent/cg_qbt.sh https://github.com/cgkings/script-store/raw/master/script/cg_qbt.sh && chmod +x "$config_dir"/qBittorrent/cg_qbt.sh
   ## 计算密码
   wget -qN https://github.com/cgkings/script-store/raw/master/tools/qb_password_gen && chmod +x "$HOME"/qb_password_gen
   PBKDF2password=$("$HOME"/qb_password_gen "$webui_passwd")
