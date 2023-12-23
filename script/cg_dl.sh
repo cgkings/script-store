@@ -178,7 +178,6 @@ program=$config_dir/qBittorrent/cg_qbt.sh \"%N\" \"%F\" \"%C\" \"%Z\" \"%I\" \"%
 [BitTorrent]
 Session\AddExtensionToIncompleteFiles=true
 Session\AsyncIOThreadsCount=12
-Session\Categories=@Variant(\0\0\0\b\0\0\0\x4\0\0\0\b\0\x66\0r\0\x64\0s\0\0\0\n\0\0\0\x30\0/\0h\0o\0m\0\x65\0/\0q\0\x62\0t\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0\x66\0r\0\x64\0s\0\0\0\x6\0\x63\0h\0\x64\0\0\0\n\0\0\0.\0/\0h\0o\0m\0\x65\0/\0q\0\x62\0t\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0\x63\0h\0\x64\0\0\0\xe\0\x63\0g\0\x64\0o\0w\0n\0s\0\0\0\n\0\0\0\x36\0/\0h\0o\0m\0\x65\0/\0q\0\x62\0t\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0\x63\0g\0\x64\0o\0w\0n\0s\0\0\0\n\0\x39\0\x38\0t\0-\0\x63\0\0\0\n\0\0\0\x32\0/\0h\0o\0m\0\x65\0/\0q\0\x62\0t\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0\x39\0\x38\0t\0-\0\x63)
 Session\DisableAutoTMMTriggers\CategorySavePathChanged=false
 Session\DisableAutoTMMTriggers\DefaultSavePathChanged=false
 Session\SendBufferLowWatermark=5120
@@ -215,6 +214,25 @@ WebUI\Password_PBKDF2="@ByteArray($PBKDF2password)"
 WebUI\Port=${webui_port}
 WebUI\Username=${webui_username}
 
+EOF
+  cat << EOF > "$config_dir"/qBittorrent/config/categories.json
+{
+    "98t-c": {
+        "save_path": "/home/qbt/downloads/98t-c"
+    },
+    "cgdowns": {
+        "save_path": "/home/qbt/downloads/cgdowns"
+    },
+    "chd": {
+        "save_path": "/home/qbt/downloads/chd"
+    }
+    "frds": {
+        "save_path": "/home/qbt/downloads/frds"
+    }
+    "mt": {
+        "save_path": "/home/qbt/downloads/mt"
+    }
+}
 EOF
   systemctl start qbittorrent-nox.service
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
