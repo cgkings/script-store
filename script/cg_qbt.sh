@@ -85,10 +85,10 @@ else
     rclone_dest="{1hzETacfMuAIBAsHqKIys-98glIMRb-iv}"
     rclone_upload
     qb_del
-  elif [ "${file_category}" == "1.pt-down" ]; then
+  elif [ "${file_category}" == "cgdowns" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
     rclone_upload
-  elif [ "${file_category}" == "2.pt-up" ] || [ "${file_category}" == "3.pt-mt" ] || [ "${file_category}" == "4.pt-ttg" ]; then
+  elif [ "${file_category}" == "chd" ] || [ "${file_category}" == "mt" ] || [ "${file_category}" == "frds" ]; then
     rclone_dest="{0AAa0DHcTPGi9Uk9PVA}"
   fi
 fi

@@ -155,6 +155,7 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
   mkdir -p "$download_dir" && mkdir -p "$config_dir"/qBittorrent/data/GeoIP
+  mkdir -p "$download_dir"/98t-c && mkdir -p "$download_dir"/cgdowns && mkdir -p "$download_dir"/chd && mkdir -p "$download_dir"/frds
   systemctl enable qbittorrent-nox.service && systemctl start qbittorrent-nox.service
   ## 下载最新GeoLite2-Country.mmdb
   curl -kLo "$config_dir"/qBittorrent/data/GeoIP/GeoLite2-Country.mmdb https://github.com/helloxz/qbittorrent/raw/main/GeoLite2-Country.mmdb
@@ -177,6 +178,9 @@ program=$config_dir/qBittorrent/cg_qbt.sh \"%N\" \"%F\" \"%C\" \"%Z\" \"%I\" \"%
 [BitTorrent]
 Session\AddExtensionToIncompleteFiles=true
 Session\AsyncIOThreadsCount=12
+Session\Categories=@Variant(\0\0\0\b\0\0\0\x4\0\0\0\b\0\x66\0r\0\x64\0s\0\0\0\n\0\0\0\x30\0/\0h\0o\0m\0\x65\0/\0q\0\x62\0t\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0\x66\0r\0\x64\0s\0\0\0\x6\0\x63\0h\0\x64\0\0\0\n\0\0\0.\0/\0h\0o\0m\0\x65\0/\0q\0\x62\0t\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0\x63\0h\0\x64\0\0\0\xe\0\x63\0g\0\x64\0o\0w\0n\0s\0\0\0\n\0\0\0\x36\0/\0h\0o\0m\0\x65\0/\0q\0\x62\0t\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0\x63\0g\0\x64\0o\0w\0n\0s\0\0\0\n\0\x39\0\x38\0t\0-\0\x63\0\0\0\n\0\0\0\x32\0/\0h\0o\0m\0\x65\0/\0q\0\x62\0t\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0\x39\0\x38\0t\0-\0\x63)
+Session\DisableAutoTMMTriggers\CategorySavePathChanged=false
+Session\DisableAutoTMMTriggers\DefaultSavePathChanged=false
 Session\SendBufferLowWatermark=5120
 Session\SendBufferWatermark=20480
 Session\SendBufferWatermarkFactor=250
