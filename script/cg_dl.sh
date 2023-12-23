@@ -185,8 +185,6 @@ Session\SendBufferWatermarkFactor=250
 Accepted=true
 
 [Preferences]
-Advanced\RecheckOnCompletion=false
-Advanced\trackerPort=9000
 Bittorrent\AddTrackers=true
 Bittorrent\MaxConnecs=-1
 Bittorrent\MaxConnecsPerTorrent=-1
