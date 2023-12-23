@@ -135,7 +135,7 @@ check_qbt() {
   ## 创建系统服务
     test -e /etc/systemd/system/qbittorrent-nox.service && rm /etc/systemd/system/qbittorrent-nox.service
     touch /etc/systemd/system/qbittorrent-nox.service
-    cat << EOF > /etc/systemd/system/qbittorrent-nox@.service
+    cat << EOF > /etc/systemd/system/qbittorrent-nox.service
 [Unit]
 Description=qBittorrent
 After=network.target
@@ -157,7 +157,7 @@ EOF
   ## 下载最新GeoLite2-Country.mmdb
   curl -kLo "$config_dir"/qBittorrent/data/GeoIP/GeoLite2-Country.mmdb https://github.com/helloxz/qbittorrent/raw/main/GeoLite2-Country.mmdb
   ## 计算密码
-  wget https://raw.githubusercontent.com/jerry048/Seedbox-Components/main/Torrent%20Clients/qBittorrent/qb_password_gen && chmod +x "$HOME"/qb_password_gen
+  wget -qN https://github.com/cgkings/script-store/raw/master/tools/qb_password_gen && chmod +x "$HOME"/qb_password_gen
   PBKDF2password=$("$HOME"/qb_password_gen "$webui_passwd")
   rm -f "$HOME"/qb_password_gen
   ## 调整qBittorrent.conf参数
