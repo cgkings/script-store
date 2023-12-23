@@ -17,7 +17,7 @@
 curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 default_username="admin"
 default_password="adminadmin"
-ip_addr=$(curl -sL ifconfig.me)
+ip_addr=$(curl https://ipinfo.io/ip)
 rclone_remote="upsa"
 
 ################## 检查安装docker ##################
@@ -84,53 +84,122 @@ docker_port_set() {
 
 ################## config目录设置 ##################
 config_dir_set() {
-  config_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name config目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$config_default_dir" 3>&1 1>&2 2>&3)
+  config_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "config目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$config_default_dir" 3>&1 1>&2 2>&3)
   esc_key "$config_dir"
 }
 
 ################## 下载目录设置 ##################
 download_dir_set() {
-  download_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name 下载目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$download_default_dir" 3>&1 1>&2 2>&3)
+  download_dir=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "下载目录设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$download_default_dir" 3>&1 1>&2 2>&3)
   esc_key "$download_dir"
 }
 
 # ################## 用户名密码设置 ##################
-# passwd_set() {
-#   webui_username=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui用户名设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$" 3>&1 1>&2 2>&3)
-#   esc_key "$webui_username"
-#   webui_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "$docker_default_name webui密码设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$default_password" 3>&1 1>&2 2>&3)
-#   esc_key "$webui_passwd"
-# }
-
+passwd_set() {
+  webui_username=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "webui用户名设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$default_username" 3>&1 1>&2 2>&3)
+  esc_key "$webui_username"
+  webui_passwd=$(whiptail --inputbox --backtitle "Hi,欢迎使用cg_dl。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "webui密码设置" --nocancel "注：回车继续,ESC退出脚本" 10 68 "$default_password" 3>&1 1>&2 2>&3)
+  esc_key "$webui_passwd"
+}
 
 ################## 检查安装qbt ##################
 check_qbt() {
-  docker_default_name="qbittorrent"
   webui_default_port="8070"
   connect_default_port="34567"
-  config_default_dir="/home/qbt/config"
+  config_default_dir="/home/qbt"
   download_default_dir="/home/qbt/downloads"
-  docker_name_set
   docker_port_set
   config_dir_set
   download_dir_set
   # passwd_set
-  docker run -d --name="$docker_name" \
-  -e PUID="$UID" \
-  -e PGID="$GID" \
-  -e WEBUI_PORT="$webui_port" \
-  -e BT_PORT="$connect_port" \
-  -e LANG=C.utf8 \
-  -p "$connect_port":"$connect_port" \
-  -p "$connect_port":"$connect_port"/udp \
-  -p "$webui_port":"$webui_port" \
-  -v "$config_dir":/etc/qBittorrent \
-  -v "$download_dir":/downloads \
-  -v /usr/bin/fclone:/usr/bin/fclone \
-  -v /root/.config/rclone/rclone.conf:/root/.config/rclone/rclone.conf \
-  -v /home/vps_sa/ajkins_sa:/home/vps_sa/ajkins_sa \
-  --restart unless-stopped \
-  cgkings/qbittorrent
+  ## 更新系统
+  apt-get -qqy update && apt-get -qqy upgrade
+  apt-get -qqy install sudo sysstat htop curl psmisc
+  ## 选择下载qb安装版本
+  qb_latest_version=$(curl -s "https://api.github.com/repos/userdocs/qbittorrent-nox-static/releases/latest" | jq -r .tag_name | sed 's/release-//')
+  Mainmenu=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用cg_dl。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "选择" --menu --nocancel "注:本脚本适配Debian11,ESC退出" 18 55 7 \
+    "4.3.9" "      ==>安装qBittorrent 4.3.9_v2.0.5" \
+    "4.5.5" "      ==>安装qBittorrent 4.5.5_v2.0.9" \
+    "latest_version" "      ==>安装qBittorrent $qb_latest_version" 3>&1 1>&2 2>&3)
+  case $Mainmenu in
+    4.3.9)
+      sudo wget -qNO /usr/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-4.3.9_v2.0.5/x86_64-qbittorrent-nox" && sudo chmod +x /usr/bin/qbittorrent-nox
+      ;;
+    4.5.5)
+      sudo wget -qNO /usr/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-4.5.5_v2.0.9/x86_64-qbittorrent-nox" && sudo chmod +x /usr/bin/qbittorrent-nox
+      ;;
+    latest_version)
+      sudo wget -qNO /usr/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox" && sudo chmod +x /usr/bin/qbittorrent-nox
+      ;;
+  esac
+  ## 创建系统服务
+    test -e /etc/systemd/system/qbittorrent-nox.service && rm /etc/systemd/system/qbittorrent-nox.service
+    touch /etc/systemd/system/qbittorrent-nox.service
+    cat << EOF > /etc/systemd/system/qbittorrent-nox@.service
+[Unit]
+Description=qBittorrent
+After=network.target
+
+[Service]
+Type=forking
+User=root
+LimitNOFILE=infinity
+ExecStart=/usr/bin/qbittorrent-nox -d --webui-port="$webui_port" --profile="$config_dir"
+ExecStop=/usr/bin/killall -w -s 9 /usr/bin/qbittorrent-nox
+Restart=on-failure
+TimeoutStopSec=20
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  mkdir -p "$download_dir" && mkdir -p "$config_dir"/qBittorrent/data/GeoIP
+  ## 下载最新GeoLite2-Country.mmdb
+  curl -kLo "$config_dir"/qBittorrent/data/GeoIP/GeoLite2-Country.mmdb https://github.com/helloxz/qbittorrent/raw/main/GeoLite2-Country.mmdb
+  ## 计算密码
+  wget https://raw.githubusercontent.com/jerry048/Seedbox-Components/main/Torrent%20Clients/qBittorrent/qb_password_gen && chmod +x "$HOME"/qb_password_gen
+  PBKDF2password=$("$HOME"/qb_password_gen "$webui_passwd")
+  rm -f "$HOME"/qb_password_gen
+  ## 调整qBittorrent.conf参数
+  cat << EOF > "$config_dir"/qBittorrent/config/qBittorrent.conf
+
+[General]
+ported_to_new_savepath_system=true
+
+[AutoRun]
+enabled=true
+program=/"$config_dir"/qBittorrent/cg_qbt.sh \"%N\" \"%F\" \"%C\" \"%Z\" \"%I\" \"%L\"
+
+[BitTorrent]
+Session\AddExtensionToIncompleteFiles=true
+Session\AddTrackersEnabled=true
+Session\AdditionalTrackers=$(curl -s https://githubraw.sleele.workers.dev/XIU2/TrackersListCollection/master/best.txt | awk '{if(!NF){next}}1' | sed ':a;N;s/\n/\\n/g;ta')
+Session\AsyncIOThreadsCount=12
+Session\SendBufferLowWatermark=5120
+Session\SendBufferWatermark=20480
+Session\SendBufferWatermarkFactor=250
+
+[LegalNotice]
+Accepted=true
+
+[Preferences]
+General\Locale=zh
+General\UseRandomPort=false
+Queueing\QueueingEnabled=true
+Queueing\MaxActiveDownloads=5
+Queueing\MaxActiveTorrents=-1
+Queueing\MaxActiveUploads=-1
+Connection\PortRangeMin=${connect_port}
+Downloads\DiskWriteCacheSize=2048
+Downloads\SavePath="$download_dir"
+WebUI\Enabled=true
+WebUI\CSRFProtection=false
+WebUI\LocalHostAuth=false
+WebUI\Port="$webui_port"
+WebUI\Username=$webui_username
+WebUI\Password_PBKDF2="@ByteArray($PBKDF2password)"
+EOF
+  systemctl enable qbittorrent-nox.service && systemctl start qbittorrent-nox.service
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
   # sleep 2s
   # docker exec -it "$docker_name" curl -X POST -d 'json={"web_ui_username":"${webui_username}","web_ui_password":"${webui_passwd}"}' http://127.0.0.1:"${webui_port}"/api/v2/app/setPreferences
@@ -138,60 +207,15 @@ check_qbt() {
 -----------------------------------------------------------------------------
 ${curr_date} [INFO] qbittorrent - $docker_name 安装完成!
 -----------------------------------------------------------------------------
-容器名称: $docker_name
 网页地址: http://$ip_addr:$webui_port
-登录用户: ${default_username}
-登录密码: ${default_password}
+登录用户: ${webui_username}
+登录密码: ${webui_passwd}
 配置目录: $config_dir
 下载目录: $download_dir
 qb信息: /root/install_log.txt
 ------------------------------------------------------------------------qb-end
 EOF
     tail -f /root/install_log.txt | sed '/.*qb-end.*/q'
-}
-
-################## 检查安装transmission ##################
-check_tr() {
-  docker_default_name="transmission"
-  webui_default_port="9091"
-  connect_default_port="51416"
-  config_default_dir="/home/tr/config"
-  download_default_dir="/home/tr/downloads"
-  docker_name_set
-  docker_port_set
-  config_dir_set
-  download_dir_set
-  # passwd_set
-  docker run -d --name="$docker_name" \
-  -e PUID="$UID" \
-  -e PGID="$GID" \
-  -e TZ=Asia/Shanghai \
-  -e USER="${default_username}" \
-  -e PASS="${default_password}" \
-  -e RPCPORT="$webui_port" \
-  -e PEERPORT="$connect_port" \
-  -p "$webui_port":"$webui_port" \
-  -p "$connect_port":"$connect_port" \
-  -p "$connect_port":"$connect_port"/udp \
-  -v "$config_dir":/config \
-  -v "$download_dir":/downloads \
-  -v /home/tr/torrents:/watch \
-  --restart unless-stopped \
-  chisbread/transmission
-  cat >> /root/install_log.txt << EOF
-------------------------------------------------------------------------
-${curr_date} [INFO] transmission - $docker_name 安装完成!
-------------------------------------------------------------------------
-容器名称: $docker_name
-网页地址: http://$ip_addr:$webui_port
-默认用户: $default_username
-默认密码: $default_password
-配置目录: $config_dir
-下载目录: $download_dir
-tr信息 : /root/install_log.txt
-------------------------------------------------------------------tr-end
-EOF
-  tail -f /root/install_log.txt | sed '/.*tr-end.*/q'
 }
 
 ################## 检查安装aria2 ##################
@@ -313,62 +337,10 @@ Uninstall_qbt() {
   fi
 }
 
-################## 卸载transmission-daemon ##################
-Uninstall_transmission-daemon() {
-  systemctl disable transmission-daemon
-  service transmission-daemon stop
-  bash <(curl -sL https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh) << EOF
-1
-EOF
-  sudo apt remove -y transmission-daemon
-  sudo apt autoremove -y
-  rm -f /lib/systemd/system/transmission-daemon.service
-}
-
-################## 安装flexget ##################
-check_flexget() {
-  if [ -z "$(command -v flexget)" ]; then
-    #建立flexget独立的 python3 虚拟环境
-    mkdir -p 755 /home/software/flexget/
-    virtualenv --system-site-packages --no-setuptools --no-wheel /home/software/flexget/
-    #在python3虚拟环境里安装flexget
-    /home/software/flexget/bin/pip3 install -U flexget
-    #建立 flexget 日志存放
-    mkdir -p 755 /var/log/flexget && chown root:adm /var/log/flexget
-    #建立 flexget 的配置文件
-    read -r -t 10 -p "请输入你的flexget的config.yml备份下载网址(10秒超时或回车默认作者地址,有需要自行修改,路径为:/root/.config/flexget/config.yml:" config_yml_link
-    config_yml_link=${config_yml_link:-https://raw.githubusercontent.com/cgkings/script-store/master/config/cn_yml/config.yml}
-    mkdir -p 755 /root/.config/flexget && wget -qN "${config_yml_link}" -O /root/.config/flexget/config.yml
-    aria2_key=$(grep "rpc-secret" /root/.aria2c/aria2.conf | awk -F= '{print $2}')
-    sed -i "s/secret:.*$/secret: $aria2_key/g" /root/.config/flexget/config.yml
-    #建立软连接
-    ln -sf /home/software/flexget/bin/flexget /usr/local/bin/
-    #设置为自动启动,在 rc.local 中增加启动命令
-    /home/software/flexget/bin/flexget -L error -l /var/log/flexget/flexget.log daemon start -d
-  fi
-  if [ -z "$(crontab -l | grep "flexget")" ]; then
-    crontab -l | {
-                   cat
-                        echo "*/10 * * * * /usr/local/bin/flexget -c /root/.config/flexget/config.yml --cron execute"
-    }                                            | crontab -
-  else
-    #删除包含flexget的计划任务,重新创建
-    sed -i '/flexget/d' /var/spool/cron/crontabs/root
-    crontab -l | {
-                   cat
-                        echo "*/10 * * * * /usr/local/bin/flexget -c /root/.config/flexget/config.yml --cron execute"
-    }                                            | crontab -
-  fi
-  flexget --test execute
-  echo -e "flexget已完成部署动作,等10分钟,用<flexget status>命令看一下状态吧!"
-  echo -e "如安装有异常,请联系作者"
-}
-
 ################## 安装rsshub ##################
 check_rsshub() {
-  if [ -z "$(docker ps -a | grep aria2)" ]; then
-    docker pull diygod/rsshub
-    docker run -d --name rsshub -p 1200:1200 diygod/rsshub
+  if [ -z "$(docker ps -a | grep rsshub)" ]; then
+    docker run -d --name rsshub -p 1200:1200 --restart=always diygod/rsshub
   fi
 }
 
@@ -380,7 +352,6 @@ dl_help() {
 
 可用参数(Available flags):
   bash <(curl -sL git.io/cg_dl) --qb      安装配置qbittorrent套件
-  bash <(curl -sL git.io/cg_dl) --tr      安装配置transmission套件
   bash <(curl -sL git.io/cg_dl) --aria2   安装配置aria2套件
   bash <(curl -sL git.io/cg_dl) -h       命令帮助
 注:无参数则使用菜单模式
@@ -391,19 +362,14 @@ EOF
 dl_menu() {
   whiptail --clear --ok-button "Enter键开始检查安装" --backtitle "Hi,欢迎使用cg_pt工具包。本脚本仅适用于debian ubuntu,有关问题,请访问: https://github.com/cgkings/script-store (TG 王大锤)。" --title "大锤 PT 工具包" --checklist --separate-output --nocancel "请按空格及方向键来选择安装软件,ESC键退出脚本" 15 58 7 \
         "install_qbt" " : 安装qbittorrent" off \
-        "install_tr" " : 安装transmission" off \
         "install_aria2" " : 安装aria2套件,带ariang" off \
         "install_rsshub" " : 安装rsshub" off \
         "install_art" " : 安装Autoremove" on \
-        "install_mktorrent" " : 安装mktorrent" on \
-        "install_flexget" " : 安装flexget" off 2> results
+        "install_mktorrent" " : 安装mktorrent" on 2> results
   while read -r choice; do
         case $choice in
           "install_qbt")
             check_qbt
-            ;;
-          "install_tr")
-            check_tr
             ;;
           "install_aria2")
             check_aria2
@@ -416,9 +382,6 @@ dl_menu() {
             ;;
           "install_mktorrent")
             check_mktorrent
-            ;;
-          "install_flexget")
-            check_flexget
             ;;
           *)
             esc_key " "
@@ -437,11 +400,6 @@ else
       check_mktorrent
       check_art
       check_qbt
-      ;;
-    --tr)
-      check_mktorrent
-      check_art
-      check_tr
       ;;
     --aria2)
       check_aria2
