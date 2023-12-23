@@ -217,7 +217,7 @@ WebUI\Username=${webui_username}
 EOF
   systemctl start qbittorrent-nox.service
   qb_web_url="http://$ip_addr:$webui_port"
-  cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${webui_username}&password=${webui_passwd}" "${qb_web_url}/api/v2/auth/login" | grep -oP '(?<=set-cookie: SID=)[^;]+')
+  cookie=$(curl -si --header "Referer: $qb_web_url" --data "username=$webui_username&password=$webui_passwd" "$qb_web_url/api/v2/auth/login" | grep -oP '(?<=set-cookie: SID=)[^;]+')
   curl -v -X POST -d "category=cgdowns&savePath=${download_dir}/cgdowns" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
   curl -v -X POST -d "category=98t-c&savePath=${download_dir}/98t-c" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
   curl -v -X POST -d "category=chd&savePath=${download_dir}/chd" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
