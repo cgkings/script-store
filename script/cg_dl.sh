@@ -108,6 +108,7 @@ check_qbt() {
   connect_default_port="34567"
   config_default_dir="/home/qbt"
   download_default_dir="/home/qbt/downloads"
+  passwd_set
   docker_port_set
   config_dir_set
   download_dir_set
