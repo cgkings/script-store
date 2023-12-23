@@ -176,8 +176,6 @@ program=$config_dir/qBittorrent/cg_qbt.sh \"%N\" \"%F\" \"%C\" \"%Z\" \"%I\" \"%
 
 [BitTorrent]
 Session\AddExtensionToIncompleteFiles=true
-Session\AddTrackersEnabled=true
-Session\AdditionalTrackers=$(curl -s https://githubraw.sleele.workers.dev/XIU2/TrackersListCollection/master/best.txt | awk '{if(!NF){next}}1' | sed ':a;N;s/\n/\\n/g;ta')
 Session\AsyncIOThreadsCount=12
 Session\SendBufferLowWatermark=5120
 Session\SendBufferWatermark=20480
@@ -187,21 +185,34 @@ Session\SendBufferWatermarkFactor=250
 Accepted=true
 
 [Preferences]
+Advanced\RecheckOnCompletion=false
+Advanced\trackerPort=9000
+Bittorrent\AddTrackers=true
+Bittorrent\MaxConnecs=-1
+Bittorrent\MaxConnecsPerTorrent=-1
+Bittorrent\MaxUploads=-1
+Bittorrent\MaxUploadsPerTorrent=-1
+Bittorrent\TrackersList=$(curl -s https://githubraw.sleele.workers.dev/XIU2/TrackersListCollection/master/best.txt | awk '{if(!NF){next}}1' | sed ':a;N;s/\n/\\n/g;ta')
+Connection\PortRangeMin=${connect_port}
+Connection\ResolvePeerCountries=true
+Downloads\DiskWriteCacheSize=2048
+Downloads\SavePath=${download_dir}
 General\Locale=zh
 General\UseRandomPort=false
-Queueing\QueueingEnabled=true
 Queueing\MaxActiveDownloads=5
 Queueing\MaxActiveTorrents=-1
 Queueing\MaxActiveUploads=-1
-Connection\PortRangeMin=${connect_port}
-Downloads\DiskWriteCacheSize=2048
-Downloads\SavePath="$download_dir"
-WebUI\Enabled=true
+Queueing\QueueingEnabled=true
 WebUI\CSRFProtection=false
 WebUI\LocalHostAuth=false
-WebUI\Port="$webui_port"
-WebUI\Username=$webui_username
+WebUI\Enabled=true
+WebUI\HostHeaderValidation=true
+WebUI\LocalHostAuth=false
+WebUI\MaxAuthenticationFailCount=5
 WebUI\Password_PBKDF2="@ByteArray($PBKDF2password)"
+WebUI\Port=${webui_port}
+WebUI\Username=${webui_username}
+
 EOF
   systemctl start qbittorrent-nox.service
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
