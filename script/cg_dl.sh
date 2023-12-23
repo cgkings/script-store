@@ -218,10 +218,10 @@ EOF
   systemctl start qbittorrent-nox.service
   qb_web_url="http://$ip_addr:$webui_port"
   cookie=$(curl -si --header "Referer: ${qb_web_url}" --data "username=${webui_username}&password=${webui_passwd}" "${qb_web_url}/api/v2/auth/login" | grep -oP '(?<=set-cookie: SID=)[^;]+')
-  curl -v -X POST -d "category=cgdowns&savePath=/home/qbt/downloads/cgdowns" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
-  curl -v -X POST -d "category=98t-c&savePath=/home/qbt/downloads/98t-c" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
-  curl -v -X POST -d "category=chd&savePath=/home/qbt/downloads/chd" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
-  curl -v -X POST -d "category=frds&savePath=/home/qbt/downloads/frds" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
+  curl -v -X POST -d "category=cgdowns&savePath=${download_dir}/cgdowns" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
+  curl -v -X POST -d "category=98t-c&savePath=${download_dir}/98t-c" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
+  curl -v -X POST -d "category=chd&savePath=${download_dir}/chd" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
+  curl -v -X POST -d "category=frds&savePath=${download_dir}/frds" -H "Cookie: SID=${cookie}" -H "Content-Type: application/x-www-form-urlencoded" "$qb_web_url"/api/v2/torrents/createCategory
   #备份配置文件: cd /home/qbt/config && zip -qr qbt_bat.zip ./*
   # sleep 2s
   # docker exec -it "$docker_name" curl -X POST -d 'json={"web_ui_username":"${webui_username}","web_ui_password":"${webui_passwd}"}' http://127.0.0.1:"${webui_port}"/api/v2/app/setPreferences
