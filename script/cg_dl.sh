@@ -124,15 +124,34 @@ check_qbt() {
     "latest_version" "      ==>安装qBittorrent $qb_latest_version" 3>&1 1>&2 2>&3)
   case $Mainmenu in
     4.3.9)
-      sudo wget -qNO /usr/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-4.3.9_v2.0.5/x86_64-qbittorrent-nox" && sudo chmod +x /usr/bin/qbittorrent-nox
-      ;;
+        QB_VERSION="4.3.9_v2.0.5"
+        ;;
     4.5.5)
-      sudo wget -qNO /usr/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-4.5.5_v2.0.9/x86_64-qbittorrent-nox" && sudo chmod +x /usr/bin/qbittorrent-nox
-      ;;
+        QB_VERSION="4.5.5_v2.0.9"
+        ;;
     latest_version)
-      sudo wget -qNO /usr/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox" && sudo chmod +x /usr/bin/qbittorrent-nox
-      ;;
+        QB_VERSION="latest"
+        ;;
+    *)
+        echo "Unsupported version"
+        exit 1
+        ;;
   esac
+  ARCH=$(uname -m 2> /dev/null)
+  case $ARCH in
+    x86_64)
+        ARCH_URL="x86_64-qbittorrent-nox"
+        ;;
+    aarch64)
+        ARCH_URL="aarch64-qbittorrent-nox"
+        ;;
+    *)
+        echo "Unsupported architecture"
+        exit 1
+        ;;
+  esac
+  URL="https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-${QB_VERSION}/${ARCH_URL}"
+  sudo wget -qNO /usr/bin/qbittorrent-nox "$URL" && sudo chmod +x /usr/bin/qbittorrent-nox
   ## 创建系统服务
     test -e /etc/systemd/system/qbittorrent-nox.service && rm /etc/systemd/system/qbittorrent-nox.service
     touch /etc/systemd/system/qbittorrent-nox.service
