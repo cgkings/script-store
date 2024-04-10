@@ -77,13 +77,13 @@ bak_emby() {
   rm -rf /var/lib/emby/cache/*
   
   # 打包 /var/lib/emby 和 /opt/emby-server 目录
-  tar -cvf /var_lib_emby_bak_"$(date "+%Y-%m-%d")".tar /var/lib/emby
-  tar -cvf /opt_emby_bak_"$(date "+%Y-%m-%d")".tar /opt/emby-server
+  tar -cvf /"$(date "+%Y-%m-%d")"_var_lib_emby_bak.tar /var/lib/emby
+  tar -cvf /"$(date "+%Y-%m-%d")"_opt_emby_bak.tar /opt/emby-server
   
   # 上传备份文件到 Google Drive
   # shellcheck disable=SC2154
-  fclone move /var_lib_emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP
-  fclone move /opt_emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP
+  fclone move /"$(date "+%Y-%m-%d")"_var_lib_emby_bak.tar "$my_remote": --drive-root-folder-id "${td_id}" -vP
+  fclone move /"$(date "+%Y-%m-%d")"_opt_emby_bak.tar "$my_remote": --drive-root-folder-id "${td_id}" -vP
   
   # 启动 Emby 服务器进程并记录备份完成信息
   systemctl start emby-server
@@ -95,21 +95,53 @@ bak_emby() {
 revert_emby() {
   remote_choose
   td_id_choose
-  fclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include 'emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/    /g' > ~/.config/rclone/bak_list.txt
-  bak_list=($(cat ~/.config/rclone/bak_list.txt))
-  bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
-    "${bak_list[@]}" 3>&1 1>&2 2>&3)
-  if [ -z "$bak_name" ]; then
-    rm -f ~/.config/rclone/bak_list.txt
+  # shellcheck disable=SC2207
+  local var_bak_list=($(rclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include '*var_lib_emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/ /g'))
+  var_bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
+    "${var_bak_list[@]}" 3>&1 1>&2 2>&3)
+  if [ -z "$var_bak_name" ]; then
     myexit 0
   else
-      systemctl stop emby-server #结束 emby 进程
-      fclone copy "$my_remote":"$bak_name" /root --drive-root-folder-id "${td_id}" -vP
-      rm -rf /var/lib/emby
-      tar -xvf "$bak_name" -C /var/lib && rm -f "$bak_name"
-      systemctl start emby-server
-      rm -rf ~/.config/rclone/bak_list.txt
-      echo -e "${curr_date} [INFO] emby还原完毕." | tee -a /root/install_log.txt
+    systemctl stop emby-server #结束 emby 进程
+    rclone copy "$my_remote":"$var_bak_name" ./ --drive-root-folder-id "${td_id}" -vP
+    rm -rf /var/lib/emby
+    tar -xvf "$var_bak_name" -C / && rm -f "$var_bak_name"
+    # # 检查是否存在 emby 用户组
+    # if grep -q "^emby:" /etc/group; then
+    #   echo "emby 用户组已存在。"
+    # else
+    #   sudo groupadd emby
+    #   sudo useradd -g emby emby
+    # fi
+    # # 设置 /var/lib/emby 目录的所有权和权限
+    # sudo chmod -R 777 /var/lib/emby && sudo chown -R emby:emby /var/lib/emby
+    systemctl start emby-server
+    echo -e "${curr_date} [INFO] emby还原完毕." | tee -a /root/install_log.txt
+  fi
+  remote_choose
+  td_id_choose
+  # shellcheck disable=SC2207
+  local opt_bak_list=($(rclone lsf "$my_remote": --drive-root-folder-id "${td_id}" --include '*opt_emby_bak*' --files-only -F "pt" | sed 's/ /_/g;s/\;/ /g'))
+  opt_bak_name=$(whiptail --clear --ok-button "选择完毕,进入下一步" --backtitle "Hi,欢迎使用。有关脚本问题，请访问: https://github.com/cgkings/script-store 或者 https://t.me/cgking_s (TG 王大锤)。" --title "备份文件选择" --menu --nocancel "注：上下键回车选择,ESC退出脚本！" 18 62 10 \
+    "${opt_bak_list[@]}" 3>&1 1>&2 2>&3)
+  if [ -z "$opt_bak_name" ]; then
+    myexit 0
+  else
+    systemctl stop emby-server #结束 emby 进程
+    rclone copy "$my_remote":"$opt_bak_name" ./ --drive-root-folder-id "${td_id}" -vP
+    rm -rf /opt/emby-server
+    tar -xvf "$opt_bak_name" -C / && rm -f "$opt_bak_name"
+    # # 检查是否存在 emby 用户组
+    # if grep -q "^emby:" /etc/group; then
+    #   echo "emby 用户组已存在。"
+    # else
+    #   sudo groupadd emby
+    #   sudo useradd -g emby emby
+    # fi
+    # # 设置 /opt/emby-server 目录的所有权和权限
+    # sudo chmod -R 777 /opt/emby-server && sudo chown -R emby:emby /opt/emby-server
+    systemctl start emby-server
+    echo -e "${curr_date} [INFO] emby还原完毕." | tee -a /root/install_log.txt
   fi
 }
 
