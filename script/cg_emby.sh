@@ -66,15 +66,30 @@ initialization() {
 
 ################## 备份emby ##################
 bak_emby() {
+  # 选择远程位置和目标文件夹 ID
   remote_choose
   td_id_choose
-  systemctl stop emby-server #结束 emby 进程
-  #rm -rf /var/lib/emby/cache/* #清空cache
-  cd /var/lib && tar -cvf emby_bak_"$(date "+%Y-%m-%d")".tar emby #打包/var/lib/emby
-  fclone move emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP #上传gd
+  
+  # 停止 Emby 服务器进程
+  systemctl stop emby-server
+  
+  # 清空 Emby 缓存
+  rm -rf /var/lib/emby/cache/*
+  
+  # 打包 /var/lib/emby 和 /opt/emby-server 目录
+  tar -cvf /var_lib_emby_bak_"$(date "+%Y-%m-%d")".tar /var/lib/emby
+  tar -cvf /opt_emby_bak_"$(date "+%Y-%m-%d")".tar /opt/emby-server
+  
+  # 上传备份文件到 Google Drive
+  # shellcheck disable=SC2154
+  fclone move /var_lib_emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP
+  fclone move /opt_emby_bak_"$(date "+%Y-%m-%d")".tar "$my_remote": --drive-root-folder-id "${td_id}" -vP
+  
+  # 启动 Emby 服务器进程并记录备份完成信息
   systemctl start emby-server
-  echo -e "${curr_date} [INFO] emby $(date "+%Y-%m-%d") 备份完毕." | tee -a /root/install_log.txt
+  echo -e "${curr_date} [INFO] Emby $(date "+%Y-%m-%d") 备份完毕." | tee -a /root/install_log.txt
 }
+
 
 ################## 还原emby ##################
 revert_emby() {
