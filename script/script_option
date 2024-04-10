@@ -72,23 +72,23 @@ check_sys() {
   #fi
 }
 
-################### 检查 whiptail 命令的退出状态 ##################
-check_whiptail_status() {
-  local exit_status=$1
+# ################### 检查 whiptail 命令的退出状态 ##################
+# check_whiptail_status() {
+#   local exit_status=$1
   
-  # 如果退出状态为 0，表示用户正常选择了一个选项
-  # shellcheck disable=SC2086
-  if [ $exit_status -eq 0 ]; then
-    return 0
-  elif [ $exit_status -eq 1 ]; then
-    # 用户按下了 ESC 键，退出脚本
-    myexit 0
-  else
-    # 其他退出状态，可能是出现了错误
-    echo "whiptail 命令发生了错误，退出状态：$exit_status"
-    myexit 1
-  fi
-}
+#   # 如果退出状态为 0，表示用户正常选择了一个选项
+#   # shellcheck disable=SC2086
+#   if [ $exit_status -eq 0 ]; then
+#     return 0
+#   elif [ $exit_status -eq 1 ]; then
+#     # 用户按下了 ESC 键，退出脚本
+#     myexit 0
+#   else
+#     # 其他退出状态，可能是出现了错误
+#     echo "whiptail 命令发生了错误，退出状态：$exit_status"
+#     myexit 1
+#   fi
+# }
 
 ################## 检查rclone&fclone安装情况 ##################
 check_rclone() {
