@@ -22,8 +22,6 @@ check_install() {
   check_command "ntpq" "sudo apt install -y ntp"
   # 检查并安装 jq
   check_command "jq" "sudo apt install -y jq"
-  # 检查并安装 yq
-  check_command "yq" "wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq"
   # 检查并安装 uuid-runtime
   check_command "uuidgen" "sudo apt install -y uuid-runtime"
   # 检查并安装 xray
