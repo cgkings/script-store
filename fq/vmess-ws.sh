@@ -98,8 +98,13 @@ show_inbound_config() {
     echo -e "${green}无法获取 IP 地址。${none}"
     return
   fi
+  # 创建 JSON 配置
+  local vmess_config
+  vmess_config=$(printf '{"v":"2","ps":"vmess+ws","add":"%s","port":%d,"id":"%s","aid":"0","net":"ws","path":"/%s","type":"none","host":"","tls":""}' "$ip" "$PORT" "$UUID" "$RANDOM_PATH?ed=2048")
+  # 编码为 Base64
   local vmess_link
-  vmess_link=$(printf '{"v":"2","ps":"vmess+ws","add":"%s","port":%d,"id":"%s","aid":"0","net":"ws","path":"/%s","type":"none","host":"","tls":""}' "$ip" "$PORT" "$UUID" "$RANDOM_PATH" | base64 -w 0)
+  vmess_link=$(echo -n "$vmess_config" | base64 -w 0)
+  # 显示 Vmess 链接
   echo -e "${green}Vmess-ws节点链接:${none}"
   echo "vmess://$vmess_link"
 }
