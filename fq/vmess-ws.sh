@@ -108,9 +108,9 @@ show_inbound_config() {
   echo "vmess://$vmess_link"
   # 显示 yaml文件proxies信息
   local proxies_info
-  proxies_info=$(printf '{name: "vmess+ws", type: vmess, server: %s, port: %d, uuid: %s, alterId: 0, cipher: auto, tls: false, network: ws, ws-opts: {path: "/%s"}, mux: {enable: true, concurrency: 8}, tcp-opts: {mtu: 1350}}' "$ip" "$PORT" "$UUID" "$RANDOM_PATH?ed=2048")
+  proxies_info=$(printf '{name: vmess+ws, type: vmess, server: %s, port: %d, uuid: %s, alterId: 0, cipher: auto, tls: false, network: ws, ws-opts: {path: "/%s"}, mux: {enable: true, concurrency: 8}, tcp-opts: {mtu: 1350}}' "$ip" "$PORT" "$UUID" "$RANDOM_PATH?ed=2048")
   echo -e "${green}clash yaml文件proxies信息:${none}"
-  echo "- {$proxies_info}"
+  echo "- $proxies_info"
 }
 
 check_install
