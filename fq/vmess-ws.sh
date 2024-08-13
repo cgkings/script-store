@@ -22,6 +22,8 @@ check_install() {
   check_command "ntpq" "sudo apt install -y ntp"
   # 检查并安装 jq
   check_command "jq" "sudo apt install -y jq"
+  # 检查并安装 yq
+  check_command "yq" "wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq"
   # 检查并安装 uuid-runtime
   check_command "uuidgen" "sudo apt install -y uuid-runtime"
   # 检查并安装 xray
@@ -98,15 +100,19 @@ show_inbound_config() {
     echo -e "${green}无法获取 IP 地址。${none}"
     return
   fi
-  # 创建 JSON 配置
+  # 提取 JSON 配置并编码为 Base64
   local vmess_config
   vmess_config=$(printf '{"v":"2","ps":"vmess+ws","add":"%s","port":%d,"id":"%s","aid":"0","net":"ws","path":"/%s","type":"none","host":"","tls":""}' "$ip" "$PORT" "$UUID" "$RANDOM_PATH?ed=2048")
-  # 编码为 Base64
   local vmess_link
   vmess_link=$(echo -n "$vmess_config" | base64 -w 0)
   # 显示 Vmess 链接
   echo -e "${green}Vmess-ws节点链接:${none}"
   echo "vmess://$vmess_link"
+  # 显示 yaml文件proxies信息
+  local proxies_info
+  proxies_info=$(printf '{name: "vmess+ws", type: vmess, server: %s, port: %d, uuid: %s, alterId: 0, cipher: auto, tls: false, network: ws, ws-opts: {path: "/%s"}, mux: {enable: true, concurrency: 8}, tcp-opts: {mtu: 1350}}' "$ip" "$PORT" "$UUID" "$RANDOM_PATH?ed=2048")
+  echo -e "${green}clash yaml文件proxies信息:${none}"
+  echo "- {$proxies_info}"
 }
 
 check_install
