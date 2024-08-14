@@ -11,9 +11,12 @@ LIMIT2=160
 # 设置网卡名称
 INTERFACE=$(ip route | grep default | awk '{print $5}')
 SRV_HOSTNAME=$(hostname -f)
+# 脚本路径
+# 获取脚本所在目录
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ====================== 检查并设置计划任务 ======================
-CRON_JOB="*/5 * * * * $SCRIPT_PATH"
+CRON_JOB="*/5 * * * * $SCRIPT_DIR/monitor_traffic.sh"
 CRON_EXISTS=$(crontab -l 2>/dev/null | grep -F "$CRON_JOB")
 
 if [ -z "$CRON_EXISTS" ]; then
@@ -37,7 +40,7 @@ TOTAL_GB=$(echo "$TOTAL" | awk '{print $1/1024}')
 
 # 定义流量信息输出函数，带有一个参数作为附加信息
 log_traffic_info() {
-    cat << EOF
+    cat << EOF | tee -a "$SCRIPT_DIR"/traffic_monitor.log
 时间: $(date '+%Y-%m-%d %H:%M:%S')
 ${VPSNAME}(${SRV_HOSTNAME}) 当前流量使用情况:
 入流量（接受流量）: ${RX_GB} GB
