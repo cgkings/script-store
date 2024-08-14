@@ -7,7 +7,7 @@
 VPSNAME="ali-hk1"
 # 设置流量限制（单位：GB）
 LIMIT=150
-LIMIT2=160
+LIMIT2=180
 # 设置网卡名称
 INTERFACE=$(ip route | grep default | awk '{print $5}')
 SRV_HOSTNAME=$(hostname -f)
@@ -53,15 +53,15 @@ EOF
 # ======================    流量控制处理    ======================
 if (($( echo "$RX_GB >= $LIMIT2" | bc -l)))  || (($( echo "$TX_GB >= $LIMIT2" | bc -l))); then
 
-  log_traffic_info "已超过160GB，执行关机操作！！！"
+  log_traffic_info "已超过${LIMIT2}GB，执行关机操作！！！"
   sudo shutdown -h now
 
 elif (($( echo "$RX_GB >= $LIMIT" | bc -l)))  || (($( echo "$TX_GB >= $LIMIT" | bc -l))); then
 
-  log_traffic_info "已超过150GB，超过160GB将执行关机操作！！！"
+  log_traffic_info "已超过${LIMIT}GB，超过160GB将执行关机操作！！！"
 
 else
 
-  log_traffic_info "正常使用暂未超过150GB！！！"
+  log_traffic_info "正常使用暂未超过${LIMIT}GB！！！"
 
 fi
