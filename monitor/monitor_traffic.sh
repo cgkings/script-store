@@ -15,6 +15,7 @@ INTERFACE=$(ip route | grep default | awk '{print $5}')
 
 # 确保日志目录存在
 mkdir -p "$(dirname "$LOG_FILE")"
+# =============================================================================
 
 # ============================ 检查并设置计划任务 ============================
 CRON_JOB="*/5 * * * * $SCRIPT_PATH"
@@ -24,13 +25,16 @@ if [ -z "$CRON_EXISTS" ]; then
     (crontab -l 2>/dev/null; echo "$CRON_JOB") | crontab -
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Added cron job for traffic monitoring" >> $LOG_FILE
 fi
+# =============================================================================
 
 # ============================ 检查并重置流量统计 =============================
 if [ ! -f "$MONTHLY_LOG" ] || [ "$(cat $MONTHLY_LOG)" != "$CURRENT_MONTH" ]; then
     echo "$CURRENT_MONTH" > "$MONTHLY_LOG"
-    vnstat --reset -i "$INTERFACE" --force  # 重置vnStat的流量统计
+    vnstat --disable -i "$INTERFACE"
+    vnstat --enable -i "$INTERFACE"  # 重置vnStat的流量统计
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Reset monthly traffic statistics" >> $LOG_FILE
 fi
+# =============================================================================
 
 # ============================ 流量监控和操作 ================================
 VNSTAT_JSON=$(vnstat -i "$INTERFACE" --json)
@@ -62,9 +66,9 @@ EOF
 # 判断是否超过流量限制并执行相应操作
 if (( $(echo "$TOTAL >= $LIMIT2" | bc -l) )); then
     log_traffic_info "已超过160GB，执行关机操作！！！"
-    sudo shutdown -h now
 elif (( $(echo "$TOTAL >= $LIMIT" | bc -l) )); then
     log_traffic_info "已超过150GB，超过160GB将执行关机操作！！！"
 else
     log_traffic_info "未超过警戒值150GB，正常使用！"
 fi
+# =============================================================================
