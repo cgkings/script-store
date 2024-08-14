@@ -1,7 +1,13 @@
 #!/bin/bash
+#===============================================================
+# https://github.com/cgkings/script-store
+# File Name: monitor_traffic.sh
+# Author: 王大锤
+# Created Time : 2024.8.14
+# Description:流量限流控制
+# System Required: Debian/Ubuntu
+# Version: 1.0
 
-# Your USERID or Channel ID to display alert and key, we recommend you create new bot with @BotFather on Telegram
-#你要修改的都在这里USERID,KEY,VPSNAME,PFTIME,LIMIT,LIMIT2
 # ======================      定义变量     ======================
 # 设置机器名字
 VPSNAME="ali-hk1"
@@ -14,6 +20,25 @@ SRV_HOSTNAME=$(hostname -f)
 # 脚本路径
 # 获取脚本所在目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+green='\e[32m'
+none='\e[0m'
+
+# ====================== 检查并安装依赖程序 ======================
+# 定义一个通用的检查并安装函数
+check_command() {
+  local cmd=$1
+  local install_cmd=$2
+  if ! command -v "$cmd" &> /dev/null; then
+    apt-get update    
+    echo -e "${green}正在安装 ${cmd}...${none}"
+    eval "$install_cmd"
+  fi
+}
+
+  # 检查并安装 vnstat
+  check_command "vnstat" "sudo apt-get install vnstat"
+  # 检查并安装 bc
+  check_command "bc" "sudo apt install -y bc"
 
 # ====================== 检查并设置计划任务 ======================
 CRON_JOB="*/5 * * * * $SCRIPT_DIR/monitor_traffic.sh"
@@ -41,12 +66,12 @@ TOTAL_GB=$(echo "$TOTAL" | awk '{print $1/1024}')
 # 定义流量信息输出函数，带有一个参数作为附加信息
 log_traffic_info() {
     cat << EOF | tee -a "$SCRIPT_DIR"/traffic_monitor.log
-时间: $(date '+%Y-%m-%d %H:%M:%S')
-${VPSNAME}(${SRV_HOSTNAME}) 当前流量使用情况:
+${green}${VPSNAME}(${SRV_HOSTNAME}) 当前流量使用情况:${none}
 入流量（接受流量）: ${RX_GB} GB
 出流量（发送流量）: ${TX_GB} GB
 总流量（接受发送）: ${TOTAL_GB} GB
 $1
+时间: $(date '+%Y-%m-%d %H:%M:%S')
 EOF
 }
 
