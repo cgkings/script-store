@@ -1,6 +1,7 @@
 #!/bin/bash
 #===============================================================
 # https://github.com/cgkings/script-store
+# wget https://xgogo.in/monitor_traffic.sh && chmod +x monitor_traffic.sh
 # File Name: monitor_traffic.sh
 # Author: 王大锤
 # Created Time : 2024.8.14
