@@ -71,7 +71,6 @@ EOF
 # 判断是否超过流量限制并执行相应操作
 if (( $(echo "$TOTAL >= $LIMIT2" | bc -l) )); then
     log_traffic_info "已超过160GB，执行关机操作！！！"
-    sudo shutdown -h now
 elif (( $(echo "$TOTAL >= $LIMIT" | bc -l) )); then
     log_traffic_info "已超过150GB，超过160GB将执行关机操作！！！"
 else
