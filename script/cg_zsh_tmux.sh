@@ -21,7 +21,7 @@ curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 ################## 基础软件安装 ##################
 #echo -e "${curr_date} 静默升级系统软件源"
 sys_update=$(apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1)
-echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
+echo -e "${curr_date} $sys_update" | tee -a /root/install_log.txt
 #echo -e "${curr_date} 静默检查并安装常用软件1"
 apt install -y sudo git wget nano tmux chrony iperf3 jq tar zip unzip gzip unar ncdu zsh vnstat bc 2> /dev/null
 #echo -e "${curr_date} 静默检查并安装常用软件2"

@@ -18,8 +18,8 @@ check_command() {
 check_install() {
   # 更新包列表
   apt-get update
-  # 检查并安装 ntp,避免时间误差导致错误
-  check_command "ntpq" "sudo apt install -y ntp"
+  # 检查并安装 chrony,避免时间误差导致错误
+  check_command "chrony" "sudo apt install -y chrony"
   # 检查并安装 jq
   check_command "jq" "sudo apt install -y jq"
   # 检查并安装 uuid-runtime
