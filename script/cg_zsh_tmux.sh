@@ -1,0 +1,118 @@
+#!/bin/bash
+#=============================================================
+# https://github.com/cgkings/script-store
+# bash <(curl -sL git.io/cg_1key_dd)
+# File Name: cg_zsh_tmux.sh
+# Author: cgkings
+# Created Time : 2022.1.1
+# Description:zsh
+# System Required: Debian/Ubuntu
+# Version: 1.0
+#该脚本安装基础软件、基础系统环境、开发环境(python/node/docker)、自用软件(rclone/fclone/ohmyzsh/ohmytmux/caddy)、系统优化(禁用swap/bbr)
+#=============================================================
+
+################## 调试日志 ##################
+#set -x    ##分步执行
+#exec &> /tmp/log.txt   ##脚本执行的过程和结果导入/tmp/log.txt文件中
+
+################## 前置变量 ##################
+curr_date=$(date "+%Y-%m-%d %H:%M:%S")
+
+################## 基础软件安装 ##################
+#echo -e "${curr_date} 静默升级系统软件源"
+sys_update=$(apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1)
+echo -e "${curr_date} $sys_update\n$sys_upgrade" | tee -a /root/install_log.txt
+#echo -e "${curr_date} 静默检查并安装常用软件1"
+apt install -y sudo git wget nano tmux chrony iperf3 jq tar zip unzip gzip unar ncdu zsh vnstat bc 2> /dev/null
+#echo -e "${curr_date} 静默检查并安装常用软件2"
+echo -e "${curr_date} sudo git wget nano tmux chrony iperf3 jq tar zip unzip gzip unar ncdu zsh vnstat bc 已安装" | tee -a /root/install_log.txt
+
+################## 基础系统环境 ##################
+#设置中国时区
+if timedatectl | grep -q Asia/Shanghai; then
+  echo > /dev/null
+else
+  timedatectl set-timezone 'Asia/Shanghai'
+  echo -e "${curr_date} 设置时区为Asia/Shanghai,done!" | tee -a /root/install_log.txt
+fi
+#设置en_US.UTF-8
+if [[ $LANG == "en_US.UTF-8" ]]; then
+  echo > /dev/null
+else
+  chattr -i /etc/locale.gen #解除文件修改限制
+  cat > '/etc/locale.gen' << EOF
+zh_TW.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
+EOF
+  locale-gen
+  update-locale
+  chattr -i /etc/default/locale
+  cat > '/etc/default/locale' << EOF
+LANGUAGE="en_US.UTF-8"
+LANG="en_US.UTF-8"
+LC_ALL="en_US.UTF-8"
+EOF
+  export LANGUAGE="en_US.UTF-8"
+  export LANG="en_US.UTF-8"
+  export LC_ALL="en_US.UTF-8"
+  echo -e "${curr_date} 设置语言为英文，done!" | tee -a /root/install_log.txt
+fi
+#设置256颜色
+if [ -z "$(grep -s "export TERM=xterm-256color" ~/.bashrc)" ]; then
+  cat >> ~/.bashrc << EOF
+
+if [ "$TERM" != "xterm-256color" ]; then
+export TERM=xterm-256color
+fi
+EOF
+  # shellcheck source=/dev/null
+  source /root/.bashrc
+  echo -e "${curr_date} 设置256色成功" | tee -a /root/install_log.txt
+fi
+#设置系统别名
+if grep -q "alias c='clear'" /root/.bashrc; then
+  echo > /dev/null
+else
+  cat >> /root/.bashrc << EOF
+
+alias wget='wget -c'
+alias tmuxl='tmux ls'
+alias tmuxa='tmux a -t'
+alias tmuxn='tmux new -s'
+alias c='clear'
+alias nano="nano -m"
+EOF
+  echo -e "${curr_date} 设置alias别名,done!" | tee -a /root/install_log.txt
+fi
+
+################## 基础开发环境 ##################
+#预装docker
+bash <(curl -sL https://get.docker.com)
+#预装docker-compose
+curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+################## 安装装逼神器 ohmyzsh & ohmytmux ##################
+#安装oh my zsh
+cd /root && bash <(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
+sed -i '/^ZSH_THEME=/c\ZSH_THEME="jtriley"' ~/.zshrc #设置主题
+git clone https://github.com/zsh-users/zsh-syntax-highlighting /root/.oh-my-zsh/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-completions /root/.oh-my-zsh/plugins/zsh-completions
+#[ -z "$(grep "autoload -U compinit && compinit" ~/.zshrc)" ] && echo "autoload -U compinit && compinit" >> ~/.zshrc
+[ -z "$(grep "plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)" ~/.zshrc)" ] && sed -i '/^plugins=/c\plugins=(git z zsh-syntax-highlighting zsh-autosuggestions zsh-completions)' ~/.zshrc
+#自动更新
+echo "zstyle ':omz:update' mode auto" >> ~/.zshrc
+# source /root/.bashrc
+[ -z "$(grep "source /root/.bashrc" ~/.zshrc)" ] && echo -e "\nsource /root/.bashrc" >> /root/.zshrc
+#不显示开机提示语
+touch ~/.hushlogin
+echo -e "${curr_date} 安装oh my zsh,done!" | tee -a /root/install_log.txt
+#安装oh my tmux
+cd /root && git clone https://github.com/gpakosz/.tmux.git
+ln -sf .tmux/.tmux.conf .
+cp .tmux/.tmux.conf.local .
+echo -e "${curr_date} 安装oh my tmux，done!" | tee -a /root/install_log.txt
+sudo chsh -s /usr/bin/zsh
+
+################## 重启 ##################
+reboot -f
