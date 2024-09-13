@@ -114,5 +114,34 @@ cp .tmux/.tmux.conf.local .
 echo -e "${curr_date} 安装oh my tmux，done!" | tee -a /root/install_log.txt
 sudo chsh -s /usr/bin/zsh
 
+################## bbr ###################
+wget https://github.com/Zxilly/bbr-v3-pkg/releases/download/2024-03-07-190234/linux-headers-6.4.0-bbrv3_6.4.0-g7542cc7c41c0-1_amd64.deb && wget https://github.com/Zxilly/bbr-v3-pkg/releases/download/2024-03-07-190234/linux-image-6.4.0-bbrv3_6.4.0-g7542cc7c41c0-1_amd64.deb && dpkg -i linux-headers-6.4.0-bbrv3_6.4.0-g7542cc7c41c0-1_amd64.deb && dpkg -i linux-image-6.4.0-bbrv3_6.4.0-g7542cc7c41c0-1_amd64.deb
+# 使用单个 sed 命令删除不需要的行
+sed -i '/net\.ipv4\.tcp_no_metrics_save\|net\.ipv4\.tcp_ecn\|net\.ipv4\.tcp_frto\|net\.ipv4\.tcp_mtu_probing\|net\.ipv4\.tcp_rfc1337\|net\.ipv4\.tcp_sack\|net\.ipv4\.tcp_fack\|net\.ipv4\.tcp_window_scaling\|net\.ipv4\.tcp_adv_win_scale\|net\.ipv4\.tcp_moderate_rcvbuf\|net\.ipv4\.tcp_rmem\|net\.ipv4\.tcp_wmem\|net\.core\.rmem_max\|net\.core\.wmem_max\|net\.ipv4\.udp_rmem_min\|net\.ipv4\.udp_wmem_min\|net\.core\.default_qdisc\|net\.ipv4\.tcp_congestion_control/d' /etc/sysctl.conf
+
+# 追加新的配置
+cat >> /etc/sysctl.conf << EOF
+net.ipv4.tcp_no_metrics_save=1
+net.ipv4.tcp_ecn=0
+net.ipv4.tcp_frto=0
+net.ipv4.tcp_mtu_probing=0
+net.ipv4.tcp_rfc1337=0
+net.ipv4.tcp_sack=1
+net.ipv4.tcp_fack=1
+net.ipv4.tcp_window_scaling=1
+net.ipv4.tcp_adv_win_scale=1
+net.ipv4.tcp_moderate_rcvbuf=1
+net.core.rmem_max=33554432
+net.core.wmem_max=33554432
+net.ipv4.tcp_rmem=4096 87380 33554432
+net.ipv4.tcp_wmem=4096 16384 33554432
+net.ipv4.udp_rmem_min=8192
+net.ipv4.udp_wmem_min=8192
+net.core.default_qdisc=fq
+net.ipv4.tcp_congestion_control=bbr
+EOF
+
+# 重新加载配置
+sysctl -p && sysctl --system
 ################## 重启 ##################
 reboot -f
