@@ -23,40 +23,11 @@ curr_date=$(date "+%Y-%m-%d %H:%M:%S")
 sys_update=$(apt update --fix-missing 2> /dev/null | grep packages | cut -d '.' -f 1)
 echo -e "${curr_date} $sys_update" | tee -a /root/install_log.txt
 #echo -e "${curr_date} 静默检查并安装常用软件1"
-apt install -y sudo git wget nano tmux chrony iperf3 jq tar zip unzip gzip unar ncdu zsh vnstat bc 2> /dev/null
+apt install -y sudo git wget nano tmux chrony jq tar zip unzip gzip unar ncdu zsh vnstat bc 2> /dev/null
 #echo -e "${curr_date} 静默检查并安装常用软件2"
-echo -e "${curr_date} sudo git wget nano tmux chrony iperf3 jq tar zip unzip gzip unar ncdu zsh vnstat bc 已安装" | tee -a /root/install_log.txt
+echo -e "${curr_date} sudo git wget nano tmux chrony jq tar zip unzip gzip unar ncdu zsh vnstat bc 已安装" | tee -a /root/install_log.txt
 
 ################## 基础系统环境 ##################
-#设置中国时区
-if timedatectl | grep -q Asia/Shanghai; then
-  echo > /dev/null
-else
-  timedatectl set-timezone 'Asia/Shanghai'
-  echo -e "${curr_date} 设置时区为Asia/Shanghai,done!" | tee -a /root/install_log.txt
-fi
-#设置en_US.UTF-8
-if [[ $LANG == "en_US.UTF-8" ]]; then
-  echo > /dev/null
-else
-  chattr -i /etc/locale.gen #解除文件修改限制
-  cat > '/etc/locale.gen' << EOF
-zh_TW.UTF-8 UTF-8
-en_US.UTF-8 UTF-8
-EOF
-  locale-gen
-  update-locale
-  chattr -i /etc/default/locale
-  cat > '/etc/default/locale' << EOF
-LANGUAGE="en_US.UTF-8"
-LANG="en_US.UTF-8"
-LC_ALL="en_US.UTF-8"
-EOF
-  export LANGUAGE="en_US.UTF-8"
-  export LANG="en_US.UTF-8"
-  export LC_ALL="en_US.UTF-8"
-  echo -e "${curr_date} 设置语言为英文，done!" | tee -a /root/install_log.txt
-fi
 #设置256颜色
 if [ -z "$(grep -s "export TERM=xterm-256color" ~/.bashrc)" ]; then
   cat >> ~/.bashrc << EOF
@@ -88,8 +59,6 @@ fi
 ################## 基础开发环境 ##################
 #预装docker
 bash <(curl -sL https://get.docker.com)
-#预装docker-compose
-curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 ################## 安装装逼神器 ohmyzsh & ohmytmux ##################
 #安装oh my zsh
