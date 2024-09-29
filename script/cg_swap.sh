@@ -31,7 +31,7 @@ make-swapfile() {
   mkswap /swapfile
   #启用swap区
   swapon /swapfile
-  echo '/swapfile none swap defaults 0 0' >> /etc/fstab
+  echo '/swapfile none swap sw 0 0' >> /etc/fstab
   echo -e "${green}swap创建成功,信息如下:${normal}"
   cat /proc/swaps
   grep Swap /proc/meminfo
@@ -44,7 +44,7 @@ auto_swap() {
   elif [ "$totalmem" -gt 1024 ]; then
     swapsize="$((totalmem * 2))MB"
   fi
-  if grep -q "swapfile" /etc/fstab ;then
+  if grep -q "swapfile" /etc/fstab; then
     del_swap
     make-swapfile
   else
@@ -66,12 +66,26 @@ add_swap() {
       add_swap
     fi
   fi
-  if grep -q "swapfile" /etc/fstab ;then
+  if grep -q "swapfile" /etc/fstab; then
     del_swap
     make-swapfile
   else
     make-swapfile
   fi
+}
+################## swap调用参数调整 ##################
+make_good() {
+    echo "正在优化..."
+    echo
+    cat /proc/sys/vm/swappiness
+    sudo sysctl vm.swappiness=50
+    cat /proc/sys/vm/vfs_cache_pressure
+    sudo sysctl vm.vfs_cache_pressure=50
+    cp /etc/sysctl.conf /etc/sysctl.conf.bak
+    echo "vm.swappiness=50" >> /etc/sysctl.conf
+    echo "vm.vfs_cache_pressure = 50" >> /etc/sysctl.conf
+    echo "优化完成"
+    sudo sysctl -p
 }
 
 ################## 删 除 swap ##################
@@ -179,19 +193,3 @@ else
       ;;
   esac
 fi
-#swap调用参数调整
-#modi(){
-#echo "正在优化..."
-#echo
-#cat /proc/sys/vm/swappiness
-#sudo sysctl vm.swappiness=10
-#cat /proc/sys/vm/vfs_cache_pressure
-#sudo sysctl vm.vfs_cache_pressure=50
-#cp /etc/sysctl.conf /etc/sysctl.conf.bak
-#echo >> /etc/sysctl.conf
-#echo "vm.swappiness=10" >> /etc/sysctl.conf
-#echo >> /etc/sysctl.conf
-#echo "vm.vfs_cache_pressure = 50" >> /etc/sysctl.conf
-#echo "优化完成"
-#swap_menu
-#}
